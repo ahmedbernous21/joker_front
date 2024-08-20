@@ -20,7 +20,7 @@ const Admin = () => {
 
       if (response) {
         setSuccessMessage("Login successful!");
-        navigate("/dashboard");
+        navigate("/dashboard/");
       }
     } catch (error) {
       setErrorMessage(error.message || "An error occurred during login");
