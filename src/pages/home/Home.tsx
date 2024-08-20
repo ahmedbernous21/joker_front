@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Home = () => {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -13,14 +15,15 @@ const Home = () => {
                 sandales, assiettes, et plus encore avec les images et symboles
                 de votre choix.
               </p>
-              <button className="rounded-lg bg-blue-600 px-7 py-5 text-white shadow transition duration-300 hover:bg-blue-500">
+              {/* next time i will point it /design/:article dynamically */}  
+              <Link to="/design/tshirt" className="rounded-lg bg-blue-600 px-7 py-5 text-white shadow transition duration-300 hover:bg-blue-500">
                 Créez votre design personnalisé
-              </button>
+              </Link>
             </div>
 
             <div className="w-full md:w-1/2">
               <img
-                src="/public/home.svg"
+                src="/home.svg"
                 alt="Home illustration"
                 className="mx-auto w-full max-w-md"
               />
@@ -36,7 +39,7 @@ const Home = () => {
             <div className="grid grid-cols-1 gap-8 text-center md:grid-cols-3">
               <div className="rounded-lg bg-gray-100 p-8 shadow-lg">
                 <img
-                  src="/public/tshirt.jpg"
+                  src="/tshirt.jpg"
                   alt="Feature 1"
                   className="mx-auto mb-4 h-24 w-24"
                 />
@@ -54,7 +57,7 @@ const Home = () => {
 
               <div className="rounded-lg bg-gray-100 p-8 shadow-lg">
                 <img
-                  src="/public/business_cards.jpg"
+                  src="/business_cards.jpg"
                   alt="Feature 2"
                   className="mx-auto mb-4 h-24 w-24"
                 />
@@ -66,7 +69,7 @@ const Home = () => {
 
               <div className="rounded-lg bg-gray-100 p-8 shadow-lg">
                 <img
-                  src="/public/feature3.svg"
+                  src="/feature3.svg"
                   alt="Feature 3"
                   className="mx-auto mb-4 h-24 w-24"
                 />
@@ -83,7 +86,8 @@ const Home = () => {
       <footer className="bg-gray-900 py-8 text-white">
         <div className="container mx-auto px-6 text-center">
           <p className="text-sm">
-            &copy; 2024 Joker Graphics. All rights reserved.
+            &copy; {new Date().getFullYear()} Joker Graphics. All rights
+            reserved.
           </p>
           <div className="mt-4">
             <a href="#about" className="mx-2 text-blue-400 hover:text-blue-600">

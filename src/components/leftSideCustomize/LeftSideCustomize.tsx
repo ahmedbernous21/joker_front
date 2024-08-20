@@ -13,7 +13,7 @@ const LeftSideCustomize = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="mx-4 flex flex-col items-center justify-center gap-4 md:mx-0">
+    <div className="mx-4 flex flex-col border-2 rounded-xl items-center justify-center gap-4 md:mx-0">
       <div className="flex h-[470px] max-w-[600px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 px-6 text-center text-black">
         <LeftSideHeader />
         <BiText

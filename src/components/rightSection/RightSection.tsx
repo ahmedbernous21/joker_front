@@ -66,9 +66,15 @@ const RightSection = () => {
                   )}
                 />
                 {/* Display the current value */}
-                <span>
-                  {frontTexts.find((text) => text.id === selectedId)?.fontSize}
-                </span>
+                <div className="flex">
+                  <span>
+                    {
+                      frontTexts.find((text) => text.id === selectedId)
+                        ?.fontSize
+                    }
+                  </span>
+                  <span>px</span>
+                </div>
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -116,9 +122,15 @@ const RightSection = () => {
                   )}
                 />
                 {/* Display the current value */}
-                <span>
-                  {frontTexts.find((text) => text.id === selectedId)?.rotation}
-                </span>
+                <div className="flex">
+                  <span>
+                    {
+                      frontTexts.find((text) => text.id === selectedId)
+                        ?.rotation
+                    }
+                  </span>
+                  <span>deg</span>
+                </div>
               </div>
             </div>
             <div className="flex flex-col gap-2">

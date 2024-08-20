@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 interface tshirtSliceState {
   bgCanvas: string;
   selectedId: number | null;
-  frontTexts: any[];
-  images: any[];
+  frontTexts: any[]; // any for now
+  images: any[]; // any for now
   readyToExport: boolean;
 }
 
@@ -100,6 +100,7 @@ const canvasSlice = createSlice({
     createImage(state, action) {
       state.images.push(action.payload);
     },
+    // now am gonna do the same for images
   },
 });
 
