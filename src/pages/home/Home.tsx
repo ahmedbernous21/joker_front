@@ -1,14 +1,16 @@
 import LeftSideCustomize from "../../components/leftSideCustomize/LeftSideCustomize";
+import RightSection from "../../components/rightSection/RightSection";
 import TshirtCanvas from "../../components/tshirtCanvas/TshirtCanvas";
 
 const Home = () => {
   return (
     <div
-      className="flex flex-wrap justify-center items-center gap-12 my-12 xl:my-0"
+      className="my-12 flex flex-wrap items-center justify-center gap-12 xl:my-0"
       style={{ minHeight: "calc(100vh - 63px)" }}
     >
       <LeftSideCustomize />
       <TshirtCanvas />
+      <RightSection />
     </div>
   );
 };

@@ -1,73 +1,69 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+interface tshirtSliceState {
+  bgCanvas: string;
+  selectedId: number | null;
+  frontTexts: any[];
+  images: any[];
+  readyToExport: boolean;
+}
+
+const initialState: tshirtSliceState = {
+  bgCanvas: "#9a9996",
+  selectedId: null,
+  frontTexts: [],
+  images: [],
+  readyToExport: false,
+};
 const canvasSlice = createSlice({
   name: "tShirt",
-  initialState: {
-    bgCanvas: "#9a9996",
-    frontText: "",
-    backText: "",
-    frontTextSize: 16,
-    backTextSize: 16,
-    isFrontTextBold: false,
-    isBackTextBold: false,
-    frontFontFamily: '"Grey Qo", cursive',
-    backFontFamily: '"Grey Qo", cursive',
-    frontTextColor: "black",
-    backTextColor: "black",
-    frontImageUrl: null,
-    backImageUrl: null,
-    readyToExport: false,
-  },
+  initialState,
   reducers: {
     setCanvasBG(state, action) {
       state.bgCanvas = action.payload;
     },
-    setFrontText(state, action) {
-      state.frontText = action.payload;
+    createText(state, action) {
+      state.frontTexts.push(action.payload);
     },
-    setBackText(state, action) {
-      state.backText = action.payload;
+    editText(state, action) {
+      state.frontTexts = state.frontTexts.map((frontText: any) => {
+        if (frontText.id == action.payload.id) {
+          frontText.text = action.payload.text;
+        }
+        return frontText;
+      });
     },
-    setFrontTextSize(state, action) {
-      state.frontTextSize = action.payload;
+    setTextSize(state, action) {
+      state.frontTexts = state.frontTexts.map((frontText: any) => {
+        if (frontText.id == action.payload.id) {
+          frontText.fontSize = action.payload.fontSize;
+        }
+        return frontText;
+      });
     },
-    setBackTextSize(state, action) {
-      state.backTextSize = action.payload;
-    },
-    FrontTextBoldToggle(state, action) {
-      if (action.payload === "1") {
-        state.isFrontTextBold = true;
-      } else {
-        state.isFrontTextBold = false;
-      }
-    },
-    BackTextBoldToggle(state, action) {
-      if (action.payload === "1") {
-        state.isBackTextBold = true;
-      } else {
-        state.isBackTextBold = false;
-      }
-    },
-    setFontFamily(state, action) {
+    setFontFamily(state: any, action) {
       if (action.payload.type == "front") {
         state.frontFontFamily = action.payload.value;
       } else {
         state.backFontFamily = action.payload.value;
       }
     },
-    setTextColor(state, action) {
-      if (action.payload.type == "front") {
-        state.frontTextColor = action.payload.value;
-      } else {
-        state.backTextColor = action.payload.value;
-      }
+    setTextColor(state: any, action) {
+      console.log(action.payload);
+      state.frontTexts = state.frontTexts.map((frontText: any) => {
+        if (frontText.id == action.payload.id) {
+          frontText.color = action.payload.color;
+        }
+        return frontText;
+      });
     },
-    setFrontImageUrl(state, action) {
-      state.frontImageUrl = action.payload;
-      console.log(state.frontImageUrl);
-    },
-    setBackImageUrl(state, action) {
-      state.backImageUrl = action.payload;
+    setTextRotation(state, action) {
+      state.frontTexts = state.frontTexts.map((frontText: any) => {
+        if (frontText.id == action.payload.id) {
+          frontText.rotation = action.payload.rotation;
+        }
+        return frontText;
+      });
     },
     readyToExportToggle(state, action) {
       if (action.payload == "1") {
@@ -75,6 +71,34 @@ const canvasSlice = createSlice({
       } else {
         state.readyToExport = false;
       }
+    },
+    setSelectedId(state, action) {
+      state.selectedId = action.payload;
+    },
+    changeFontStyle(state, action) {
+      state.frontTexts = state.frontTexts.map((frontText: any) => {
+        if (frontText.id == action.payload.id) {
+          if (action.payload.style === "italic") {
+            frontText.italic = !frontText.italic;
+          } else if (action.payload.style == "bold") {
+            frontText.bold = !frontText.bold;
+          } else {
+            frontText.underline = !frontText.underline;
+          }
+        }
+        return frontText;
+      });
+    },
+    changeFontFamily(state, action) {
+      state.frontTexts = state.frontTexts.map((frontText: any) => {
+        if (frontText.id == action.payload.id) {
+          frontText.fontFamily = action.payload.fontFamily;
+        }
+        return frontText;
+      });
+    },
+    createImage(state, action) {
+      state.images.push(action.payload);
     },
   },
 });

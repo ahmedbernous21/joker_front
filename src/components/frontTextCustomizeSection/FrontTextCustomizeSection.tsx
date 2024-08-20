@@ -22,6 +22,7 @@ const FrontTextCustomizeSection = () => {
             }
             name=""
             id=""
+            
             className="w-[40%] rounded-lg border-2 border-[#00d5ff] pl-4 focus:outline-none"
           />
 

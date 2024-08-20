@@ -4,7 +4,7 @@ import { tShirtActions } from "../../store/slices/tShirtSlice";
 import { useDispatch } from "react-redux";
 
 const Model = ({ setIsModelOpen }: any) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
   const [selectedSize, setSelectedSize] = useState<string>("");
 
   const handleSizeSelection = (size: string) => {
