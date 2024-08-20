@@ -1,4 +1,5 @@
 import LeftSideCustomize from "../../components/leftSideCustomize/LeftSideCustomize";
+import RightSection from "../../components/rightSection/RightSection";
 import TshirtCanvas from "../../components/tshirtCanvas/TshirtCanvas";
 
 const Design = () => {
@@ -9,6 +10,7 @@ const Design = () => {
     >
       <LeftSideCustomize />
       <TshirtCanvas />
+      <RightSection />
     </div>
   );
 };
