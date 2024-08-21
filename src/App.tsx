@@ -5,9 +5,10 @@ import Design from "./pages/design/Design";
 // import Canvas from "./components/tshirtCanvas/TshirtCanvas";
 import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
-import Home from "./pages/home/home";
+// import Home from "./pages/home/home";
 import Admin from "./pages/Admin/admin";
 import Dashboard from "./pages/Dashboard/dashboard";
+import Home from "./pages/home/Home";
 
 function App() {
   return (

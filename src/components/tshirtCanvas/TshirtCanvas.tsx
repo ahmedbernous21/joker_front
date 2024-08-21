@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import { tShirtActions } from "../../store/slices/tShirtSlice";
+import LeftSideSubmitButton from "../leftSideCustomize/LeftSideSubmitButton";
 
-function  TshirtCanvas() {
+function TshirtCanvas() {
   const dispatch = useDispatch();
   const { readyToExport } = useSelector((state: IRootState) => state.tShirt);
   const frontTshirtStageRef = useRef(null);
@@ -37,9 +38,11 @@ function  TshirtCanvas() {
     }
   }, [readyToExport]);
   return (
-    <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-      <FrontTshirtCanvas stageRef={frontTshirtStageRef} />
-      <BackTshirtCanvas stageRef={backTshirtStageRef} />
+    <div className="flex-col items-center justify-center gap-2 flex">
+      <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+        <FrontTshirtCanvas stageRef={frontTshirtStageRef} />
+        <BackTshirtCanvas stageRef={backTshirtStageRef} />
+      </div>
     </div>
   );
 }

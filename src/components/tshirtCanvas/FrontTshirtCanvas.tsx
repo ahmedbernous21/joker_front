@@ -1,41 +1,40 @@
 import { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Image, Text, Rect, Transformer } from "react-konva";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { IRootState } from "../../store/store";
 import useImage from "use-image";
 
+import { tShirtActions } from "../../store/slices/tShirtSlice";
 const FrontTshirtCanvas = ({ stageRef }: any) => {
-  const {
-    bgCanvas,
-    frontText,
-    frontTextSize,
-    frontTextColor,
-    isFrontTextBold,
-    frontFontFamily,
-    frontImageUrl,
-  } = useSelector((state: IRootState) => state.tShirt);
+  const dispatch = useDispatch();
+  const { bgCanvas, selectedId, frontTexts, images } = useSelector(
+    (state: IRootState) => state.tShirt,
+  );
 
   // Front t-shirt image
   const [frontImage] = useImage("/crew_front.png");
 
   // State to manage the logo image
-  const [frontImageLogo, setFrontImageLogo] = useState(new window.Image());
+  const [imagesTmp, setimagesTmp] = useState<any[]>([]);
   useEffect(() => {
-    if (frontImageUrl) {
-      const img = new window.Image();
-      img.src = URL.createObjectURL(frontImageUrl); // Ensure this image has a transparent background
-      img.onload = () => setFrontImageLogo(img);
+    if (images.length > 0) {
+      images.forEach((image) => {
+        const img = new window.Image();
+        console.log(image);
+        img.src = URL.createObjectURL(image); // Ensure this image has a transparent background
+        img.onload = () => setimagesTmp([...imagesTmp, img]);
+      });
     }
-  }, [frontImageUrl]);
+  }, [images]);
 
-  const [selectedId, selectShape] = useState<string | null>(null);
-  const shapeRef = useRef<any>(null);
+  // const [selectedId] = useState<string | null>(null);
+  const shapeRefs = useRef<any>({});
   const trRef = useRef<any>(null);
 
   useEffect(() => {
     if (trRef.current) {
       if (selectedId) {
-        trRef.current.setNode(shapeRef.current);
+        trRef.current.setNode(shapeRefs.current[selectedId]);
         trRef.current.getLayer().batchDraw();
       } else {
         trRef.current.nodes([]);
@@ -54,7 +53,7 @@ const FrontTshirtCanvas = ({ stageRef }: any) => {
         onMouseDown={(e) => {
           const clickedOnEmpty = e.target === e.target.getStage();
           if (clickedOnEmpty) {
-            selectShape(null);
+            dispatch(tShirtActions.setSelectedId(null));
           }
         }}
         className="flex flex-col"
@@ -69,22 +68,21 @@ const FrontTshirtCanvas = ({ stageRef }: any) => {
             fill={bgCanvas}
           />
           <Image image={frontImage} x={0} y={0} width={320} height={450} />
-          {frontImageUrl && (
+          {imagesTmp?.map((image) => (
             <Image
-              image={frontImageLogo}
-              ref={shapeRef}
+              image={image}
+              ref={(node) => (shapeRefs.current["static-image"] = node)}
               id="static-image"
               x={115}
               y={100}
               width={80}
               height={80}
               draggable
-              onClick={() => selectShape("static-image")}
               onDragEnd={(e) => {
                 console.log("Image dragged to:", e.target.x(), e.target.y());
               }}
               onTransformEnd={(e) => {
-                const node = shapeRef.current;
+                const node = shapeRefs.current["static-image"];
                 console.log("Image transformed:", {
                   x: node.x(),
                   y: node.y(),
@@ -93,31 +91,51 @@ const FrontTshirtCanvas = ({ stageRef }: any) => {
                 });
               }}
             />
-          )}
+          ))}
+
+          {frontTexts.map((frontText) => (
+            <Text
+              key={frontText.id}
+              text={frontText.text}
+              x={frontText.x || 0}
+              y={frontText.y || 0}
+              width={320}
+              align="center"
+              fontSize={frontText.fontSize}
+              textDecoration={`${frontText.underline ? "underline" : ""}`}
+              fontFamily={frontText.fontFamily}
+              fontStyle={`${frontText.italic ? "italic" : ""} ${frontText.bold ? "bold" : ""} `}
+              rotation={frontText.rotation}
+              draggable
+              fill={frontText.color}
+              ref={(node) => (shapeRefs.current[frontText.id] = node)}
+              id={frontText.id}
+              onClick={() => {
+                dispatch(tShirtActions.setSelectedId(frontText.id));
+              }}
+              onTransformEnd={(e) => {
+                const node = shapeRefs.current[frontText.id];
+                console.log("Text transformed:", {
+                  x: node.x(),
+                  y: node.y(),
+                  scaleX: node.scaleX(),
+                  scaleY: node.scaleY(),
+                });
+              }}
+            />
+          ))}
 
           <Transformer
             ref={trRef}
-            stroke="none" // Removes the border color
-            strokeWidth={0} // Ensures no visible border
-            opacity={0.1} // Sets transparency
+            stroke="none"
+            strokeWidth={0}
+            opacity={0.5}
             boundBoxFunc={(oldBox, newBox) => {
               if (newBox.width < 5 || newBox.height < 5) {
                 return oldBox;
               }
               return newBox;
             }}
-          />
-
-          <Text
-            text={frontText}
-            y={80}
-            width={320}
-            align="center"
-            fontSize={frontTextSize}
-            fontFamily={frontFontFamily}
-            fontStyle={isFrontTextBold ? "bold" : ""}
-            draggable
-            fill={frontTextColor}
           />
         </Layer>
       </Stage>
