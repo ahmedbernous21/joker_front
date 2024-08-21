@@ -6,8 +6,8 @@ import Design from "./pages/design/Design";
 import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
 // import Home from "./pages/home/home";
-import Admin from "./pages/Admin/admin";
-import Dashboard from "./pages/Dashboard/dashboard";
+import Admin from "./pages/Admin/Admin";
+import Login from "./pages/LoginAdmin/LoginAdmin";
 import Home from "./pages/home/Home";
 
 function App() {
@@ -17,8 +17,8 @@ function App() {
       <Routes>
         <Route element={<Home />} path="/" />
         <Route element={<Design />} path="/design/:article" />
-        <Route element={<Admin />} path="/kedache/" />
-        <Route element={<Dashboard />} path="/dashboard/" />
+        <Route element={<Login />} path="/kedache/" />
+        <Route element={<Admin />} path="/dashboard/" />
         <Route element={<NotFound />} path="* " />
       </Routes>
     </BrowserRouter>
