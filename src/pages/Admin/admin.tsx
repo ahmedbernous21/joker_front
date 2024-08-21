@@ -7,9 +7,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
   const menuItems = [
-    { label: "Dashboard", href: "#" },
-    { label: "Articles", href: "#" },
-    { label: "Statistics", href: "#" },
+    { label: "Overview", href: "/dashboard/overview/" },
+    { label: "Articles", href: "/dashboard/articles/" },
     { label: "Logout", href: "#" },
   ];
   useEffect(() => {

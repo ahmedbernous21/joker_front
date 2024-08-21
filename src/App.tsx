@@ -9,6 +9,7 @@ import Header from "./components/header/Header";
 import Admin from "./pages/Admin/Admin";
 import Login from "./pages/LoginAdmin/LoginAdmin";
 import Home from "./pages/home/Home";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route element={<Home />} path="/" />
         <Route element={<Design />} path="/design/:article" />
         <Route element={<Login />} path="/kedache/" />
-        <Route element={<Admin />} path="/dashboard/" />
+        <Route element={<Dashboard />} path="/dashboard/overview/" />
+        <Route element={<Admin />} path="/dashboard/articles/" />
         <Route element={<NotFound />} path="* " />
       </Routes>
     </BrowserRouter>
