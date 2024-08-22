@@ -39,8 +39,8 @@ function MiddleSideCustomize() {
   }, [readyToExport]);
 
   return (
-    <div className="flex flex-row items-start justify-start gap-6">
-      <div className="flex flex-col gap-6">
+    <div className="flex flex-col-reverse  items-center md:items-start  gap-6 md:flex-row">
+      <div className="flex md:flex-col gap-6">
         <div
           onClick={() => dispatch(canvasActions.setActiveSide("front"))}
           className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${articles[selectedArticleIndex].active === "front" ? "outline-solid outline outline-2 outline-blue-500" : ""}`}
