@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import tShirtReducer from "./slices/tShirtSlice";
+import canvasReducer from "./slices/canvasSlice";
 
 const store = configureStore({
   reducer: {
-    tShirt: tShirtReducer,
+    canvas: canvasReducer,
   },
 });
 

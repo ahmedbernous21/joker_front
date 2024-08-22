@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SketchPicker } from "react-color";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
-import { tShirtActions } from "../../store/slices/tShirtSlice";
+import { canvasActions } from "../../store/slices/canvasSlice";
 
 // Define the type for the props
 interface ColorPickerProps {
@@ -13,20 +13,24 @@ interface ColorPickerProps {
 const ColorPicker: React.FC<ColorPickerProps> = ({ type, id }) => {
   const [showSketchPicker, setShowSketchPicker] = useState(false);
   const dispatch = useDispatch();
-  const { bgCanvas, frontTexts } = useSelector(
-    (state: IRootState) => state.tShirt,
+  const { bgCanvas, articles, selectedArticleIndex } = useSelector(
+    (state: IRootState) => state.canvas,
   );
+  const { canvasTexts } =
+    articles[selectedArticleIndex].active == "front"
+      ? articles[selectedArticleIndex].firstImage
+      : articles[selectedArticleIndex].secondImage;
 
   return (
     <>
       <button
         onClick={() => setShowSketchPicker(!showSketchPicker)}
-        className="h-4 w-full text-white"
+        className="h-4 w-full rounded-xl text-white outline outline-1 outline-black"
         style={{
           backgroundColor:
             type == ""
               ? bgCanvas
-              : frontTexts.find((text) => text.id === id)?.color,
+              : canvasTexts.find((canvasText) => canvasText.id === id)?.color,
         }}
       ></button>
       {showSketchPicker && (
@@ -36,20 +40,15 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ type, id }) => {
             onClick={() => setShowSketchPicker(false)}
           ></div>
           <div
-            className="fixed right-0 top-1/2 z-50 -translate-y-1/2"
+            className="fixed right-8 top-1/2 z-50 -translate-y-1/2"
             onClick={(e) => e.stopPropagation()} // Prevent click from closing the picker
           >
             <SketchPicker
-              // color={
-              //   type == ""
-              //     ? bgCanvas
-              //     : frontTexts.find((text) => text.id === id)?.color
-              // }
               color="#fff"
               onChange={(e) => {
                 type == ""
-                  ? dispatch(tShirtActions.setCanvasBG(e.hex))
-                  : dispatch(tShirtActions.setTextColor({ id, color: e.hex }));
+                  ? dispatch(canvasActions.setCanvasBG(e.hex))
+                  : dispatch(canvasActions.setTextColor({ id, color: e.hex }));
               }}
             />
           </div>

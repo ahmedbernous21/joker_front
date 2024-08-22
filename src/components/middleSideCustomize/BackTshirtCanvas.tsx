@@ -13,7 +13,7 @@ const FrontTshirtCanvas = ({ stageRef }: any) => {
     backFontFamily,
     backTextColor,
     backImageUrl,
-  } = useSelector((state: IRootState) => state.tShirt);
+  } = useSelector((state: IRootState) => state.canvas);
 
   // Front t-shirt image
   const [backImage] = useImage("/crew_back.png");
