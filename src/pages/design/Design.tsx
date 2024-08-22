@@ -1,16 +1,18 @@
 import LeftSideCustomize from "../../components/leftSideCustomize/LeftSideCustomize";
 import RightSection from "../../components/rightSection/RightSection";
-import TshirtCanvas from "../../components/tshirtCanvas/TshirtCanvas";
+import MiddleSideCustomize from "../../components/middleSideCustomize/MiddleSideCustomize";
 
 const Design = () => {
   return (
-    <div
-      className="my-12 flex flex-wrap items-center justify-center bg-gray-50 gap-12 xl:my-0"
-      style={{ minHeight: "calc(100vh - 108px)" }}
-    >
-      <LeftSideCustomize />
-      <TshirtCanvas />
-      <RightSection />
+    <div className="bg-gray-50">
+      <div
+        className="container flex flex-wrap items-center justify-center gap-12 py-12 md:py-6 xl:my-0"
+        style={{ minHeight: "calc(100vh - 109px)" }}
+      >
+        <LeftSideCustomize />
+        <MiddleSideCustomize />
+        <RightSection />
+      </div>
     </div>
   );
 };
