@@ -39,7 +39,7 @@ const Home = () => {
             <div className="grid grid-cols-1 gap-8 text-center md:grid-cols-3">
               <div className="rounded-lg bg-gray-100 p-8 shadow-lg">
                 <img
-                  src="/tshirt.jpg"
+                  src="/tshirt-removebg-preview.png"
                   alt="Feature 1"
                   className="mx-auto mb-4 h-24 w-24"
                 />
@@ -69,7 +69,7 @@ const Home = () => {
 
               <div className="rounded-lg bg-gray-100 p-8 shadow-lg">
                 <img
-                  src="/feature3.svg"
+                  src="/feature-3.svg"
                   alt="Feature 3"
                   className="mx-auto mb-4 h-24 w-24"
                 />

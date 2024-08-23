@@ -12,11 +12,11 @@ const Header = () => {
     <header className="relative bg-white shadow-sm">
       <nav className="container mx-auto flex items-center justify-between p-2">
         <Link to="/" className="flex items-center">
-          <img
+          {/* <img
             src="/joker_logo.jpg"
             alt="Joker Graphics Logo"
             className="mr-3 h-20 w-20"
-          />
+          /> */}
           <span className="text-lg font-semibold text-gray-800 sm:text-2xl">
             Joker Graphics
           </span>
