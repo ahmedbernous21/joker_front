@@ -11,7 +11,7 @@ const LeftSideCustomize = () => {
 
   return (
     <div className="mx-4 flex flex-col items-center justify-center gap-4 md:mx-0">
-      <div className="flex h-[470px] max-w-[600px] flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white p-4 px-6 text-center text-black">
+      <div className="flex md:h-[470px] max-w-[600px] flex-row md:flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white p-4 px-6 text-center text-black">
         <LeftSideHeader />
         <BiText
           onClick={() => {

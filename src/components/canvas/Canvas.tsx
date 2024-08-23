@@ -87,6 +87,14 @@ const Canvas = ({ stageRef }: any) => {
                   }),
                 );
               }}
+              onTap={() => {
+                dispatch(
+                  canvasActions.setSelectedLayer({
+                    id: image.id,
+                    type: "image",
+                  }),
+                );
+              }}
               onDragEnd={(e) => {
                 console.log("Image dragged to:", e.target.x(), e.target.y());
               }}
@@ -132,6 +140,15 @@ const Canvas = ({ stageRef }: any) => {
                   }),
                 );
               }}
+              onTap={() => {
+                dispatch(
+                  canvasActions.setSelectedLayer({
+                    id: canvasText.id,
+                    type: "text",
+                  }),
+                );
+              }}
+              
               onTransformEnd={(e) => {
                 const node = shapeRefs.current[canvasText.id];
                 console.log("Text transformed:", {
