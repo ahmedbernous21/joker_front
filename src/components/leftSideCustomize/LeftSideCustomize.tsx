@@ -1,10 +1,7 @@
 import { BiText } from "react-icons/bi";
-// import BackTextCustomizeSection from "../backTextCustomizeSection/BackTextCustomizeSection";
-// import FrontTextCustomizeSection from "../frontTextCustomizeSection/FrontTextCustomizeSection";
-// import LeftSideSubmitButton from "./LeftSideSubmitButton";
 import LeftSideHeader from "./LeftSideHeader";
 import { useDispatch } from "react-redux";
-import { tShirtActions } from "../../store/slices/tShirtSlice";
+import { canvasActions } from "../../store/slices/canvasSlice";
 import { v4 as uuid } from "uuid";
 import { toast } from "react-hot-toast";
 import { FaUpload } from "react-icons/fa6";
@@ -13,18 +10,18 @@ const LeftSideCustomize = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="mx-4 flex flex-col border-2 rounded-xl items-center justify-center gap-4 md:mx-0">
-      <div className="flex h-[470px] max-w-[600px] flex-col items-center justify-center gap-4 rounded-xl bg-white p-4 px-6 text-center text-black">
+    <div className="mx-4 flex flex-col items-center justify-center gap-4 md:mx-0">
+      <div className="flex md:h-[470px] max-w-[600px] flex-row md:flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white p-4 px-6 text-center text-black">
         <LeftSideHeader />
         <BiText
           onClick={() => {
             dispatch(
-              tShirtActions.createText({
+              canvasActions.createText({
                 id: uuid(),
-                text: "hello world",
+                text: "édite-moi",
                 color: "black",
                 fontFamily: '"Moderustic", sans-serif',
-                fontSize: 100,
+                fontSize: 30,
                 bold: false,
                 rotation: 0,
                 underline: false,
@@ -45,17 +42,23 @@ const LeftSideCustomize = () => {
           multiple={false}
           onChange={(e) => {
             if (e.target.files) {
-              dispatch(tShirtActions.createImage(e.target.files[0]));
+              const img = new window.Image();
+              img.src = URL.createObjectURL(e.target.files[0]); // Ensure this image has a transparent background
+              img.onload = () => {
+                dispatch( 
+                  canvasActions.createImage({
+                    src: img,
+                    id: uuid(),
+                    rotation: 0,
+                  }),
+                );
+              };
             }
           }}
           className="hidden"
         />
-        {/* <FrontTextCustomizeSection />
-        <BackTextCustomizeSection /> */}
       </div>
-      {/* <div>
-        View 3rd
-      </div> */}
+      {/* <div>View 3rd</div> */}
     </div>
   );
 };

@@ -1,12 +1,19 @@
 import { useDispatch, useSelector } from "react-redux";
-import { tShirtActions } from "../../store/slices/tShirtSlice";
+import { canvasActions } from "../../store/slices/canvasSlice";
+import { IRootState } from "../../store/store";
 
 interface TextFontFamilyProps {
   id: string;
 }
 const TextFontFamily = ({ id }: TextFontFamilyProps) => {
   const dispatch = useDispatch();
-  const { frontTexts } = useSelector((state: any) => state.tShirt);
+  const { articles, selectedArticleIndex } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
+  const { canvasTexts } =
+    articles[selectedArticleIndex].active == "front"
+      ? articles[selectedArticleIndex].firstImage
+      : articles[selectedArticleIndex].secondImage;
   const fonts = [
     { name: "Grey Qo", value: '"Grey Qo", cursive' },
     { name: "Inter", value: '"Inter", sans-serif' },
@@ -17,10 +24,10 @@ const TextFontFamily = ({ id }: TextFontFamilyProps) => {
 
   return (
     <select
-      value={frontTexts.find((text) => text.id === id)?.fontFamily}
+      value={canvasTexts.find((canvasText) => canvasText.id === id)?.fontFamily}
       onChange={(e) =>
         dispatch(
-          tShirtActions.changeFontFamily({
+          canvasActions.changeFontFamily({
             id: id,
             fontFamily: e.target.value,
           }),

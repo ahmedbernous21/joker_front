@@ -1,10 +1,10 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { tShirtActions } from "../../store/slices/tShirtSlice";
+import { canvasActions } from "../../store/slices/canvasSlice";
 import { useDispatch } from "react-redux";
 
-const Model = ({ setIsModelOpen }: any) => {
-  const dispatch = useDispatch(); 
+const OrderModel = ({ setIsModelOpen }: any) => {
+  const dispatch = useDispatch();
   const [selectedSize, setSelectedSize] = useState<string>("");
 
   const handleSizeSelection = (size: string) => {
@@ -42,7 +42,7 @@ const Model = ({ setIsModelOpen }: any) => {
 
           <div className="flex gap-2">
             <button
-              onClick={() => dispatch(tShirtActions.readyToExportToggle("1"))}
+              onClick={() => dispatch(canvasActions.readyToExportToggle("1"))}
               className="mt-6 rounded-lg border border-blue-500 bg-white px-4 py-2 text-blue-500"
             >
               Download
@@ -63,4 +63,4 @@ const Model = ({ setIsModelOpen }: any) => {
   );
 };
 
-export default Model;
+export default OrderModel;

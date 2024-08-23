@@ -6,6 +6,7 @@ import store from "./store/store.ts";
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
@@ -14,4 +15,3 @@ createRoot(document.getElementById("root")!).render(
     </Provider>
   </StrictMode>,
 );
-  
