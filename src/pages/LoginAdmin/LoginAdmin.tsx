@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import HttpClient from "../../httpClient.tsx";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ const Login = () => {
 
       if (response) {
         setSuccessMessage("Login successful!");
-        navigate("/dashboard/");
+        navigate("/dashboard/overview/");
       }
     } catch (error) {
       setErrorMessage(error.message || "An error occurred during login");

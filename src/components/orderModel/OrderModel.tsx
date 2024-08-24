@@ -1,14 +1,34 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { canvasActions } from "../../store/slices/canvasSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import httpClient from "../../httpClient";
+import { IRootState } from "../../store/store";
 
 const OrderModel = ({ setIsModelOpen }: any) => {
   const dispatch = useDispatch();
+  const { bgCanvas } = useSelector((state: IRootState) => state.canvas);
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSizeSelection = (size: string) => {
     setSelectedSize(size);
+  };
+  const createOrder = async () => {
+    if (!selectedSize) {
+      return toast.error("Please select a size");
+    }
+    try {
+      const response = await httpClient.post("requests/", {
+        size: selectedSize,
+        color: bgCanvas,
+      });
+      if (response) {
+        console.log(response);
+      }
+    } catch (error) {
+      setErrorMessage(error.message || "An error occurred during login");
+    }
   };
 
   return (
@@ -39,7 +59,7 @@ const OrderModel = ({ setIsModelOpen }: any) => {
           </div>
           <p className="mt-4">Selected Size: {selectedSize || "None"}</p>
           <p className="mt-4">Price: {"0 DZD"}</p>
-
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           <div className="flex gap-2">
             <button
               onClick={() => dispatch(canvasActions.readyToExportToggle("1"))}
@@ -48,10 +68,7 @@ const OrderModel = ({ setIsModelOpen }: any) => {
               Download
             </button>
             <button
-              onClick={() => {
-                setIsModelOpen(false);
-                toast.success("Order Placed Successfully");
-              }}
+              onClick={createOrder}
               className="mt-6 rounded-lg bg-blue-500 px-4 py-2 text-white"
             >
               Confirm
