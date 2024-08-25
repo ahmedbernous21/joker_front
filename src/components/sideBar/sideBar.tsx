@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Sidebar = ({ title = "Admin Dashboard", menuItems = [] }) => {
   return (
     <aside className="hidden w-64 bg-blue-600 p-6 text-white md:block">
@@ -6,9 +8,9 @@ const Sidebar = ({ title = "Admin Dashboard", menuItems = [] }) => {
         <ul>
           {menuItems.map((item, index) => (
             <li key={index} className="mb-4">
-              <a href={item.href} className="text-white">
+              <Link to={item.href} className="text-white">
                 {item.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

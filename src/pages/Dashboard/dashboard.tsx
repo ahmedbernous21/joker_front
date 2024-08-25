@@ -20,7 +20,7 @@ const Dashboard = () => {
   const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
 
   const menuItems = [
-    { label: "Overview", href: "overview/" },
+    { label: "Overview", href: "/dashboard/overview/" },
     { label: "Articles", href: "/dashboard/articles/" },
     { label: "Logout", href: "#" },
   ];

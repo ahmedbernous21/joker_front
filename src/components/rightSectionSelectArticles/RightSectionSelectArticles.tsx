@@ -13,7 +13,7 @@ const RightSectionSelectArticles = () => {
         }}
         name=""
         id=""
-        className="w-full rounded-xl py-2 text-center"
+        className="w-full rounded-xl py-2 text-center outline-none"
       >
         {articles.map((article: any) => (
           <option key={article.id} value={JSON.stringify(article)}>

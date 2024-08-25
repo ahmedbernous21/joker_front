@@ -1,22 +1,27 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <main className="flex-1">
         <section className="container mx-auto flex items-center justify-center px-6 pb-12 md:py-12">
-          <div className="flex flex-col-reverse items-center md:gap-12 md:flex-row">
+          <div className="flex flex-col-reverse items-center md:flex-row md:gap-12">
             <div className="w-full text-center md:w-1/2 md:text-left">
               <h1 className="mb-4 text-2xl font-bold text-gray-800 md:text-3xl xl:text-5xl">
                 Bienvenue chez Joker Graphics
               </h1>
-              <p className="mb-6 text-base md:text-lg text-gray-600">
+              <p className="mb-6 text-base text-gray-600 md:text-lg">
                 Personnalisez vos t-shirts (coton, polyester), casquettes,
                 sandales, assiettes, et plus encore avec les images et symboles
                 de votre choix.
               </p>
-              {/* next time i will point it /design/:article dynamically */}  
-              <Link to="/design/tshirt" className="rounded-lg bg-blue-600 px-4 py-2 md:px-7 inline-block md:py-5 text-white shadow transition duration-300 hover:bg-blue-500">
+              {/* next time i will point it /design/:article dynamically */}
+              <Link
+                to="/design/tshirt"
+                className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-white shadow transition duration-300 hover:bg-blue-500 md:px-7 md:py-5"
+              >
                 Créez votre design personnalisé
               </Link>
             </div>
