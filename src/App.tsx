@@ -6,15 +6,15 @@ import Design from "./pages/design/Design";
 import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
 // import Home from "./pages/home/home";
-import Admin from "./pages/Admin/admin";
+import Admin from "./pages/Admin/Admin";
 import Login from "./pages/LoginAdmin/LoginAdmin";
 import Home from "./pages/home/Home";
-import Dashboard from "./pages/Dashboard/dashboard";
 import { useEffect } from "react";
 import "./registerServiceWorker";
+import Dashboard from "./pages/Dashboard/dashboard";
+import Articles from "./pages/Articles/Articles";
 
 function App() {
-
   useEffect(() => {
     const subscribeUser = async () => {
       if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -61,6 +61,7 @@ function App() {
       <Routes>
         <Route element={<Home />} path="/" />
         <Route element={<Design />} path="/design/:article" />
+        <Route element={<Articles />} path="/design/" />
         <Route element={<Login />} path="/kedache/" />
         <Route element={<Dashboard />} path="/dashboard/overview/" />
         <Route element={<Admin />} path="/dashboard/articles/" />
