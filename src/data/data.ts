@@ -17,6 +17,7 @@ const articlesInitialState = [
       images: [],
     },
     active: "front",
+    articleBackground: "#ffffff",
   },
   {
     id: uuid(),
@@ -29,6 +30,7 @@ const articlesInitialState = [
     },
     secondImage: null,
     active: "front",
+    articleBackground: "#ffffff",
   },
   {
     id: uuid(),
@@ -41,7 +43,8 @@ const articlesInitialState = [
     },
     secondImage: null,
     active: "front",
+    articleBackground: "#ffffff",
   },
-];
+] as const;
 
 export default articlesInitialState;

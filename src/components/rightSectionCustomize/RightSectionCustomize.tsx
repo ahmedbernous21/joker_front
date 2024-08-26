@@ -12,19 +12,12 @@ const RightSectionCustomize = () => {
   const { selectedLayer, articles, selectedArticleIndex } = useSelector(
     (state: IRootState) => state.canvas,
   );
-  const { images } =
-    articles[selectedArticleIndex].active == "front"
-      ? articles[selectedArticleIndex].firstImage
-      : articles[selectedArticleIndex].secondImage;
   const { canvasTexts } =
     articles[selectedArticleIndex].active == "front"
       ? articles[selectedArticleIndex].firstImage
       : articles[selectedArticleIndex].secondImage;
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch(
-      canvasActions.editText({ id: selectedLayer.id, text: e.target.value }),
-    );
-  };
+
+  const canvasText = canvasTexts?.find((text) => text.id === selectedLayer?.id);
 
   return (
     <div className="flex w-[300px] flex-col gap-2">
@@ -39,16 +32,12 @@ const RightSectionCustomize = () => {
                     step={0.1}
                     min={0}
                     max={100}
-                    values={[
-                      canvasTexts.find(
-                        (canvasText) => canvasText.id === selectedLayer.id,
-                      )?.fontSize,
-                    ]}
+                    values={[canvasText?.fontSize]}
                     onChange={(value) => {
                       dispatch(
-                        canvasActions.setTextSize({
+                        canvasActions.editText({
                           id: selectedLayer.id,
-                          fontSize: value,
+                          fontSize: value[0],
                         }),
                       );
                     }}
@@ -60,16 +49,8 @@ const RightSectionCustomize = () => {
                           height: "6px",
                           width: "100%",
                           background: `linear-gradient(to right, #007bff ${
-                            canvasTexts.find(
-                              (canvasText) =>
-                                canvasText.id === selectedLayer.id,
-                            )?.fontSize
-                          }%, #ddd ${
-                            canvasTexts.find(
-                              (canvasText) =>
-                                canvasText.id === selectedLayer.id,
-                            )?.fontSize
-                          }%)`,
+                            canvasText?.fontSize
+                          }%, #ddd ${canvasText?.fontSize}%)`,
                         }}
                       >
                         {children}
@@ -90,131 +71,15 @@ const RightSectionCustomize = () => {
                   />
                   {/* Display the current value */}
                   <div className="flex">
-                    <span>
-                      {
-                        canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.fontSize
-                      }
-                    </span>
+                    <span>{canvasText?.fontSize}</span>
                     <span>px</span>
                   </div>
                 </div>
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <p className="font-bold">Rotate</p>
-              <div className="flex items-center gap-2">
-                <Range
-                  step={0.1}
-                  min={0}
-                  max={360}
-                  values={[
-                    selectedLayer.type == "text"
-                      ? canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.rotation
-                      : images.find((image) => image.id === selectedLayer.id)
-                          ?.rotation,
-                  ]}
-                  onChange={(value) => {
-                    dispatch(
-                      canvasActions.setTextRotation({
-                        id: selectedLayer.id,
-                        rotation: value,
-                        type: selectedLayer.type,
-                      }),
-                    );
-                  }}
-                  renderTrack={({ props, children }) => (
-                    <div
-                      {...props}
-                      style={{
-                        ...props.style,
-                        height: "6px",
-                        width: "100%",
-                        background:
-                          selectedLayer.type == "text"
-                            ? `linear-gradient(to right, #007bff ${
-                                canvasTexts.find(
-                                  (canvasText: any) =>
-                                    canvasText.id === selectedLayer.id,
-                                )?.rotation *
-                                (100 / 360)
-                              }%, #ddd ${
-                                canvasTexts.find(
-                                  (canvasText: any) =>
-                                    canvasText.id === selectedLayer.id,
-                                )?.rotation *
-                                (100 / 360)
-                              }%)`
-                            : `linear-gradient(to right, #007bff ${
-                                images.find(
-                                  (image: any) => image.id === selectedLayer.id,
-                                )?.rotation *
-                                (100 / 360)
-                              }%, #ddd ${
-                                images.find(
-                                  (image: any) => image.id === selectedLayer.id,
-                                )?.rotation *
-                                (100 / 360)
-                              }%)`,
-                      }}
-                    >
-                      {children}
-                    </div>
-                  )}
-                  renderThumb={({ props }) => (
-                    <div
-                      {...props}
-                      key={props.key}
-                      style={{
-                        ...props.style,
-                        height: "12px",
-                        width: "12px",
-                      }}
-                      className="rounded-full bg-blue-500"
-                    />
-                  )}
-                />
-                {/* Display the current value */}
-                <div className="flex">
-                  <span>
-                    {selectedLayer.type == "text" ? (
-                      <>
-                        {
-                          canvasTexts.find(
-                            (canvasText) => canvasText.id === selectedLayer.id,
-                          )?.rotation
-                        }
-                      </>
-                    ) : (
-                      <>
-                        {
-                          images.find((image) => image.id === selectedLayer.id)
-                            ?.rotation
-                        }
-                      </>
-                    )}
-                  </span>
-                  <span>deg</span>
-                </div>
-              </div>
-            </div>
             {selectedLayer.type == "text" && (
               <>
                 <div className="flex flex-col gap-2">
-                  <p className="font-bold">Text</p>
-                  <textarea
-                    value={
-                      canvasTexts.find(
-                        (canvasText) => canvasText.id === selectedLayer.id,
-                      )?.text
-                    }
-                    onChange={handleInputChange}
-                    autoFocus
-                    className="bg-[#f2f2f2] p-2 focus:outline-none"
-                  />
                   <p className="font-bold">Color</p>
                   <div className="relative">
                     <ColorPicker type="id" id={selectedLayer.id} />
@@ -226,69 +91,80 @@ const RightSectionCustomize = () => {
                     <FaItalic
                       className="h-[25px] w-1/3 cursor-pointer bg-blue-500 p-1 text-white"
                       style={{
-                        background: canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.italic
-                          ? "rgb(59 130 246)"
-                          : "transparent",
-                        color: canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.italic
-                          ? "white"
-                          : "black",
+                        background:
+                          canvasText?.style == "italic"
+                            ? "rgb(59 130 246)"
+                            : "transparent",
+                        color:
+                          canvasText?.style == "italic" ? "white" : "black",
                       }}
                       onClick={() => {
-                        dispatch(
-                          canvasActions.changeFontStyle({
-                            id: selectedLayer.id,
-                            style: "italic",
-                          }),
-                        );
+                        canvasText?.style == "italic"
+                          ? dispatch(
+                              canvasActions.editText({
+                                id: selectedLayer.id,
+                                style: "normal",
+                              }),
+                            )
+                          : dispatch(
+                              canvasActions.editText({
+                                id: selectedLayer.id,
+                                style: "italic",
+                              }),
+                            );
                       }}
                     />
                     <FaBold
                       onClick={() => {
-                        dispatch(
-                          canvasActions.changeFontStyle({
-                            id: selectedLayer.id,
-                            style: "bold",
-                          }),
-                        );
+                        canvasText?.fontWeight == "bold"
+                          ? dispatch(
+                              canvasActions.editText({
+                                id: selectedLayer.id,
+                                fontWeight: "normal",
+                              }),
+                            )
+                          : dispatch(
+                              canvasActions.editText({
+                                id: selectedLayer.id,
+                                fontWeight: "bold",
+                              }),
+                            );
                       }}
                       style={{
-                        background: canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.bold
-                          ? "rgb(59 130 246)"
-                          : "transparent",
-                        color: canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.bold
-                          ? "white"
-                          : "black",
+                        background:
+                          canvasText?.fontWeight == "bold"
+                            ? "rgb(59 130 246)"
+                            : "transparent",
+                        color:
+                          canvasText?.fontWeight == "bold" ? "white" : "black",
                       }}
                       className="h-[25px] w-1/3 cursor-pointer border-x-2 p-1"
                     />
                     <FaUnderline
                       onClick={() => {
-                        dispatch(
-                          canvasActions.changeFontStyle({
-                            id: selectedLayer.id,
-                            style: "underline",
-                          }),
-                        );
+                        canvasText?.underline == "underline"
+                          ? dispatch(
+                              canvasActions.editText({
+                                id: selectedLayer.id,
+                                underline: "none",
+                              }),
+                            )
+                          : dispatch(
+                              canvasActions.editText({
+                                id: selectedLayer.id,
+                                underline: "underline",
+                              }),
+                            );
                       }}
                       style={{
-                        background: canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.underline
-                          ? "rgb(59 130 246)"
-                          : "transparent",
-                        color: canvasTexts.find(
-                          (canvasText) => canvasText.id === selectedLayer.id,
-                        )?.underline
-                          ? "white"
-                          : "black",
+                        background:
+                          canvasText?.underline == "underline"
+                            ? "rgb(59 130 246)"
+                            : "transparent",
+                        color:
+                          canvasText?.underline == "underline"
+                            ? "white"
+                            : "black",
                       }}
                       className="h-[25px] w-1/3 cursor-pointer p-1"
                     />
