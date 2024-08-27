@@ -1,60 +1,85 @@
-import { useState } from "react";
-import { SketchPicker } from "react-color";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 
-// Define the type for the props
 interface ColorPickerProps {
-  type: "id" | "";
+  type: "id" | "bgCanvas";
   id: string | null;
 }
 
 const ColorPicker: React.FC<ColorPickerProps> = ({ type, id }) => {
-  const [showSketchPicker, setShowSketchPicker] = useState(false);
   const dispatch = useDispatch();
-  const { bgCanvas, articles, selectedArticleIndex } = useSelector(
+  const { articles, selectedArticleIndex } = useSelector(
     (state: IRootState) => state.canvas,
   );
   const { canvasTexts } =
-    articles[selectedArticleIndex].active == "front"
+    articles[selectedArticleIndex].active === "front"
       ? articles[selectedArticleIndex].firstImage
       : articles[selectedArticleIndex].secondImage;
+  const { articleBackground } = articles[selectedArticleIndex];
+
+  const [popularColors] = useState([
+    "#ffffff",
+    "#000000",
+    "#f44336",
+    "#e91e63",
+    "#9c27b0",
+    "#673ab7",
+    "#3f51b5",
+    "#2196f3",
+    "#03a9f4",
+    "#00bcd4",
+    "#009688",
+    "#4caf50",
+    "#8bc34a",
+    "#cddc39",
+    "#ffeb3b",
+    "#ffc107",
+    "#ff9800",
+    "#ff5722",
+    "#795548",
+    "#607d8b",
+    "#C0C0C0",
+    "#C9AE5D",
+  ]);
 
   return (
-    <>
-      <button
-        onClick={() => setShowSketchPicker(!showSketchPicker)}
-        className="h-4 w-full rounded-xl text-white outline outline-1 outline-black"
-        style={{
-          backgroundColor:
-            type == ""
-              ? bgCanvas
-              : canvasTexts.find((canvasText) => canvasText.id === id)?.color,
-        }}
-      ></button>
-      {showSketchPicker && (
-        <>
-          <div
-            className="fixed left-0 top-0 z-10 h-screen w-screen bg-black bg-opacity-50"
-            onClick={() => setShowSketchPicker(false)}
-          ></div>
-          <div
-            className="fixed right-8 top-1/2 z-50 -translate-y-1/2"
-            onClick={(e) => e.stopPropagation()} // Prevent click from closing the picker
-          >
-            <SketchPicker
-              color="#fff"
-              onChange={(e) => {
-                type == ""
-                  ? dispatch(canvasActions.setCanvasBG(e.hex))
-                  : dispatch(canvasActions.setTextColor({ id, color: e.hex }));
+    <div className="flex w-full justify-center">
+      <div className="flex w-[230px] flex-wrap justify-center gap-2">
+        {type === "bgCanvas" &&
+          popularColors.map((color, index) => (
+            <button
+              key={color + index + type} // Use color as a stable key
+              onClick={() =>
+                dispatch(canvasActions.setArticleBackground(color))
+              }
+              className="h-6 w-6 rounded-full text-white outline outline-1 outline-black"
+              style={{
+                backgroundColor: color,
+                outline: articleBackground === color ? "3px solid black" : "",
               }}
-            />
-          </div>
-        </>
-      )}
-    </>
+            ></button>
+          ))}
+        {type === "id" &&
+          popularColors.map((color, index) => (
+            <button
+              key={color + index + type}
+              onClick={() =>
+                dispatch(canvasActions.editText({ id: id, color }))
+              }
+              className="h-6 w-6 rounded-full text-white outline outline-1 outline-black"
+              style={{
+                backgroundColor: color,
+                outline:
+                  canvasTexts.find((text) => text.id === id)?.color === color
+                    ? "3px solid black"
+                    : "",
+              }}
+            ></button>
+          ))}
+      </div>
+    </div>
   );
 };
 

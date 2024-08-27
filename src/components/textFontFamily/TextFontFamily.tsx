@@ -14,6 +14,7 @@ const TextFontFamily = ({ id }: TextFontFamilyProps) => {
     articles[selectedArticleIndex].active == "front"
       ? articles[selectedArticleIndex].firstImage
       : articles[selectedArticleIndex].secondImage;
+  const canvasText = canvasTexts.find((text) => text.id === id);
   const fonts = [
     { name: "Grey Qo", value: '"Grey Qo", cursive' },
     { name: "Inter", value: '"Inter", sans-serif' },
@@ -24,10 +25,10 @@ const TextFontFamily = ({ id }: TextFontFamilyProps) => {
 
   return (
     <select
-      value={canvasTexts.find((canvasText) => canvasText.id === id)?.fontFamily}
+      value={canvasText?.fontFamily}
       onChange={(e) =>
         dispatch(
-          canvasActions.changeFontFamily({
+          canvasActions.editText({
             id: id,
             fontFamily: e.target.value,
           }),

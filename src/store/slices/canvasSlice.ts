@@ -4,7 +4,6 @@ import articlesInitialState from "../../data/data";
 interface canvasSliceState {
   articles: any;
   selectedArticleIndex: number;
-  bgCanvas: string;
   selectedLayer: any | null;
   readyToExport: boolean;
 }
@@ -12,7 +11,6 @@ interface canvasSliceState {
 const initialState: canvasSliceState = {
   articles: articlesInitialState,
   selectedArticleIndex: 0,
-  bgCanvas: "#9a9996",
   selectedLayer: null,
   readyToExport: false,
 };
@@ -20,8 +18,9 @@ const canvasSlice = createSlice({
   name: "canvas",
   initialState,
   reducers: {
-    setCanvasBG(state, action) {
-      state.bgCanvas = action.payload;
+    setArticleBackground(state, action) {
+      state.articles[state.selectedArticleIndex].articleBackground =
+        action.payload;
     },
     createText(state, action) {
       if (state.articles[state.selectedArticleIndex].active == "front") {
@@ -40,7 +39,7 @@ const canvasSlice = createSlice({
           state.articles[state.selectedArticleIndex].firstImage.canvasTexts.map(
             (canvasText: any) => {
               if (canvasText.id == action.payload.id) {
-                canvasText.text = action.payload.text;
+                canvasText = { ...canvasText, ...action.payload };
               }
               return canvasText;
             },
@@ -51,103 +50,10 @@ const canvasSlice = createSlice({
             state.selectedArticleIndex
           ].secondImage.canvasTexts.map((canvasText: any) => {
             if (canvasText.id == action.payload.id) {
-              canvasText.text = action.payload.text;
+              canvasText = { ...canvasText, ...action.payload };
             }
             return canvasText;
           });
-      }
-    },
-    setTextSize(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts.map(
-            (canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                canvasText.fontSize = action.payload.fontSize;
-              }
-              return canvasText;
-            },
-          );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-          state.articles[
-            state.selectedArticleIndex
-          ].secondImage.canvasTexts.map((canvasText: any) => {
-            if (canvasText.id == action.payload.id) {
-              canvasText.fontSize = action.payload.fontSize;
-            }
-            return canvasText;
-          });
-      }
-    },
-    setTextColor(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts.map(
-            (canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                canvasText.color = action.payload.color;
-              }
-              return canvasText;
-            },
-          );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-          state.articles[
-            state.selectedArticleIndex
-          ].secondImage.canvasTexts.map((canvasText: any) => {
-            if (canvasText.id == action.payload.id) {
-              canvasText.color = action.payload.color;
-            }
-            return canvasText;
-          });
-      }
-    },
-    setTextRotation(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        if (action.payload.type == "text") {
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-            state.articles[
-              state.selectedArticleIndex
-            ].firstImage.canvasTexts.map((canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                canvasText.rotation = action.payload.rotation;
-              }
-              return canvasText;
-            });
-        } else {
-          state.articles[state.selectedArticleIndex].firstImage.images =
-            state.articles[state.selectedArticleIndex].firstImage.images.map(
-              (image: any) => {
-                if (image.id == action.payload.id) {
-                  image.rotation = action.payload.rotation;
-                }
-                return image;
-              },
-            );
-        }
-      } else {
-        if (action.payload.type == "text") {
-          state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-            state.articles[
-              state.selectedArticleIndex
-            ].secondImage.canvasTexts.map((canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                canvasText.rotation = action.payload.rotation;
-              }
-              return canvasText;
-            });
-        } else {
-          state.articles[state.selectedArticleIndex].secondImage.images =
-            state.articles[state.selectedArticleIndex].secondImage.images.map(
-              (image: any) => {
-                if (image.id == action.payload.id) {
-                  image.rotation = action.payload.rotation;
-                }
-                return image;
-              },
-            );
-        }
       }
     },
     readyToExportToggle(state, action) {
@@ -160,64 +66,7 @@ const canvasSlice = createSlice({
     setSelectedLayer(state, action) {
       state.selectedLayer = action.payload;
     },
-    changeFontStyle(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts.map(
-            (canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                if (action.payload.style === "italic") {
-                  canvasText.italic = !canvasText.italic;
-                } else if (action.payload.style == "bold") {
-                  canvasText.bold = !canvasText.bold;
-                } else {
-                  canvasText.underline = !canvasText.underline;
-                }
-              }
-              return canvasText;
-            },
-          );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-          state.articles[
-            state.selectedArticleIndex
-          ].secondImage.canvasTexts.map((canvasText: any) => {
-            if (canvasText.id == action.payload.id) {
-              if (action.payload.style === "italic") {
-                canvasText.italic = !canvasText.italic;
-              } else if (action.payload.style == "bold") {
-                canvasText.bold = !canvasText.bold;
-              } else {
-                canvasText.underline = !canvasText.underline;
-              }
-            }
-            return canvasText;
-          });
-      }
-    },
-    changeFontFamily(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts.map(
-            (canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                canvasText.fontFamily = action.payload.fontFamily;
-              }
-              return canvasText;
-            },
-          );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-          state.articles[
-            state.selectedArticleIndex
-          ].secondImage.canvasTexts.map((canvasText: any) => {
-            if (canvasText.id == action.payload.id) {
-              canvasText.fontFamily = action.payload.fontFamily;
-            }
-            return canvasText;
-          });
-      }
-    },
+
     createImage(state, action) {
       if (state.articles[state.selectedArticleIndex].active == "front") {
         state.articles[state.selectedArticleIndex].firstImage.images.push(
@@ -227,6 +76,29 @@ const canvasSlice = createSlice({
         state.articles[state.selectedArticleIndex].secondImage.images.push(
           action.payload,
         );
+      }
+    },
+    editImage(state, action) {
+      if (state.articles[state.selectedArticleIndex].active == "front") {
+        state.articles[state.selectedArticleIndex].firstImage.images =
+          state.articles[state.selectedArticleIndex].firstImage.images.map(
+            (image: any) => {
+              if (image.id == action.payload.id) {
+                image = { ...image, ...action.payload };
+              }
+              return image;
+            },
+          );
+      } else {
+        state.articles[state.selectedArticleIndex].secondImage.images =
+          state.articles[state.selectedArticleIndex].secondImage.images.map(
+            (image: any) => {
+              if (image.id == action.payload.id) {
+                image = { ...image, ...action.payload };
+              }
+              return image;
+            },
+          );
       }
     },
     deleteLayer(state, action) {
@@ -274,6 +146,7 @@ const canvasSlice = createSlice({
           state.selectedArticleIndex = index;
         }
       });
+      state.selectedLayer = null;
     },
   },
 });
