@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Text } from "react-konva";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
@@ -19,6 +19,10 @@ const CanvasTexts = ({
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [canvasText, setCanvasText] = useState(
+    currentArticle.canvasTexts.find((text) => text.id === selectedLayer?.id),
+  );
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (selectedLayer) {
@@ -29,8 +33,6 @@ const CanvasTexts = ({
         }),
       );
     }
-
-    handleTextTransformAndDrag();
   };
 
   const handleTextClick = (canvasText: any) => {
@@ -40,21 +42,16 @@ const CanvasTexts = ({
         type: "text",
       }),
     );
-    handleTextTransformAndDrag();
   };
 
-  const handleInputBlur = () => {
-    dispatch(canvasActions.setSelectedLayer(null));
-  };
-
-  const handleTextTransformAndDrag = () => {
-    const node = shapeRefs.current[selectedLayer?.id];
+  const handleTextTransformAndDrag = (id: any) => {
+    const node = shapeRefs.current[id];
     if (node) {
       dispatch(
         canvasActions.editText({
-          id: selectedLayer.id,
-          x: trRef?.current?.x(),
-          y: trRef?.current?.y(),
+          id,
+          x: node.x(),
+          y: node.y(),
           scaleX: node.scaleX(),
           scaleY: node.scaleY(),
           width: node.width(), // Adjust width based on scale
@@ -64,17 +61,16 @@ const CanvasTexts = ({
     }
   };
 
-  const [canvasText, setCanvasText] = useState(
-    currentArticle.canvasTexts.find((text) => text.id === selectedLayer?.id),
-  );
-
   useEffect(() => {
     setCanvasText(
       currentArticle.canvasTexts.find((text) => text.id === selectedLayer?.id),
     );
   }, [currentArticle.canvasTexts, selectedLayer]);
+
   useEffect(() => {
-    handleTextTransformAndDrag();
+    if (selectedLayer) {
+      handleTextTransformAndDrag(selectedLayer.id);
+    }
   }, [
     trRef?.current?.height(),
     trRef?.current?.width(),
@@ -82,25 +78,14 @@ const CanvasTexts = ({
     trRef?.current?.y(),
     trRef?.current?.scaleX(),
     trRef?.current?.scaleY(),
+    textareaRef.current?.textContent?.length,
   ]);
 
   useEffect(() => {
-    if (selectedLayer && textareaRef.current) {
-      const node = shapeRefs.current[selectedLayer.id];
-      if (node) {
-        textareaRef.current.style.top = `${trRef?.current?.y()}px`;
-        textareaRef.current.style.left = `${trRef?.current?.x()}px`;
-        textareaRef.current.style.width = `${node.width}px`;
-        textareaRef.current.style.height = `${node.height}px`;
-        textareaRef.current.style.fontSize = `${node.fontSize()}px`;
-        textareaRef.current.style.fontFamily = node.fontFamily();
-      }
+    if (!selectedLayer) {
+      setIsEditing(false);
     }
-  }, [selectedLayer, shapeRefs]);
-
-  useEffect(() => {
-    handleTextTransformAndDrag();
-  }, [textareaRef.current?.textContent?.length]);
+  }, [selectedLayer, isEditing]);
 
   return (
     <>
@@ -125,16 +110,20 @@ const CanvasTexts = ({
             }`}
             rotation={canvasText.rotation}
             draggable
-            fill={canvasText.color}
+            fill={
+              isEditing && selectedLayer?.id == canvasText.id
+                ? "transparent"
+                : canvasText.color
+            }
             ref={(node) => (shapeRefs.current[canvasText.id] = node)}
             id={canvasText.id}
             onClick={() => handleTextClick(canvasText)}
             onTap={() => handleTextClick(canvasText)}
-            onTransform={() => handleTextTransformAndDrag()}
-            onTransformEnd={() => handleTextTransformAndDrag()}
-            onDragStart={() => handleTextTransformAndDrag()}
-            onDragMove={() => handleTextTransformAndDrag()}
-            onDragEnd={() => handleTextTransformAndDrag()}
+            onTransform={() => handleTextTransformAndDrag(canvasText.id)}
+            onTransformEnd={() => handleTextTransformAndDrag(canvasText.id)}
+            onDragStart={() => handleTextTransformAndDrag(canvasText.id)}
+            onDragMove={() => handleTextTransformAndDrag(canvasText.id)}
+            onDragEnd={() => handleTextTransformAndDrag(canvasText.id)}
           />
         </Fragment>
       ))}
@@ -143,34 +132,45 @@ const CanvasTexts = ({
         <>
           {(() => {
             return (
-              <Html>
+              <Html divProps={{ style: {} }}>
                 <textarea
                   ref={textareaRef}
-                  value={canvasText.text}
+                  value={canvasText?.text}
                   onChange={handleInputChange}
                   style={{
-                    fontSize: `${canvasText.fontSize}px`,
                     position: "absolute",
-                    top: `${trRef?.current?.y()}px`,
-                    left: `${trRef?.current?.x()}px`,
-                    width: `${canvasText.width}px`,
-                    height: `${canvasText.height}px`,
+                    fontSize: `${canvasText?.fontSize}px`,
+                    color:
+                      isEditing && selectedLayer.id == canvasText.id
+                        ? canvasText?.color
+                        : "transparent",
+                    top: `${canvasText?.y}px`,
+                    left: `${canvasText?.x}px`,
+                    width: `${canvasText?.width}px`,
+                    height: `${canvasText?.height}px`,
+                    maxHeight : `${450 - canvasText?.y}px`,
                     textAlign: "center",
-                    fontFamily: canvasText.fontFamily,
+                    fontFamily: canvasText?.fontFamily,
                     fontStyle:
-                      canvasText.style === "italic" ? "italic" : "normal",
+                      canvasText?.style === "italic" ? "italic" : "normal",
                     fontWeight:
-                      canvasText.fontWeight === "bold" ? "bold" : "normal",
+                      canvasText?.fontWeight === "bold" ? "bold" : "normal",
                     textDecoration:
-                      canvasText.underline === "underline" ? "underline" : "",
-                    transform: `scaleX(${canvasText.scaleX}) scaleY(${canvasText.scaleY})`,
+                      canvasText?.underline === "underline" ? "underline" : "",
+                    transform: `scaleX(${canvasText?.scaleX}) scaleY(${canvasText?.scaleY})`,
                     transformOrigin: "left top",
                     border: "none",
                     resize: "none", // Prevent textarea from being resized
-                    lineHeight: .9,
+                    lineHeight: 1,
                   }}
                   autoFocus
-                  className="overflow-hidden bg-transparent text-red-400 focus:outline-none"
+                  onClick={() => setIsEditing(true)}
+                  readOnly={
+                    isEditing && selectedLayer.id == canvasText?.id
+                      ? false
+                      : true
+                  }
+                  className="overflow-hidden bg-transparent focus:outline-none"
                 />
               </Html>
             );

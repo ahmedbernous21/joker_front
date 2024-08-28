@@ -26,11 +26,11 @@ const LeftSideCustomize = () => {
                 rotation: 0,
                 underline: false,
                 italic: false,
-                width: 320,
-                height : 50,
+                width: 300,
+                height: 50,
                 scaleX: 1,
                 scaleY: 1,
-                x: 0,
+                x: 10,
                 y: 20,
               }),
             );
@@ -48,27 +48,23 @@ const LeftSideCustomize = () => {
           multiple={false}
           onChange={(e) => {
             if (e.target.files) {
-              const img = new window.Image();
-              img.src = URL.createObjectURL(e.target.files[0]); // Ensure this image has a transparent background
-              img.onload = () => {
-                dispatch(
-                  canvasActions.createImage({
-                    src: img,
-                    id: uuid(),
-                    rotation: 0,
-                    x: 115,
-                    y: 100,
-                    width: 80,
-                    height: 80,
-                  }),
-                );
-              };
+              const imageSrc = URL.createObjectURL(e.target.files[0]);              
+              dispatch(
+                canvasActions.createImage({
+                  src: imageSrc,
+                  id: uuid(),
+                  rotation: 0,
+                  x: 115,
+                  y: 100,
+                  width: 80,
+                  height: 80,
+                }),
+              );
             }
           }}
           className="hidden"
         />
       </div>
-
     </div>
   );
 };
