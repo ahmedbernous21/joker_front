@@ -2,12 +2,10 @@ import ColorPicker from "../colorPicker/ColorPicker";
 
 const LeftSideHeader = () => {
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-center font-bold">Tshirt </p>
-      <div className="flex relative flex-wrap items-center justify-center gap-4">
-        <ColorPicker type="" id="" />
-      </div>
+    <div className="flex w-full flex-col gap-2">
+      <p className="text-center font-bold">Background</p>
+      <ColorPicker id={null} type="bgCanvas" />
     </div>
   );
-};  
+};
 export default LeftSideHeader;

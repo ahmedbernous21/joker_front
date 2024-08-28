@@ -13,7 +13,7 @@ function MiddleSideCustomize() {
     (state: IRootState) => state.canvas,
   );
   function downloadURI(uri: string, name: string) {
-    var link = document.createElement("a");
+    const link = document.createElement("a");
     link.download = name;
     link.href = uri;
     document.body.appendChild(link);
@@ -39,8 +39,8 @@ function MiddleSideCustomize() {
   }, [readyToExport]);
 
   return (
-    <div className="flex flex-col-reverse  items-center md:items-start  gap-6 md:flex-row">
-      <div className="flex md:flex-col gap-6">
+    <div className="flex flex-col-reverse items-center gap-6 md:flex-row md:items-start ">
+      <div className="flex gap-6 md:flex-col">
         <div
           onClick={() => dispatch(canvasActions.setActiveSide("front"))}
           className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${articles[selectedArticleIndex].active === "front" ? "outline-solid outline outline-2 outline-blue-500" : ""}`}
@@ -61,7 +61,7 @@ function MiddleSideCustomize() {
           </>
         )}
       </div>
-      <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+      <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row ">
         <Canvas stageRef={frontRef} />
       </div>
     </div>

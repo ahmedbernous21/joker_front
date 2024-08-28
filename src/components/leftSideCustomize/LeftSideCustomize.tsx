@@ -11,7 +11,7 @@ const LeftSideCustomize = () => {
 
   return (
     <div className="mx-4 flex flex-col items-center justify-center gap-4 md:mx-0">
-      <div className="flex md:h-[470px] max-w-[600px] flex-row md:flex-col items-center justify-center gap-4 rounded-xl border-2 bg-white p-4 px-6 text-center text-black">
+      <div className="flex max-w-[600px] flex-row flex-wrap items-center justify-center gap-4 rounded-xl border-2 bg-white p-4 px-6 text-center text-black md:h-[470px] md:flex-col">
         <LeftSideHeader />
         <BiText
           onClick={() => {
@@ -19,21 +19,27 @@ const LeftSideCustomize = () => {
               canvasActions.createText({
                 id: uuid(),
                 text: "édite-moi",
-                color: "black",
                 fontFamily: '"Moderustic", sans-serif',
                 fontSize: 30,
+                color: "#000000",
                 bold: false,
                 rotation: 0,
                 underline: false,
                 italic: false,
+                width: 300,
+                height: 50,
+                scaleX: 1,
+                scaleY: 1,
+                x: 10,
+                y: 20,
               }),
             );
             toast.success("Text added successfully");
           }}
-          className="cursor-pointer rounded-full p-1 text-2xl text-black"
+          className="h-6 w-6 cursor-pointer rounded-full border-2 border-black text-2xl text-black"
         />
         <label htmlFor="add-image">
-          <FaUpload className="cursor-pointer rounded-full p-1 text-2xl text-black" />
+          <FaUpload className="h-6 w-6 cursor-pointer rounded-full border-2 border-black text-2xl text-black" />
         </label>
         <input
           type="file"
@@ -42,23 +48,23 @@ const LeftSideCustomize = () => {
           multiple={false}
           onChange={(e) => {
             if (e.target.files) {
-              const img = new window.Image();
-              img.src = URL.createObjectURL(e.target.files[0]); // Ensure this image has a transparent background
-              img.onload = () => {
-                dispatch( 
-                  canvasActions.createImage({
-                    src: img,
-                    id: uuid(),
-                    rotation: 0,
-                  }),
-                );
-              };
+              const imageSrc = URL.createObjectURL(e.target.files[0]);              
+              dispatch(
+                canvasActions.createImage({
+                  src: imageSrc,
+                  id: uuid(),
+                  rotation: 0,
+                  x: 115,
+                  y: 100,
+                  width: 80,
+                  height: 80,
+                }),
+              );
             }
           }}
           className="hidden"
         />
       </div>
-      {/* <div>View 3rd</div> */}
     </div>
   );
 };
