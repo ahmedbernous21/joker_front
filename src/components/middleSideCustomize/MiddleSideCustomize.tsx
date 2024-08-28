@@ -39,7 +39,7 @@ function MiddleSideCustomize() {
   }, [readyToExport]);
 
   return (
-    <div className="flex flex-col-reverse items-center gap-6 md:flex-row md:items-start">
+    <div className="flex flex-col-reverse items-center gap-6 md:flex-row md:items-start ">
       <div className="flex gap-6 md:flex-col">
         <div
           onClick={() => dispatch(canvasActions.setActiveSide("front"))}
@@ -61,7 +61,7 @@ function MiddleSideCustomize() {
           </>
         )}
       </div>
-      <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+      <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row ">
         <Canvas stageRef={frontRef} />
       </div>
     </div>
