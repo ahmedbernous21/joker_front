@@ -62,7 +62,7 @@ function App() {
         <Route element={<Login />} path="/kedache/" />
         <Route element={<Dashboard />} path="/dashboard/overview/" />
         <Route element={<Admin />} path="/dashboard/articles/" />
-        <Route element={<NotFound />} path="* " />
+        <Route element={<NotFound />} path="*" />
       </Routes>
     </BrowserRouter>
   );

@@ -1,160 +1,103 @@
 import { createSlice } from "@reduxjs/toolkit";
 import articlesInitialState from "../../data/data";
+import { CanvasSliceState } from "../../interfaces/CanvasSliceInterfaces";
 
-interface canvasSliceState {
-  articles: any;
-  selectedArticleIndex: number;
-  selectedLayer: any | null;
-  readyToExport: boolean;
-}
-
-const initialState: canvasSliceState = {
+const initialState: CanvasSliceState = {
   articles: articlesInitialState,
   selectedArticleIndex: 0,
   selectedLayer: null,
   readyToExport: false,
 };
+
+const getCurrentArticle = (state: CanvasSliceState) => {
+  return state.articles[state.selectedArticleIndex];
+};
+
+const getCurrentSide = (state) => {
+  const currentArticle = getCurrentArticle(state);
+  return currentArticle.active === "front"
+    ? currentArticle.articleFrontSideInfo
+    : currentArticle.articleBackSideInfo;
+};
+const updateLayer = (layers: any[], payload: any) =>
+  layers.map((layer) =>
+    layer.id === payload.id ? { ...layer, ...payload } : layer,
+  );
+
 const canvasSlice = createSlice({
   name: "canvas",
   initialState,
   reducers: {
     setArticleBackground(state, action) {
-      state.articles[state.selectedArticleIndex].articleBackground =
-        action.payload;
+      getCurrentArticle(state).articleBackground = action.payload;
     },
     createText(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.canvasTexts.push(
-          action.payload,
-        );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.canvasTexts.push(
-          action.payload,
-        );
-      }
+      getCurrentSide(state)?.texts.push(action.payload);
     },
     editText(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts.map(
-            (canvasText: any) => {
-              if (canvasText.id == action.payload.id) {
-                canvasText = { ...canvasText, ...action.payload };
-              }
-              return canvasText;
-            },
-          );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-          state.articles[
-            state.selectedArticleIndex
-          ].secondImage.canvasTexts.map((canvasText: any) => {
-            if (canvasText.id == action.payload.id) {
-              canvasText = { ...canvasText, ...action.payload };
-            }
-            return canvasText;
-          });
+      const currentSide = getCurrentSide(state);
+      if (currentSide) {
+        currentSide.texts = currentSide.texts.map((text) =>
+          text.id === action.payload.id ? { ...text, ...action.payload } : text,
+        );
+        const selectedArticle = getCurrentArticle(state);
+        if (selectedArticle.active === "front") {
+          selectedArticle.articleFrontSideInfo.texts = currentSide.texts;
+        } else {
+          if (selectedArticle.articleBackSideInfo != null) {
+            selectedArticle.articleBackSideInfo.texts = currentSide.texts;
+          }
+        }
       }
     },
     readyToExportToggle(state, action) {
-      if (action.payload == "1") {
-        state.readyToExport = true;
-      } else {
-        state.readyToExport = false;
-      }
+      state.readyToExport = action.payload === "1";
     },
     setSelectedLayer(state, action) {
       state.selectedLayer = action.payload;
     },
-
     createImage(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.images.push(
-          action.payload,
-        );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.images.push(
-          action.payload,
-        );
-      }
+      getCurrentSide(state)?.images.push(action.payload);
     },
     editImage(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        state.articles[state.selectedArticleIndex].firstImage.images =
-          state.articles[state.selectedArticleIndex].firstImage.images.map(
-            (image: any) => {
-              if (image.id == action.payload.id) {
-                image = { ...image, ...action.payload };
-              }
-              return image;
-            },
-          );
-      } else {
-        state.articles[state.selectedArticleIndex].secondImage.images =
-          state.articles[state.selectedArticleIndex].secondImage.images.map(
-            (image: any) => {
-              if (image.id == action.payload.id) {
-                image = { ...image, ...action.payload };
-              }
-              return image;
-            },
-          );
+      const currentSide = getCurrentSide(state);
+      if (currentSide) {
+        currentSide.images = updateLayer(currentSide.images, action.payload);
       }
     },
     deleteLayer(state, action) {
-      if (state.articles[state.selectedArticleIndex].active == "front") {
-        if (action.payload.type == "text") {
-          state.articles[state.selectedArticleIndex].firstImage.canvasTexts =
-            state.articles[
-              state.selectedArticleIndex
-            ].firstImage.canvasTexts.filter(
-              (canvasText: any) => canvasText.id != action.payload.id,
-            );
+      const currentSide = getCurrentSide(state);
+      if (currentSide) {
+        if (action.payload.type === "text") {
+          currentSide.texts = currentSide.texts.filter(
+            (text) => text.id !== action.payload.id,
+          );
         } else {
-          state.articles[state.selectedArticleIndex].firstImage.images =
-            state.articles[state.selectedArticleIndex].firstImage.images.filter(
-              (image: any) => image.id != action.payload.id,
-            );
+          currentSide.images = currentSide.images.filter(
+            (image) => image.id !== action.payload.id,
+          );
         }
-      } else {
-        if (action.payload.type == "text") {
-          state.articles[state.selectedArticleIndex].secondImage.canvasTexts =
-            state.articles[
-              state.selectedArticleIndex
-            ].secondImage.canvasTexts.filter(
-              (canvasText: any) => canvasText.id != action.payload.id,
-            );
-        } else {
-          state.articles[state.selectedArticleIndex].secondImage.images =
-            state.articles[
-              state.selectedArticleIndex
-            ].secondImage.images.filter(
-              (image: any) => image.id != action.payload.id,
-            );
-        }
+        state.selectedLayer = null;
       }
-
-      state.selectedLayer = null;
     },
     setActiveSide(state, action) {
-      state.articles[state.selectedArticleIndex].active = action.payload;
+      getCurrentArticle(state).active = action.payload;
       state.selectedLayer = null;
     },
     changeArticle(state, action) {
-      articlesInitialState.forEach((article, index) => {
-        if (article.articleName == action.payload.articleName) {
-          state.selectedArticleIndex = index;
-        }
-      });
+      const articleIndex = initialState.articles.findIndex(
+        (article) => article.articleName === action.payload.articleName,
+      );
+      if (articleIndex !== -1) {
+        state.selectedArticleIndex = articleIndex;
+      }
       state.selectedLayer = null;
     },
   },
 });
 
 const canvasActions = canvasSlice.actions;
-
 const canvasReducer = canvasSlice.reducer;
 
 export default canvasReducer;
-
 export { canvasActions };

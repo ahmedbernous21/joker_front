@@ -1,19 +1,20 @@
 import { v4 as uuid } from "uuid";
+import { Article } from "../interfaces/CanvasSliceInterfaces";
 
-const articlesInitialState = [
+const articlesInitialState: Article[] = [
   {
     id: uuid(),
     articleName: "tshirt",
-    firstImage: {
+    articleFrontSideInfo: {
       name: "front",
       src: "/crew_front.png",
-      canvasTexts: [],
+      texts: [],
       images: [],
     },
-    secondImage: {
+    articleBackSideInfo: {
       name: "back",
       src: "/crew_back.png",
-      canvasTexts: [],
+      texts: [],
       images: [],
     },
     active: "front",
@@ -22,29 +23,29 @@ const articlesInitialState = [
   {
     id: uuid(),
     articleName: "chope",
-    firstImage: {
+    articleFrontSideInfo: {
       name: "front",
       src: "/cuptest.png",
-      canvasTexts: [],
+      texts: [],
       images: [],
     },
-    secondImage: null,
+    articleBackSideInfo: null,
     active: "front",
     articleBackground: "#ffffff",
   },
   {
     id: uuid(),
     articleName: "casquette",
-    firstImage: {
+    articleFrontSideInfo: {
       name: "front",
       src: "/hat.png",
-      canvasTexts: [],
+      texts: [],
       images: [],
     },
-    secondImage: null,
+    articleBackSideInfo: null,
     active: "front",
     articleBackground: "#ffffff",
   },
-] as const;
+];
 
 export default articlesInitialState;

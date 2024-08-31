@@ -2,24 +2,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 const RightSectionSelectArticles = () => {
   const dispatch = useDispatch();
   const { articles } = useSelector((state: IRootState) => state.canvas);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const isArticleExist = articles.find(
       (article: any) => article.articleName === location.pathname.split("/")[2],
     );
+
     if (!isArticleExist) {
-      toast.error("Article not found");
-      navigate(`/`);
+      navigate(`/not-found`);
+      return;
     }
     dispatch(canvasActions.changeArticle(isArticleExist));
   }, []);
-  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedArticle = JSON.parse(e.target.value);
     dispatch(canvasActions.changeArticle(selectedArticle));
@@ -28,15 +29,8 @@ const RightSectionSelectArticles = () => {
   return (
     <select
       onChange={handleChange}
-      name=""
-      id=""
+      name="articlesSelect"
       className="w-full rounded-xl py-2 text-center outline-none"
-      // defaultChecked={
-      //   articles.find(
-      //     (article: any) =>
-      //       article.articleName === location.pathname.split("/")[2],
-      //   ).articleName
-      // }
       value={JSON.stringify(
         articles.find(
           (article: any) =>

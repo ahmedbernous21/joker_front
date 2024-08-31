@@ -1,20 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
+import {
+  getCurrentSelectedText,
+} from "../../store/selectors/canvasSelectors";
 
-interface TextFontFamilyProps {
-  id: string;
-}
-const TextFontFamily = ({ id }: TextFontFamilyProps) => {
+const TextFontFamily = () => {
   const dispatch = useDispatch();
-  const { articles, selectedArticleIndex } = useSelector(
-    (state: IRootState) => state.canvas,
-  );
-  const { canvasTexts } =
-    articles[selectedArticleIndex].active == "front"
-      ? articles[selectedArticleIndex].firstImage
-      : articles[selectedArticleIndex].secondImage;
-  const canvasText = canvasTexts.find((text) => text.id === id);
+  const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
+
+  const text = useSelector((state) => getCurrentSelectedText(state));
   const fonts = [
     { name: "Grey Qo", value: '"Grey Qo", cursive' },
     { name: "Inter", value: '"Inter", sans-serif' },
@@ -25,11 +20,11 @@ const TextFontFamily = ({ id }: TextFontFamilyProps) => {
 
   return (
     <select
-      value={canvasText?.fontFamily}
+      value={text?.fontFamily}
       onChange={(e) =>
         dispatch(
           canvasActions.editText({
-            id: id,
+            id: selectedLayer?.id,
             fontFamily: e.target.value,
           }),
         )

@@ -1,30 +1,38 @@
 import { canvasActions } from "../../store/slices/canvasSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Image } from "react-konva";
+import { ImageConfig } from "konva/lib/shapes/Image";
+import { getCurrentSide } from "../../store/selectors/canvasSelectors";
+import { IRootState } from "../../store/store";
 
 interface CanvasImagesProps {
   shapeRefs: any;
-  currentArticle: any;
 }
-const CanvasImages = ({ shapeRefs, currentArticle }: CanvasImagesProps) => {
+const CanvasImages = ({ shapeRefs }: CanvasImagesProps) => {
   const dispatch = useDispatch();
+  const currentArticleSide = useSelector((state: IRootState) =>
+    getCurrentSide(state),
+  );
 
-  const handleImageTransformAndDrag = (image: any) => {
-    const node = shapeRefs.current[image.id];
+  const handleImageTransformAndDrag = (id: string | undefined) => {
+    if (!id) {
+      return;
+    }
+    const node = shapeRefs.current[id];
     dispatch(
       canvasActions.editImage({
-        id: image.id,
+        id,
         x: node.x(),
         y: node.y(),
         scaleX: node.scaleX(),
         scaleY: node.scaleY(),
-        width: node.width(), // Adjust width based on scale
-        height: node.height(), // Adjust height based on scale
+        width: node.width(),
+        height: node.height(),
         rotation: node.rotation(),
       }),
     );
   };
-  const selectLayerHandler = (image: any) => {
+  const selectLayerHandler = (image: ImageConfig) => {
     dispatch(
       canvasActions.setSelectedLayer({
         id: image.id,
@@ -34,7 +42,7 @@ const CanvasImages = ({ shapeRefs, currentArticle }: CanvasImagesProps) => {
   };
   return (
     <>
-      {currentArticle.images?.map((image: any) => {
+      {currentArticleSide?.images?.map((image: ImageConfig) => {
         const img = new window.Image();
         img.src = image.src;
         img.onload = () => {};
@@ -54,11 +62,11 @@ const CanvasImages = ({ shapeRefs, currentArticle }: CanvasImagesProps) => {
             draggable
             onClick={() => selectLayerHandler(image)}
             onTap={() => selectLayerHandler(image)}
-            onTransformStart={() => handleImageTransformAndDrag(image)}
-            onTransform={() => handleImageTransformAndDrag(image)}
-            onTransformEnd={() => handleImageTransformAndDrag(image)}
-            onDragMove={() => handleImageTransformAndDrag(image)}
-            onDragEnd={() => handleImageTransformAndDrag(image)}
+            onTransformStart={() => handleImageTransformAndDrag(image.id)}
+            onTransform={() => handleImageTransformAndDrag(image.id)}
+            onTransformEnd={() => handleImageTransformAndDrag(image.id)}
+            onDragMove={() => handleImageTransformAndDrag(image.id)}
+            onDragEnd={() => handleImageTransformAndDrag(image.id)}
           />
         );
       })}

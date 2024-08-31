@@ -4,43 +4,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
 import { Html } from "react-konva-utils";
-
-interface CanvasText {
-  id: string;
-  text: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  scaleX: number;
-  scaleY: number;
-  rotation: number;
-  fontSize: number;
-  fontFamily: string;
-  style: string;
-  fontWeight: string;
-  underline: string;
-  color: string;
-}
+import { getCurrentSide } from "../../store/selectors/canvasSelectors";
+import { TextConfig } from "konva/lib/shapes/Text";
 
 interface CanvasTextsProps {
-  currentArticle: {
-    canvasTexts: CanvasText[];
-  };
   shapeRefs: React.MutableRefObject<{ [key: string]: any }>;
   trRef: React.RefObject<any>;
 }
 
-const CanvasTexts = ({
-  currentArticle,
-  shapeRefs,
-  trRef,
-}: CanvasTextsProps) => {
+const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
+  const currentArticleSide = useSelector((state: IRootState) =>
+    getCurrentSide(state),
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [canvasText, setCanvasText] = useState<CanvasText | undefined>(
-    currentArticle.canvasTexts.find((text) => text.id === selectedLayer?.id),
+  const [canvasText, setCanvasText] = useState<TextConfig | undefined>(
+    currentArticleSide?.texts.find((text) => text.id === selectedLayer?.id),
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -69,17 +49,20 @@ const CanvasTexts = ({
     }
   };
 
-  const handleTextClick = (canvasText: CanvasText) => {
+  const handleTextClick = (text: TextConfig) => {
     dispatch(
       canvasActions.setSelectedLayer({
-        id: canvasText.id,
+        id: text.id,
         type: "text",
       }),
     );
     setIsEditing(true);
   };
 
-  const handleTextTransformAndDrag = (id: string) => {
+  const handleTextTransformAndDrag = (id: string | undefined) => {
+    if (!id) {
+      return;
+    }
     const node = shapeRefs.current[id];
     if (node) {
       dispatch(
@@ -99,9 +82,9 @@ const CanvasTexts = ({
 
   useEffect(() => {
     setCanvasText(
-      currentArticle.canvasTexts.find((text) => text.id === selectedLayer?.id),
+      currentArticleSide?.texts.find((text) => text.id === selectedLayer?.id),
     );
-  }, [currentArticle.canvasTexts, selectedLayer]);
+  }, [currentArticleSide?.texts, selectedLayer]);
 
   useEffect(() => {
     if (selectedLayer) {
@@ -126,7 +109,6 @@ const CanvasTexts = ({
       setIsEditing(false);
     }
   }, [selectedLayer]);
-
   useEffect(() => {
     if (isEditing && textareaRef.current) {
       textareaRef.current.focus();
@@ -135,7 +117,7 @@ const CanvasTexts = ({
 
   return (
     <>
-      {currentArticle.canvasTexts?.map((canvasText) => (
+      {currentArticleSide?.texts?.map((canvasText) => (
         <Fragment key={canvasText.id}>
           <Text
             text={canvasText.text}
@@ -183,7 +165,7 @@ const CanvasTexts = ({
             ref={textareaRef}
             value={canvasText?.text}
             onChange={(e) => handleInputChange(e)}
-            wrap="hard"
+            wrap="char"
             style={{
               position: "absolute",
               fontSize: `${canvasText?.fontSize}px`,
@@ -192,7 +174,6 @@ const CanvasTexts = ({
                   ? canvasText?.color
                   : "transparent",
               top: `${canvasText?.y}px`,
-              // left: `${canvasText?.x}px`,
               width: `${canvasText?.width}px`,
               height: `${canvasText?.height}px`,
               textAlign: "center",
@@ -211,7 +192,7 @@ const CanvasTexts = ({
               boxSizing: "border-box",
               padding: 0,
               margin: 0,
-              left: canvasText?.style === "italic" ? `${canvasText?.x - 0.5}px` : `${canvasText?.x}px`,
+              left: `${canvasText?.x}px`,
             }}
             autoFocus
             onClick={() => setIsEditing(true)}

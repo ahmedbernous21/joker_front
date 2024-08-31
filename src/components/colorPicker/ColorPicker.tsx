@@ -1,23 +1,25 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
+import {
+  getCurrentSelectedText,
+  getCurrentArticle,
+} from "../../store/selectors/canvasSelectors";
 import { canvasActions } from "../../store/slices/canvasSlice";
-
 interface ColorPickerProps {
-  type: "id" | "bgCanvas";
-  id: string | null;
+  type: "text" | "articleBackGround";
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ type, id }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ type }) => {
   const dispatch = useDispatch();
-  const { articles, selectedArticleIndex } = useSelector(
-    (state: IRootState) => state.canvas,
+  const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
+  const currentArticle = useSelector((state: IRootState) =>
+    getCurrentArticle(state),
   );
-  const { canvasTexts } =
-    articles[selectedArticleIndex].active === "front"
-      ? articles[selectedArticleIndex].firstImage
-      : articles[selectedArticleIndex].secondImage;
-  const { articleBackground } = articles[selectedArticleIndex];
+
+  const selectedText = useSelector((state: IRootState) =>
+    getCurrentSelectedText(state),
+  );
 
   const [popularColors] = useState([
     "#ffffff",
@@ -47,37 +49,32 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ type, id }) => {
   return (
     <div className="flex w-full justify-center">
       <div className="flex w-[230px] flex-wrap justify-center gap-2">
-        {type === "bgCanvas" &&
-          popularColors.map((color, index) => (
-            <button
-              key={color + index + type} // Use color as a stable key
-              onClick={() =>
-                dispatch(canvasActions.setArticleBackground(color))
+        {popularColors.map((color, index) => (
+          <button
+            key={color + index + type} // Use color as a stable key
+            onClick={() => {
+              if (type == "articleBackGround") {
+                dispatch(canvasActions.setArticleBackground(color));
+              } else {
+                dispatch(
+                  canvasActions.editText({ id: selectedLayer?.id, color }),
+                );
               }
-              className="h-6 w-6 rounded-full text-white outline outline-1 outline-black"
-              style={{
-                backgroundColor: color,
-                outline: articleBackground === color ? "3px solid black" : "",
-              }}
-            ></button>
-          ))}
-        {type === "id" &&
-          popularColors.map((color, index) => (
-            <button
-              key={color + index + type}
-              onClick={() =>
-                dispatch(canvasActions.editText({ id: id, color }))
-              }
-              className="h-6 w-6 rounded-full text-white outline outline-1 outline-black"
-              style={{
-                backgroundColor: color,
-                outline:
-                  canvasTexts.find((text) => text.id === id)?.color === color
+            }}
+            className="h-6 w-6 rounded-full text-white outline outline-1 outline-black"
+            style={{
+              backgroundColor: color,
+              outline:
+                type == "articleBackGround"
+                  ? color == currentArticle.articleBackground
+                    ? "3px solid black"
+                    : ""
+                  : color == selectedText?.color
                     ? "3px solid black"
                     : "",
-              }}
-            ></button>
-          ))}
+            }}
+          ></button>
+        ))}
       </div>
     </div>
   );
