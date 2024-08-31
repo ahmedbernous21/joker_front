@@ -48,7 +48,7 @@ const LeftSideCustomize = () => {
           multiple={false}
           onChange={(e) => {
             if (e.target.files) {
-              const imageSrc = URL.createObjectURL(e.target.files[0]);              
+              const imageSrc = URL.createObjectURL(e.target.files[0]);
               dispatch(
                 canvasActions.createImage({
                   src: imageSrc,

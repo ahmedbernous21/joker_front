@@ -20,6 +20,7 @@ const CanvasImages = ({ shapeRefs, currentArticle }: CanvasImagesProps) => {
         scaleY: node.scaleY(),
         width: node.width(), // Adjust width based on scale
         height: node.height(), // Adjust height based on scale
+        rotation: node.rotation(),
       }),
     );
   };
@@ -53,6 +54,7 @@ const CanvasImages = ({ shapeRefs, currentArticle }: CanvasImagesProps) => {
             draggable
             onClick={() => selectLayerHandler(image)}
             onTap={() => selectLayerHandler(image)}
+            onTransformStart={() => handleImageTransformAndDrag(image)}
             onTransform={() => handleImageTransformAndDrag(image)}
             onTransformEnd={() => handleImageTransformAndDrag(image)}
             onDragMove={() => handleImageTransformAndDrag(image)}
