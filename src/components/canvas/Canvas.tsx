@@ -9,18 +9,14 @@ import CanvasMainImage from "../canvasMainImage/CanvasMainImage";
 import CanvasBackgroundColor from "../canvasBackgroundColor/CanvasBackgroundColor";
 import CanvasTexts from "../canvasTexts/CanvasTexts";
 import CanvasTransformer from "../canvasTransformer/CanvasTransformer";
+import {
+  getCurrentArticle,
+  getCurrentSide,
+} from "../../store/selectors/canvasSelectors";
 
 const Canvas = ({ stageRef }: any) => {
   const dispatch = useDispatch();
-  const { selectedLayer, articles, selectedArticleIndex } = useSelector(
-    (state: IRootState) => state.canvas,
-  );
-
-  const [mainImage] = useImage(
-    articles[selectedArticleIndex].active === "front"
-      ? articles[selectedArticleIndex].firstImage.src
-      : articles[selectedArticleIndex].secondImage.src,
-  );
+  const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
 
   const shapeRefs = useRef<any>({});
   const trRef = useRef<any>(null);
@@ -45,16 +41,15 @@ const Canvas = ({ stageRef }: any) => {
     }
   };
 
-  const currentArticle =
-    articles[selectedArticleIndex].active === "front"
-      ? articles[selectedArticleIndex].firstImage
-      : articles[selectedArticleIndex].secondImage;
-
-  const { articleBackground } = articles[selectedArticleIndex];
+  const currentArticle = useSelector((state) => getCurrentArticle(state));
+  const currentArticleSide = useSelector((state) => getCurrentSide(state));
+  const [mainImage] = useImage(currentArticleSide?.src || "");
 
   return (
     <div className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 bg-white">
-      <p className="text-xl font-bold text-black">{currentArticle.name}</p>
+      <p className="text-xl font-bold text-black">
+        {currentArticle.articleName}
+      </p>
       <div className="relative">
         <Stage
           ref={stageRef}
@@ -65,18 +60,16 @@ const Canvas = ({ stageRef }: any) => {
           className="max-h-[450px] max-w-[320px] overflow-hidden"
         >
           <Layer>
-            <CanvasBackgroundColor articleBackground={articleBackground} />
+            <CanvasBackgroundColor
+              articleBackground={currentArticle.articleBackground}
+            />
             <CanvasMainImage mainImage={mainImage} />
             <CanvasImages
               shapeRefs={shapeRefs}
               currentArticle={currentArticle}
             />
 
-            <CanvasTexts
-              currentArticle={currentArticle}
-              shapeRefs={shapeRefs}
-              trRef={trRef}
-            />
+            <CanvasTexts shapeRefs={shapeRefs} trRef={trRef} />
 
             <CanvasTransformer trRef={trRef} />
           </Layer>

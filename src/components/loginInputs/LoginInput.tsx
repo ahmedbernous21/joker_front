@@ -1,4 +1,4 @@
-import LoginInputProps from "../../interfaces/LoginInputProps";
+import LoginInputProps from "../../interfaces/CanvasSliceInterfaces";
 
 const LoginInput = ({
   name,
