@@ -19,10 +19,8 @@ const CanvasComponent: React.FC = () => {
   const dispatch = useDispatch();
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRefs = useRef<{ [key: string]: Konva.Node }>({});
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null,
-  );
+
+  const { isEditingText } = useSelector((state: IRootState) => state.canvas);
   const selectedLayer = useSelector(
     (state: IRootState) => state.canvas.selectedLayer,
   );
@@ -32,9 +30,7 @@ const CanvasComponent: React.FC = () => {
   const currentArticleSide = useSelector((state: IRootState) =>
     getCurrentSide(state),
   );
-  const [mainImage] = useImage(
-    currentArticleSide?.src || "",
-  );
+  const [mainImage] = useImage(currentArticleSide?.src || "");
 
   useEffect(() => {
     if (trRef.current) {
@@ -53,31 +49,13 @@ const CanvasComponent: React.FC = () => {
   ) => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty && !isScrolling) {
+    if (clickedOnEmpty && isEditingText) {
+      dispatch(canvasActions.setIsEditingText(false));
+      return;
+    }
+    if (clickedOnEmpty) {
       dispatch(canvasActions.setSelectedLayer(null));
     }
-    setIsScrolling(false); // Reset scrolling state after handling the event
-  };
-
-  const handleTouchStart = (e: Konva.KonvaEventObject<TouchEvent>) => {
-    const touch = e.evt.touches[0];
-    setTouchStart({ x: touch.clientX, y: touch.clientY });
-  };
-
-  const handleTouchEnd = (e: Konva.KonvaEventObject<TouchEvent>) => {
-    if (touchStart) {
-      const touch = e.evt.changedTouches[0];
-      const dx = touch.clientX - touchStart.x;
-      const dy = touch.clientY - touchStart.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance > 10) {
-        setIsScrolling(true);
-      } else {
-        setIsScrolling(false);
-      }
-    }
-    setTouchStart(null);
   };
 
   return (
@@ -90,9 +68,6 @@ const CanvasComponent: React.FC = () => {
           width={320}
           height={450}
           onMouseDown={checkDeselect}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          onWheel={() => setIsScrolling(true)}
           className="max-h-[450px] max-w-[320px] overflow-hidden"
         >
           <Layer>
