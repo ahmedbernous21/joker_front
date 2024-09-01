@@ -8,6 +8,7 @@ const initialState: CanvasSliceState = {
   selectedArticleIndex: 0,
   selectedLayer: null,
   readyToExport: false,
+  isEditingText: false,
 };
 
 const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
@@ -101,6 +102,9 @@ const canvasSlice = createSlice({
         state.selectedArticleIndex = articleIndex;
       }
       state.selectedLayer = null;
+    },
+    setIsEditingText(state, action) {
+      state.isEditingText = action.payload;
     },
   },
 });

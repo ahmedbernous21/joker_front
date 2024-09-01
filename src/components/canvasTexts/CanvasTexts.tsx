@@ -1,10 +1,13 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { Text } from "react-konva";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
 import { Html } from "react-konva-utils";
-import { getCurrentSide } from "../../store/selectors/canvasSelectors";
+import {
+  getCurrentSelectedText,
+  getCurrentSide,
+} from "../../store/selectors/canvasSelectors";
 import { TextConfig } from "konva/lib/shapes/Text";
 import Konva from "konva";
 
@@ -15,22 +18,23 @@ interface CanvasTextsProps {
 
 const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
   const dispatch = useDispatch();
-  const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
+  const { selectedLayer, isEditingText } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
   const currentArticleSide = useSelector((state: IRootState) =>
     getCurrentSide(state),
   );
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [text, setText] = useState<TextConfig | undefined>(
-    currentArticleSide?.texts.find((text) => text.id === selectedLayer?.id),
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const text = useSelector((state: IRootState) =>
+    getCurrentSelectedText(state),
   );
-  const [isEditing, setIsEditing] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (!textareaRef.current) {
+    if (!textAreaRef.current) {
       return;
     }
 
-    const currentLength = textareaRef.current.value.length;
+    const currentLength = textAreaRef.current.value.length;
     const newLength = e.target.value.length;
 
     if (
@@ -50,14 +54,17 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
     }
   };
 
-  const handleTextClick = (text: TextConfig) => {
+  const selectLayerHandler = (text: TextConfig) => {
+    if (text == null) {
+      dispatch(canvasActions.setSelectedLayer(null));
+      return;
+    }
     dispatch(
       canvasActions.setSelectedLayer({
         id: text.id,
         type: "text",
       }),
     );
-    setIsEditing(true);
   };
 
   const handleTextTransformAndDrag = (id: string | undefined) => {
@@ -82,12 +89,6 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
   };
 
   useEffect(() => {
-    setText(
-      currentArticleSide?.texts.find((text) => text.id === selectedLayer?.id),
-    );
-  }, [currentArticleSide?.texts, selectedLayer]);
-
-  useEffect(() => {
     if (selectedLayer) {
       handleTextTransformAndDrag(selectedLayer.id);
     }
@@ -105,17 +106,17 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
     text?.height,
   ]);
 
-  const [isScrolling, setIsScrolling] = useState(false);
   useEffect(() => {
-    if (!selectedLayer && !isScrolling) {
-      setIsEditing(false);
+    if (!selectedLayer) {
+      dispatch(canvasActions.setIsEditingText(false));
     }
   }, [selectedLayer]);
+
   useEffect(() => {
-    if (isEditing && textareaRef.current) {
-      textareaRef.current.focus();
+    if (isEditingText && textAreaRef.current) {
+      textAreaRef.current.focus();
     }
-  }, [isEditing]);
+  }, [isEditingText]);
 
   return (
     <>
@@ -143,7 +144,7 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
             rotation={canvasText.rotation}
             draggable
             fill={
-              isEditing && selectedLayer?.id == canvasText.id
+              isEditingText && selectedLayer?.id == canvasText.id
                 ? "transparent"
                 : canvasText.color
             }
@@ -153,33 +154,36 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
               }
             }}
             id={canvasText.id}
-            onClick={() => handleTextClick(canvasText)}
-            onTap={() => handleTextClick(canvasText)}
+            onClick={() => selectLayerHandler(canvasText)}
+            onDblClick={() => {
+              dispatch(canvasActions.setIsEditingText(true));
+            }}
+            onDblTap={() => {
+              dispatch(canvasActions.setIsEditingText(true));
+            }}
+            onTap={() => selectLayerHandler(canvasText)}
             onTransformStart={() => handleTextTransformAndDrag(canvasText.id)}
             onTransform={() => handleTextTransformAndDrag(canvasText.id)}
             onTransformEnd={() => handleTextTransformAndDrag(canvasText.id)}
             onDragStart={() => handleTextTransformAndDrag(canvasText.id)}
             onDragMove={() => handleTextTransformAndDrag(canvasText.id)}
             onDragEnd={() => handleTextTransformAndDrag(canvasText.id)}
-            onWheel={() => setIsScrolling(true)}
           />
         </Fragment>
       ))}
 
-      {selectedLayer && trRef && (
+      {selectedLayer && selectedLayer?.id == text?.id && isEditingText && (
         <Html>
           <textarea
-            ref={textareaRef}
+            ref={textAreaRef}
             value={text?.text}
             onChange={(e) => handleInputChange(e)}
-            wrap="char"
+            onClick={(e) => e.stopPropagation()}
+            wrap="word"
             style={{
               position: "absolute",
               fontSize: `${text?.fontSize}px`,
-              color:
-                isEditing && selectedLayer.id == text?.id
-                  ? text?.color
-                  : "transparent",
+              color: text?.color,
               top: `${text?.y}px`,
               width: `${text?.width}px`,
               height: `${text?.height}px`,
@@ -194,18 +198,12 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
               border: "none",
               resize: "none",
               lineHeight: 1,
-              pointerEvents: isEditing ? "auto" : "none",
               overflow: "hidden",
               boxSizing: "border-box",
-              padding: 0,
+              padding: 3,
               margin: 0,
               left: `${text?.x}px`,
             }}
-            autoFocus
-            onClick={() => {
-              setIsEditing(true);
-            }}
-            readOnly={!isEditing}
             className="overflow-hidden bg-transparent focus:outline-none"
           />
         </Html>
