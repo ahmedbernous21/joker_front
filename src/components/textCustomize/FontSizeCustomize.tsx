@@ -2,9 +2,10 @@ import { Range } from "react-range";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
+import { TextConfig } from "konva/lib/shapes/Text";
 
 interface FontSizeCustomizeProps {
-  canvasText: any;
+  canvasText: TextConfig;
 }
 
 const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
@@ -18,7 +19,7 @@ const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
           step={0.1}
           min={0}
           max={100}
-          values={[canvasText?.fontSize]}
+          values={[canvasText?.fontSize || 0]}
           onChange={(value) => {
             dispatch(
               canvasActions.editText({

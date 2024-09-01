@@ -1,13 +1,14 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { canvasActions } from "../../store/slices/canvasSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import httpClient from "../../httpClient";
-import { IRootState } from "../../store/store";
 
-const OrderModel = ({ setIsModelOpen }: any) => {
+interface OrderModelProps {
+  setIsModelOpen: (isOpen: boolean) => void;
+}
+const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
   const dispatch = useDispatch();
-  const { bgCanvas } = useSelector((state: IRootState) => state.canvas);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -21,7 +22,6 @@ const OrderModel = ({ setIsModelOpen }: any) => {
     try {
       const response = await httpClient.post("requests/", {
         size: selectedSize,
-        color: bgCanvas,
       });
       if (response) {
         console.log(response);

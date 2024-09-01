@@ -6,10 +6,11 @@ import { IRootState } from "../../store/store";
 import { Html } from "react-konva-utils";
 import { getCurrentSide } from "../../store/selectors/canvasSelectors";
 import { TextConfig } from "konva/lib/shapes/Text";
+import Konva from "konva";
 
 interface CanvasTextsProps {
-  shapeRefs: React.MutableRefObject<{ [key: string]: any }>;
-  trRef: React.RefObject<any>;
+  shapeRefs: React.MutableRefObject<{ [key: string]: Konva.Node | null }>;
+  trRef: React.RefObject<Konva.Transformer>;
 }
 
 const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
@@ -19,7 +20,7 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
     getCurrentSide(state),
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [canvasText, setCanvasText] = useState<TextConfig | undefined>(
+  const [text, setText] = useState<TextConfig | undefined>(
     currentArticleSide?.texts.find((text) => text.id === selectedLayer?.id),
   );
   const [isEditing, setIsEditing] = useState(false);
@@ -81,7 +82,7 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
   };
 
   useEffect(() => {
-    setCanvasText(
+    setText(
       currentArticleSide?.texts.find((text) => text.id === selectedLayer?.id),
     );
   }, [currentArticleSide?.texts, selectedLayer]);
@@ -98,10 +99,10 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
     trRef?.current?.scaleX,
     trRef?.current?.scaleY,
     trRef?.current?.rotation,
-    canvasText?.text,
-    canvasText?.fontSize,
-    canvasText?.fontWeight,
-    canvasText?.height,
+    text?.text,
+    text?.fontSize,
+    text?.fontWeight,
+    text?.height,
   ]);
 
   useEffect(() => {
@@ -145,7 +146,11 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
                 ? "transparent"
                 : canvasText.color
             }
-            ref={(node) => (shapeRefs.current[canvasText.id] = node)}
+            ref={(node) => {
+              if (canvasText.id != undefined) {
+                shapeRefs.current[canvasText.id] = node;
+              }
+            }}
             id={canvasText.id}
             onClick={() => handleTextClick(canvasText)}
             onTap={() => handleTextClick(canvasText)}
@@ -159,30 +164,30 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
         </Fragment>
       ))}
 
-      {selectedLayer && (
+      {selectedLayer && trRef && (
         <Html>
           <textarea
             ref={textareaRef}
-            value={canvasText?.text}
+            value={text?.text}
             onChange={(e) => handleInputChange(e)}
             wrap="char"
             style={{
               position: "absolute",
-              fontSize: `${canvasText?.fontSize}px`,
+              fontSize: `${text?.fontSize}px`,
               color:
-                isEditing && selectedLayer.id == canvasText?.id
-                  ? canvasText?.color
+                isEditing && selectedLayer.id == text?.id
+                  ? text?.color
                   : "transparent",
-              top: `${canvasText?.y}px`,
-              width: `${canvasText?.width}px`,
-              height: `${canvasText?.height}px`,
+              top: `${text?.y}px`,
+              width: `${text?.width}px`,
+              height: `${text?.height}px`,
               textAlign: "center",
-              fontFamily: canvasText?.fontFamily,
-              fontStyle: canvasText?.style === "italic" ? "italic" : "",
-              fontWeight: canvasText?.fontWeight === "bold" ? "bold" : "normal",
+              fontFamily: text?.fontFamily,
+              fontStyle: text?.style === "italic" ? "italic" : "",
+              fontWeight: text?.fontWeight === "bold" ? "bold" : "normal",
               textDecoration:
-                canvasText?.underline === "underline" ? "underline" : "",
-              transform: `rotate(${canvasText?.rotation}deg) scale(${canvasText?.scaleX}, ${canvasText?.scaleY})`,
+                text?.underline === "underline" ? "underline" : "",
+              transform: `rotate(${text?.rotation}deg) scale(${text?.scaleX}, ${text?.scaleY})`,
               transformOrigin: "top left",
               border: "none",
               resize: "none",
@@ -192,10 +197,12 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
               boxSizing: "border-box",
               padding: 0,
               margin: 0,
-              left: `${canvasText?.x}px`,
+              left: `${text?.x}px`,
             }}
             autoFocus
-            onClick={() => setIsEditing(true)}
+            onClick={() => {
+              setIsEditing(true);
+            }}
             readOnly={!isEditing}
             className="overflow-hidden bg-transparent focus:outline-none"
           />

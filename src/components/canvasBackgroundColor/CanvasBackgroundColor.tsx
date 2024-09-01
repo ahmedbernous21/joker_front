@@ -11,9 +11,6 @@ const CanvasBackgroundColor = ({
       width={320}
       height={450}
       x={0}
-      onClick={(e) => {
-        console.log(e.target._id);
-      }}
       listening={false}
       y={0}
       stroke={articleBackground}

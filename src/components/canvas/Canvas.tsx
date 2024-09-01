@@ -13,27 +13,31 @@ import {
   getCurrentArticle,
   getCurrentSide,
 } from "../../store/selectors/canvasSelectors";
+import Konva from "konva";
+import { KonvaEventObject } from "konva/lib/Node";
 
-const Canvas = ({ stageRef }: any) => {
+const Canvas = () => {
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
 
-  const shapeRefs = useRef<any>({});
-  const trRef = useRef<any>(null);
+  const shapeRefs = useRef<{ [key: string]: Konva.Node }>({});
+  const trRef = useRef<Konva.Transformer>(null);
 
   useEffect(() => {
     if (trRef.current) {
-      if (selectedLayer?.id) {
-        trRef.current.setNode(shapeRefs.current[selectedLayer.id]);
-        trRef.current.getLayer().batchDraw();
+      if (selectedLayer != null) {
+        trRef.current.nodes([shapeRefs.current[selectedLayer.id]]);
+        trRef.current.getLayer()?.batchDraw();
       } else {
-        trRef.current.setNode(null);
-        trRef.current.getLayer().batchDraw();
+        trRef.current.nodes([]);
+        trRef.current.getLayer()?.batchDraw();
       }
     }
   }, [selectedLayer]);
 
-  const checkDeselect = (e) => {
+  const checkDeselect = (
+    e: Konva.KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>,
+  ) => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
     if (clickedOnEmpty) {
@@ -41,8 +45,12 @@ const Canvas = ({ stageRef }: any) => {
     }
   };
 
-  const currentArticle = useSelector((state) => getCurrentArticle(state));
-  const currentArticleSide = useSelector((state) => getCurrentSide(state));
+  const currentArticle = useSelector((state: IRootState) =>
+    getCurrentArticle(state),
+  );
+  const currentArticleSide = useSelector((state: IRootState) =>
+    getCurrentSide(state),
+  );
   const [mainImage] = useImage(currentArticleSide?.src || "");
 
   return (
@@ -52,7 +60,6 @@ const Canvas = ({ stageRef }: any) => {
       </p>
       <div className="relative">
         <Stage
-          ref={stageRef}
           width={320}
           height={450}
           onMouseDown={checkDeselect}
@@ -64,13 +71,8 @@ const Canvas = ({ stageRef }: any) => {
               articleBackground={currentArticle.articleBackground}
             />
             <CanvasMainImage mainImage={mainImage} />
-            <CanvasImages
-              shapeRefs={shapeRefs}
-              currentArticle={currentArticle}
-            />
-
+            <CanvasImages shapeRefs={shapeRefs} />
             <CanvasTexts shapeRefs={shapeRefs} trRef={trRef} />
-
             <CanvasTransformer trRef={trRef} />
           </Layer>
         </Stage>

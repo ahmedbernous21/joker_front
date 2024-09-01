@@ -10,9 +10,7 @@ function MiddleSideCustomize() {
     getCurrentArticle(state),
   );
   const dispatch = useDispatch();
-  const { readyToExport } = useSelector(
-    (state: IRootState) => state.canvas,
-  );
+  const { readyToExport } = useSelector((state: IRootState) => state.canvas);
   // const frontRef = useRef(null);
   // const backRef = useRef(null);
   // function downloadURI(uri: string, name: string) {
@@ -48,7 +46,10 @@ function MiddleSideCustomize() {
           onClick={() => dispatch(canvasActions.setActiveSide("front"))}
           className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${currentArticle.active === "front" ? "outline-solid outline outline-2 outline-blue-500" : ""}`}
         >
-          <img src={currentArticle.articleFrontSideInfo.src} alt="" />
+          <img
+            src={currentArticle.articleFrontSideInfo.src}
+            alt={currentArticle.articleFrontSideInfo.name}
+          />
         </div>
         {currentArticle.articleBackSideInfo != null && (
           <>
@@ -56,7 +57,10 @@ function MiddleSideCustomize() {
               onClick={() => dispatch(canvasActions.setActiveSide("back"))}
               className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${currentArticle.active === "back" ? "outline-solid outline outline-2 outline-blue-500" : ""}`}
             >
-              <img src={currentArticle.articleBackSideInfo.src} alt="" />
+              <img
+                src={currentArticle.articleBackSideInfo.src}
+                alt={currentArticle.articleBackSideInfo.name}
+              />
             </div>
           </>
         )}
