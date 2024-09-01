@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import HttpClient from "../../httpClient.tsx";
 import { useNavigate } from "react-router-dom";
 
@@ -9,7 +9,7 @@ const Login = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {

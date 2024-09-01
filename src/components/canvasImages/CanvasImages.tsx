@@ -2,16 +2,17 @@ import { canvasActions } from "../../store/slices/canvasSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Image } from "react-konva";
 import { ImageConfig } from "konva/lib/shapes/Image";
-import { getCurrentSide } from "../../store/selectors/canvasSelectors";
+import { getCurrentSideImages } from "../../store/selectors/canvasSelectors";
 import { IRootState } from "../../store/store";
+import Konva from "konva";
 
 interface CanvasImagesProps {
-  shapeRefs: any;
+  shapeRefs: React.MutableRefObject<{ [key: string]: Konva.Node | null }>;
 }
 const CanvasImages = ({ shapeRefs }: CanvasImagesProps) => {
   const dispatch = useDispatch();
-  const currentArticleSide = useSelector((state: IRootState) =>
-    getCurrentSide(state),
+  const currentArticleSideImages = useSelector((state: IRootState) =>
+    getCurrentSideImages(state),
   );
 
   const handleImageTransformAndDrag = (id: string | undefined) => {
@@ -19,18 +20,20 @@ const CanvasImages = ({ shapeRefs }: CanvasImagesProps) => {
       return;
     }
     const node = shapeRefs.current[id];
-    dispatch(
-      canvasActions.editImage({
-        id,
-        x: node.x(),
-        y: node.y(),
-        scaleX: node.scaleX(),
-        scaleY: node.scaleY(),
-        width: node.width(),
-        height: node.height(),
-        rotation: node.rotation(),
-      }),
-    );
+    if (node) {
+      dispatch(
+        canvasActions.editImage({
+          id,
+          x: node.x(),
+          y: node.y(),
+          scaleX: node.scaleX(),
+          scaleY: node.scaleY(),
+          width: node.width(),
+          height: node.height(),
+          rotation: node.rotation(),
+        }),
+      );
+    }
   };
   const selectLayerHandler = (image: ImageConfig) => {
     dispatch(
@@ -42,7 +45,7 @@ const CanvasImages = ({ shapeRefs }: CanvasImagesProps) => {
   };
   return (
     <>
-      {currentArticleSide?.images?.map((image: ImageConfig) => {
+      {currentArticleSideImages?.map((image: ImageConfig) => {
         const img = new window.Image();
         img.src = image.src;
         img.onload = () => {};
@@ -50,7 +53,11 @@ const CanvasImages = ({ shapeRefs }: CanvasImagesProps) => {
           <Image
             key={`image-${image.id}`}
             image={img}
-            ref={(node) => (shapeRefs.current[image.id] = node)}
+            ref={(node) => {
+              if (image.id != undefined) {
+                return (shapeRefs.current[image.id] = node);
+              }
+            }}
             id={`image-${image.id}`}
             x={image.x}
             y={image.y}

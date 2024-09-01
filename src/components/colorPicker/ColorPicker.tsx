@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import {
@@ -10,7 +10,7 @@ interface ColorPickerProps {
   type: "text" | "articleBackGround";
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ type }) => {
+const ColorPicker = ({ type }: ColorPickerProps) => {
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const currentArticle = useSelector((state: IRootState) =>

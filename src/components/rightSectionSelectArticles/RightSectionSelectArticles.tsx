@@ -3,6 +3,7 @@ import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { Article } from "../../interfaces/CanvasSliceInterfaces";
 
 const RightSectionSelectArticles = () => {
   const dispatch = useDispatch();
@@ -11,7 +12,8 @@ const RightSectionSelectArticles = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const isArticleExist = articles.find(
-      (article: any) => article.articleName === location.pathname.split("/")[2],
+      (article: Article) =>
+        article.articleName === location.pathname.split("/")[2],
     );
 
     if (!isArticleExist) {
@@ -33,7 +35,7 @@ const RightSectionSelectArticles = () => {
       className="w-full rounded-xl py-2 text-center outline-none"
       value={JSON.stringify(
         articles.find(
-          (article: any) =>
+          (article: Article) =>
             article.articleName === location.pathname.split("/")[2],
         ),
       )}

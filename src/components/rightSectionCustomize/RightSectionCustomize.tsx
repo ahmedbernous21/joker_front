@@ -6,16 +6,14 @@ import { FaBold, FaItalic, FaTrash, FaUnderline } from "react-icons/fa6";
 import TextFontFamily from "../textFontFamily/TextFontFamily";
 import FontSizeCustomize from "../textCustomize/FontSizeCustomize";
 import TextColorCustomize from "../textCustomize/TextColorCustomize";
-import { getCurrentSide } from "../../store/selectors/canvasSelectors";
+import { getCurrentSelectedText } from "../../store/selectors/canvasSelectors";
 
 const RightSectionCustomize = () => {
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
-  const currentArticleSide = useSelector((state: IRootState) =>
-    getCurrentSide(state),
+  const text = useSelector((state: IRootState) =>
+    getCurrentSelectedText(state),
   );
-  const texts = currentArticleSide?.texts;
-  const text = texts?.find((text) => text.id === selectedLayer?.id);
 
   return (
     <div className="flex w-[300px] flex-col gap-2">

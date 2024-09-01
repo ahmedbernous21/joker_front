@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import articlesInitialState from "../../data/data";
 import { CanvasSliceState } from "../../interfaces/CanvasSliceInterfaces";
+import { WritableDraft } from "immer";
 
 const initialState: CanvasSliceState = {
   articles: articlesInitialState,
@@ -9,20 +10,16 @@ const initialState: CanvasSliceState = {
   readyToExport: false,
 };
 
-const getCurrentArticle = (state: CanvasSliceState) => {
+const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
   return state.articles[state.selectedArticleIndex];
 };
 
-const getCurrentSide = (state) => {
+const getCurrentSide = (state: WritableDraft<CanvasSliceState>) => {
   const currentArticle = getCurrentArticle(state);
   return currentArticle.active === "front"
     ? currentArticle.articleFrontSideInfo
     : currentArticle.articleBackSideInfo;
 };
-const updateLayer = (layers: any[], payload: any) =>
-  layers.map((layer) =>
-    layer.id === payload.id ? { ...layer, ...payload } : layer,
-  );
 
 const canvasSlice = createSlice({
   name: "canvas",
@@ -62,7 +59,19 @@ const canvasSlice = createSlice({
     editImage(state, action) {
       const currentSide = getCurrentSide(state);
       if (currentSide) {
-        currentSide.images = updateLayer(currentSide.images, action.payload);
+        currentSide.images = currentSide.images.map((image) =>
+          image.id === action.payload.id
+            ? { ...image, ...action.payload }
+            : image,
+        );
+        const selectedArticle = getCurrentArticle(state);
+        if (selectedArticle.active === "front") {
+          selectedArticle.articleFrontSideInfo.images = currentSide.images;
+        } else {
+          if (selectedArticle.articleBackSideInfo != null) {
+            selectedArticle.articleBackSideInfo.images = currentSide.images;
+          }
+        }
       }
     },
     deleteLayer(state, action) {
@@ -80,7 +89,7 @@ const canvasSlice = createSlice({
         state.selectedLayer = null;
       }
     },
-    setActiveSide(state, action) {
+    setActiveSide(state, action: PayloadAction<"front" | "back">) {
       getCurrentArticle(state).active = action.payload;
       state.selectedLayer = null;
     },

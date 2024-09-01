@@ -6,6 +6,7 @@ export const getCurrentArticle = (
   state: IRootState,
 ): CanvasSliceState["articles"][number] =>
   state.canvas.articles[state.canvas.selectedArticleIndex];
+
 export const getCurrentSide = (state: IRootState) => {
   const article = getCurrentArticle(state);
   return article.active === "front"
