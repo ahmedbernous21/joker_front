@@ -1,7 +1,7 @@
 import { Image } from "react-konva";
 
 interface CanvasMainImageProps {
-  mainImage: HTMLImageElement;
+  mainImage: HTMLImageElement | undefined;
 }
 
 const CanvasMainImage = ({ mainImage }: CanvasMainImageProps) => {

@@ -105,8 +105,9 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
     text?.height,
   ]);
 
+  const [isScrolling, setIsScrolling] = useState(false);
   useEffect(() => {
-    if (!selectedLayer) {
+    if (!selectedLayer && !isScrolling) {
       setIsEditing(false);
     }
   }, [selectedLayer]);
@@ -160,6 +161,7 @@ const CanvasTexts = ({ shapeRefs, trRef }: CanvasTextsProps) => {
             onDragStart={() => handleTextTransformAndDrag(canvasText.id)}
             onDragMove={() => handleTextTransformAndDrag(canvasText.id)}
             onDragEnd={() => handleTextTransformAndDrag(canvasText.id)}
+            onWheel={() => setIsScrolling(true)}
           />
         </Fragment>
       ))}
