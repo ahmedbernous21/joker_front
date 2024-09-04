@@ -9,14 +9,16 @@ interface CanvasTransformerProps {
 }
 
 const CanvasTransformer = ({ trRef }: CanvasTransformerProps) => {
-  const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
-
-
+  const { selectedLayer } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
+  
   return (
     <>
       {selectedLayer?.id && (
         <Transformer
           ref={trRef}
+          
           boundBoxFunc={(oldBox, newBox) => {
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;

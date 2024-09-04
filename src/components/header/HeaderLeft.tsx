@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 
 const HeaderLeft = () => {
   return (
-    <Link to="/" className="flex items-center">
+    <Link
+      to="/"
+      className="flex items-center"
+    >
       <img
         src="/joker_logo.jpg"
         alt="Joker Graphics Logo"

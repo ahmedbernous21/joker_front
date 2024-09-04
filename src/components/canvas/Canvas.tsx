@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, {  useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import {
@@ -17,10 +17,11 @@ import CanvasTransformer from "../canvasTransformer/CanvasTransformer";
 
 const CanvasComponent: React.FC = () => {
   const dispatch = useDispatch();
+
+  const canvasRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const shapeRefs = useRef<{ [key: string]: Konva.Node }>({});
 
-  const { isEditingText } = useSelector((state: IRootState) => state.canvas);
   const selectedLayer = useSelector(
     (state: IRootState) => state.canvas.selectedLayer,
   );
@@ -49,10 +50,6 @@ const CanvasComponent: React.FC = () => {
   ) => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty && isEditingText) {
-      dispatch(canvasActions.setIsEditingText(false));
-      return;
-    }
     if (clickedOnEmpty) {
       dispatch(canvasActions.setSelectedLayer(null));
     }
@@ -66,6 +63,7 @@ const CanvasComponent: React.FC = () => {
       <div className="relative">
         <Stage
           width={320}
+          ref={canvasRef}
           height={450}
           onMouseDown={checkDeselect}
           className="max-h-[450px] max-w-[320px] overflow-hidden"
@@ -76,7 +74,11 @@ const CanvasComponent: React.FC = () => {
             />
             <CanvasMainImage mainImage={mainImage} />
             <CanvasImages shapeRefs={shapeRefs} />
-            <CanvasTexts shapeRefs={shapeRefs} trRef={trRef} />
+            <CanvasTexts
+              shapeRefs={shapeRefs}
+              trRef={trRef}
+              canvasRef={canvasRef}
+            />
             <CanvasTransformer trRef={trRef} />
           </Layer>
         </Stage>

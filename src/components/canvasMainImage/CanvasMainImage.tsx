@@ -12,7 +12,7 @@ const CanvasMainImage = ({ mainImage }: CanvasMainImageProps) => {
       y={0}
       width={320}
       height={450}
-      listening={false}
+      // listening={false}
     />
   );
 };
