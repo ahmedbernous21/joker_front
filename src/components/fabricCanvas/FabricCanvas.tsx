@@ -151,6 +151,8 @@ const FabricCanvas = () => {
               left: canvasImage.x,
               top: canvasImage.y,
               angle: canvasImage.rotation,
+              width: canvasImage.width,
+              height: canvasImage.height,
               scaleX: canvasImage.scaleX || 1,
               scaleY: canvasImage.scaleY || 1,
             });
