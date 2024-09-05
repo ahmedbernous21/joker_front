@@ -54,6 +54,8 @@ const FabricCanvas = () => {
       canvas.dispose();
     };
   }, [dispatch]);
+
+  // remove image handler
   useEffect(() => {
     if (canvasRef.current) {
       canvasRef.current.getObjects().forEach((obj) => {
@@ -149,14 +151,22 @@ const FabricCanvas = () => {
             const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
               left: canvasImage.x,
+              // centeredScaling: true,
+
               top: canvasImage.y,
               angle: canvasImage.rotation,
-              width: canvasImage.width,
-              height: canvasImage.height,
+              // width: canvasImage.width,
+              // height: canvasImage.height,
               scaleX: canvasImage.scaleX || 1,
               scaleY: canvasImage.scaleY || 1,
             });
-
+            if (canvasImage.width && canvasImage.height) {
+              const scaleX = canvasImage.width / canvasBGImage.width;
+              const scaleY = canvasImage.height / canvasBGImage.height;
+              canvasBGImage.scaleX = scaleX;
+              canvasBGImage.scaleY = scaleY;
+             
+            }
             canvasBGImage.on("selected", (e) => {
               dispatch(
                 canvasActions.setSelectedLayer({
@@ -194,7 +204,6 @@ const FabricCanvas = () => {
   }, [currentArticleSide?.images, dispatch]);
 
   // add main image bg
-
   useEffect(() => {
     const imageUrl = currentArticleSide?.src;
 
@@ -213,6 +222,7 @@ const FabricCanvas = () => {
 
       canvasBGImage.scaleX = scaleX;
       canvasBGImage.scaleY = scaleY;
+
       // Center the image
       canvasBGImage.set({
         left: 320 / 2,
