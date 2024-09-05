@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Design from "./pages/design/Design";
 import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
-import Admin from "./pages/Admin/Admin";
+import Admin from "./pages/Admin/admin";
 import Login from "./pages/LoginAdmin/LoginAdmin";
 import Home from "./pages/home/Home";
 import { useEffect } from "react";

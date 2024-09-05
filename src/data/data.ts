@@ -22,7 +22,7 @@ const articlesInitialState: Article[] = [
   },
   {
     id: uuid(),
-    articleName: "chope",
+    articleName: "mug",
     articleFrontSideInfo: {
       name: "front",
       src: "/cuptest.png",
@@ -35,7 +35,7 @@ const articlesInitialState: Article[] = [
   },
   {
     id: uuid(),
-    articleName: "casquette",
+    articleName: "cap",
     articleFrontSideInfo: {
       name: "front",
       src: "/hat.png",
