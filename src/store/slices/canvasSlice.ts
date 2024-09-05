@@ -44,12 +44,14 @@ const canvasSlice = createSlice({
               : text,
           );
       } else {
-        currentArticle.articleBackSideInfo.texts =
-          currentArticle.articleFrontSideInfo.texts.map((text) =>
-            text.id === action.payload.id
-              ? { ...text, ...action.payload }
-              : text,
-          );
+        if (currentArticle.articleBackSideInfo) {
+          currentArticle.articleBackSideInfo.texts =
+            currentArticle.articleFrontSideInfo.texts.map((text) =>
+              text.id === action.payload.id
+                ? { ...text, ...action.payload }
+                : text,
+            );
+        }
       }
     },
     readyToExportToggle(state, action) {
@@ -74,12 +76,14 @@ const canvasSlice = createSlice({
               : image,
           );
       } else {
-        currentArticle.articleBackSideInfo.images =
-          currentArticle.articleFrontSideInfo.images.map((image) =>
-            image.id === action.payload.id
-              ? { ...image, ...action.payload }
-              : image,
-          );
+        if (currentArticle.articleBackSideInfo) {
+          currentArticle.articleBackSideInfo.images =
+            currentArticle.articleFrontSideInfo.images.map((image) =>
+              image.id === action.payload.id
+                ? { ...image, ...action.payload }
+                : image,
+            );
+        }
       }
     },
     deleteLayer(state, action) {
@@ -101,13 +105,25 @@ const canvasSlice = createSlice({
       getCurrentArticle(state).active = action.payload;
       state.selectedLayer = null;
     },
+    
     changeArticle(state, action) {
+      const currentSide = getCurrentSide(state);
+      if (currentSide) {
+        if (state.articles[state.selectedArticleIndex].active === "front") {
+          state.articles[state.selectedArticleIndex].articleFrontSideInfo =
+            currentSide;
+        } else {
+          state.articles[state.selectedArticleIndex].articleBackSideInfo =
+            currentSide;
+        }
+      }
       const articleIndex = initialState.articles.findIndex(
         (article) => article.articleName === action.payload.articleName,
       );
       if (articleIndex !== -1) {
         state.selectedArticleIndex = articleIndex;
       }
+
       state.selectedLayer = null;
     },
   },

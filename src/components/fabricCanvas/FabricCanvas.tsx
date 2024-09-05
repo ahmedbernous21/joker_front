@@ -39,13 +39,12 @@ const CanvasTexts = () => {
       selection: false,
       allowTouchScrolling: true,
     });
+    dispatch(canvasActions.setSelectedLayer(null));
     canvas.on("mouse:down", (e) => {
       if (!e.target) {
         dispatch(canvasActions.setSelectedLayer(null));
       }
     });
-
-    // Debounce the text:changed event
 
     canvasRef.current = canvas;
 
@@ -71,27 +70,41 @@ const CanvasTexts = () => {
           fontFamily: canvasText.fontFamily,
           splitByGrapheme: true,
           fill: canvasText.color,
-          fontStyle: canvasText.fontStyle === "italic" ? "italic" : "normal",
+          fontStyle: canvasText.style == "italic" ? "italic" : "normal",
           fontWeight: canvasText.fontWeight === "bold" ? "bold" : "normal",
-          underline: canvasText.underline || false,
+          underline: canvasText.underline == "none" ? false : true,
           left: canvasText.x,
           top: canvasText.y,
           editable: true,
+          angle: canvasText.rotation,
           selectable: true,
+          scaleX: canvasText.scaleX || 1,
+          scaleY: canvasText.scaleY || 1,
         });
 
-        text.on("selected", () => {
+        text.on("selected", (e) => {
           dispatch(
             canvasActions.setSelectedLayer({ id: canvasText.id, type: "text" }),
           );
         });
+
         text.on("deselected", (e) => {
+          if (!e.target) {
+            return;
+          }
           dispatch(
             canvasActions.editText({
               id: e.target.id,
-              text: e.target.text,
               x: e.target.left,
+              rotation: e.target.angle,
               y: e.target.top,
+              fontFamily: e.target.fontFamily,
+              width: e.target.width,
+              lineHeight: e.target.lineHeight,
+              textAlign: e.target.textAlign,
+              height: e.target.height,
+              scaleX: e.target.scaleX,
+              scaleY: e.target.scaleY,
             }),
           );
         });
@@ -100,6 +113,8 @@ const CanvasTexts = () => {
           canvasRef.current.add(text);
         }
       });
+
+      canvasRef.current.renderAll();
     }
   }, [currentArticleSide?.texts, dispatch]);
 
@@ -115,13 +130,15 @@ const CanvasTexts = () => {
         image.src = canvasImage.src;
 
         image.onload = () => {
-          const canvasBGImage = new fabric.FabricImage(image);
-          canvasBGImage.id = canvasImage.id;
-          canvasBGImage.backgroundColor = currentArticle.articleBackground;
-          if (canvasImage.x && canvasImage.y) {
-            canvasBGImage.left = canvasImage.x;
-            canvasBGImage.top = canvasImage.y;
-          }
+          const canvasBGImage = new fabric.FabricImage(image, {
+            id: canvasImage.id,
+            left: canvasImage.x,
+            top: canvasImage.y,
+            angle: canvasImage.rotation,
+            scaleX: canvasImage.scaleX || 1,
+            scaleY: canvasImage.scaleY || 1,
+          });
+
           if (canvasRef.current) {
             canvasRef.current.add(canvasBGImage);
             canvasRef.current.renderAll();
@@ -140,6 +157,9 @@ const CanvasTexts = () => {
                 id: e.target.id,
                 x: e.target.left,
                 y: e.target.top,
+                rotation: e.target.angle,
+                scaleX: e.target.scaleX,
+                scaleY: e.target.scaleY,
               }),
             );
           });
@@ -150,7 +170,7 @@ const CanvasTexts = () => {
     }
   }, [currentArticleSide?.images, dispatch]);
 
-  // add images
+  // add main image bg
   useEffect(() => {
     const imageUrl = currentArticleSide?.src;
 
