@@ -9,7 +9,6 @@ import Home from "./pages/home/Home";
 import Dashboard from "./pages/Dashboard/dashboard";
 import { useEffect } from "react";
 // import "./registerServiceWorker";
-import FabricCanvas from "./components/fabricCanvas/FabricCanvas";
 
 function App() {
   // useEffect(() => {
@@ -61,7 +60,6 @@ function App() {
         <Route element={<Login />} path="/kedache/" />
         <Route element={<Dashboard />} path="/dashboard/overview/" />
         <Route element={<Admin />} path="/dashboard/articles/" />
-        <Route element={<FabricCanvas />} path="/fabric" />
         <Route element={<NotFound />} path="*" />
       </Routes>
     </BrowserRouter>

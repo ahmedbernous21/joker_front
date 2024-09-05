@@ -83,21 +83,12 @@ const RightSectionCustomize = () => {
                     />
                     <FaUnderline
                       onClick={() => {
-                        if (text?.underline == "underline") {
-                          dispatch(
-                            canvasActions.editText({
-                              id: selectedLayer.id,
-                              underline: "none",
-                            }),
-                          );
-                        } else {
-                          dispatch(
-                            canvasActions.editText({
-                              id: selectedLayer.id,
-                              underline: "underline",
-                            }),
-                          );
-                        }
+                        dispatch(
+                          canvasActions.editText({
+                            id: selectedLayer.id,
+                            underline: !text.underline,
+                          }),
+                        );
                       }}
                       style={{
                         background:

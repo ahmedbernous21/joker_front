@@ -2,13 +2,14 @@ import { Range } from "react-range";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
-import { TextConfig } from "konva/lib/shapes/Text";
+import { Text } from "fabric/fabric-impl";
 
 interface FontSizeCustomizeProps {
-  canvasText: TextConfig;
+  canvasText: Text;
 }
 
 const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
+  
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const dispatch = useDispatch();
   return (

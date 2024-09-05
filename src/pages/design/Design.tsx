@@ -1,7 +1,5 @@
 import LeftSideCustomize from "../../components/leftSideCustomize/LeftSideCustomize";
 import RightSection from "../../components/rightSection/RightSection";
-import MiddleSideCustomize from "../../components/middleSideCustomize/MiddleSideCustomize";
-import FabricCanvas from "../../components/fabricCanvas/FabricCanvas";
 import MiddleDesignSection from "../../components/middleDesignSection/MiddleDesignSection";
 
 const Design = () => {
@@ -12,9 +10,7 @@ const Design = () => {
         style={{ minHeight: "calc(100vh - 109px)" }}
       >
         <LeftSideCustomize />
-        {/* <MiddleSideCustomize /> */}
         <MiddleDesignSection />
-        {/* <FabricCanvas /> */}
 
         <RightSection />
       </div>

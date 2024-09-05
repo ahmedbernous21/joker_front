@@ -72,10 +72,11 @@ const CanvasTexts = () => {
           fill: canvasText.color,
           fontStyle: canvasText.style == "italic" ? "italic" : "normal",
           fontWeight: canvasText.fontWeight === "bold" ? "bold" : "normal",
-          underline: canvasText.underline == "none" ? false : true,
+          underline: canvasText.underline ? false : true,
           left: canvasText.x,
           top: canvasText.y,
           editable: true,
+
           angle: canvasText.rotation,
           selectable: true,
           scaleX: canvasText.scaleX || 1,
@@ -86,6 +87,9 @@ const CanvasTexts = () => {
           dispatch(
             canvasActions.setSelectedLayer({ id: canvasText.id, type: "text" }),
           );
+        });
+        text.on("editing:exited", (e) => {
+          dispatch(canvasActions.editText({ id: text.id, text: text.text }));
         });
 
         text.on("deselected", (e) => {
@@ -207,7 +211,6 @@ const CanvasTexts = () => {
     <div>
       <canvas
         id="canvas"
-        ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
         className="relative rounded-xl border-2"
