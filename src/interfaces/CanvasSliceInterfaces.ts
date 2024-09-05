@@ -1,4 +1,5 @@
-import { Image, Text } from "fabric/fabric-impl";
+import { Canvas, Image, Text } from "fabric/fabric-impl";
+import { Ref } from "react";
 
 interface ArticleSideInfo {
   name: string;
@@ -21,6 +22,7 @@ interface SelectedLayer {
 }
 
 interface CanvasSliceState {
+  canvasRef: Canvas | null | Ref<Canvas>;
   articles: Article[];
   selectedArticleIndex: number;
   selectedLayer: SelectedLayer | null;

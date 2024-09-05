@@ -8,7 +8,7 @@ import {
   getCurrentSide,
 } from "../../store/selectors/canvasSelectors";
 
-const CanvasTexts = () => {
+const FabricCanvas = () => {
   const canvasWidth = 320;
   const canvasHeight = 450;
   const dispatch = useDispatch();
@@ -54,6 +54,18 @@ const CanvasTexts = () => {
       canvas.dispose();
     };
   }, [dispatch]);
+  useEffect(() => {
+    if (canvasRef.current) {
+      canvasRef.current.getObjects().forEach((obj) => {
+        const isExist = currentArticleSide?.images?.find(
+          (text) => text.id === obj.id,
+        );
+        if (!isExist && obj.type === "image") {
+          canvasRef.current?.remove(obj);
+        }
+      });
+    }
+  }, [currentArticleSide?.images]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -72,7 +84,7 @@ const CanvasTexts = () => {
           fill: canvasText.color,
           fontStyle: canvasText.style == "italic" ? "italic" : "normal",
           fontWeight: canvasText.fontWeight === "bold" ? "bold" : "normal",
-          underline: canvasText.underline ? false : true,
+          underline: canvasText.underline ? true : false,
           left: canvasText.x,
           top: canvasText.y,
           editable: true,
@@ -126,48 +138,53 @@ const CanvasTexts = () => {
   useEffect(() => {
     if (canvasRef.current) {
       const objects = canvasRef.current.getObjects("image");
-      objects.forEach((obj) => {
-        canvasRef.current?.remove(obj);
-      });
+      const existingImageIds = objects.map((obj) => obj.id);
+
       currentArticleSide?.images?.forEach((canvasImage) => {
-        const image = new Image();
-        image.src = canvasImage.src;
+        if (!existingImageIds.includes(canvasImage.id)) {
+          const image = new Image();
+          image.src = canvasImage.src;
 
-        image.onload = () => {
-          const canvasBGImage = new fabric.FabricImage(image, {
-            id: canvasImage.id,
-            left: canvasImage.x,
-            top: canvasImage.y,
-            angle: canvasImage.rotation,
-            scaleX: canvasImage.scaleX || 1,
-            scaleY: canvasImage.scaleY || 1,
-          });
+          image.onload = () => {
+            const canvasBGImage = new fabric.FabricImage(image, {
+              id: canvasImage.id,
+              left: canvasImage.x,
+              top: canvasImage.y,
+              angle: canvasImage.rotation,
+              scaleX: canvasImage.scaleX || 1,
+              scaleY: canvasImage.scaleY || 1,
+            });
 
-          if (canvasRef.current) {
-            canvasRef.current.add(canvasBGImage);
-            canvasRef.current.renderAll();
-          }
-          canvasBGImage.on("selected", () => {
-            dispatch(
-              canvasActions.setSelectedLayer({
-                id: canvasBGImage.id,
-                type: "image",
-              }),
-            );
-          });
-          canvasBGImage.on("deselected", (e) => {
-            dispatch(
-              canvasActions.editImage({
-                id: e.target.id,
-                x: e.target.left,
-                y: e.target.top,
-                rotation: e.target.angle,
-                scaleX: e.target.scaleX,
-                scaleY: e.target.scaleY,
-              }),
-            );
-          });
-        };
+            canvasBGImage.on("selected", (e) => {
+              dispatch(
+                canvasActions.setSelectedLayer({
+                  id: canvasBGImage.id,
+                  type: "image",
+                }),
+              );
+            });
+
+            canvasBGImage.on("deselected", (e) => {
+              if (!e.target) {
+                return;
+              }
+              dispatch(
+                canvasActions.editImage({
+                  id: e.target.id,
+                  x: e.target.left,
+                  y: e.target.top,
+                  width: e.target.width,
+                  height: e.target.height,
+                  scaleX: e.target.scaleX,
+                  scaleY: e.target.scaleY,
+                }),
+              );
+            });
+            if (canvasRef.current) {
+              canvasRef.current.add(canvasBGImage);
+            }
+          };
+        }
       });
 
       canvasRef.current.renderAll();
@@ -175,6 +192,7 @@ const CanvasTexts = () => {
   }, [currentArticleSide?.images, dispatch]);
 
   // add main image bg
+
   useEffect(() => {
     const imageUrl = currentArticleSide?.src;
 
@@ -219,4 +237,4 @@ const CanvasTexts = () => {
   );
 };
 
-export default CanvasTexts;
+export default FabricCanvas;
