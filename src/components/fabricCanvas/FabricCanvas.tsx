@@ -7,7 +7,7 @@ import {
   getCurrentArticle,
   getCurrentSide,
 } from "../../store/selectors/canvasSelectors";
-
+  
 const FabricCanvas = () => {
   const canvasWidth = 320;
   const canvasHeight = 450;
@@ -151,22 +151,14 @@ const FabricCanvas = () => {
             const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
               left: canvasImage.x,
-              // centeredScaling: true,
-
-              top: canvasImage.y,
-              angle: canvasImage.rotation,
               // width: canvasImage.width,
               // height: canvasImage.height,
-              scaleX: canvasImage.scaleX || 1,
-              scaleY: canvasImage.scaleY || 1,
+              scaleX: canvasImage.width / image.width || 1,
+              scaleY: canvasImage.height / image.height || 1,
+              top: canvasImage.y,
+              angle: canvasImage.rotation,
             });
-            if (canvasImage.width && canvasImage.height) {
-              const scaleX = canvasImage.width / canvasBGImage.width;
-              const scaleY = canvasImage.height / canvasBGImage.height;
-              canvasBGImage.scaleX = scaleX;
-              canvasBGImage.scaleY = scaleY;
-             
-            }
+
             canvasBGImage.on("selected", (e) => {
               dispatch(
                 canvasActions.setSelectedLayer({
@@ -185,10 +177,8 @@ const FabricCanvas = () => {
                   id: e.target.id,
                   x: e.target.left,
                   y: e.target.top,
-                  width: e.target.width,
-                  height: e.target.height,
-                  scaleX: e.target.scaleX,
-                  scaleY: e.target.scaleY,
+                  scaleX: e.target.width / image.width,
+                  scaleY: e.target.height / image.height,
                 }),
               );
             });
