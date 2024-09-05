@@ -72,7 +72,7 @@ const canvasSlice = createSlice({
           );
       } else {
         if (currentArticle.articleBackSideInfo) {
-          currentArticle.articleBackSideInfo.images =
+          currentArticle.articleBackSideInfo.texts =
             currentArticle.articleBackSideInfo.images.map((image) =>
               image.id === action.payload.id
                 ? { ...image, ...action.payload }

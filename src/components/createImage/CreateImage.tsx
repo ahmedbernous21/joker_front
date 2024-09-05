@@ -25,8 +25,7 @@ const CreateImage = () => {
                 rotation: 0,
                 x: 115,
                 y: 100,
-                width: 80,
-                height: 80,
+              
               }),
             );
           }
