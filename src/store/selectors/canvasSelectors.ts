@@ -13,7 +13,6 @@ export const getCurrentSide = (state: IRootState) => {
     ? article.articleFrontSideInfo
     : article.articleBackSideInfo;
 };
-
 export const getCurrentSideTexts = (state: IRootState) =>
   getCurrentSide(state)?.texts || [];
 

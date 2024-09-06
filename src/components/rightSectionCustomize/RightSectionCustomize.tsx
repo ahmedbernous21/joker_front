@@ -20,7 +20,7 @@ const RightSectionCustomize = () => {
       <div className="flex max-h-[430px] flex-1 flex-col gap-6 overflow-x-auto rounded-xl bg-white p-4">
         {selectedLayer ? (
           <div className="flex flex-col gap-6">
-            {selectedLayer.type == "text" && (
+            {selectedLayer.type == "text" && text && (
               <>
                 <FontSizeCustomize canvasText={text} />
                 <TextColorCustomize />
@@ -83,21 +83,12 @@ const RightSectionCustomize = () => {
                     />
                     <FaUnderline
                       onClick={() => {
-                        if (text?.underline == "underline") {
-                          dispatch(
-                            canvasActions.editText({
-                              id: selectedLayer.id,
-                              underline: "none",
-                            }),
-                          );
-                        } else {
-                          dispatch(
-                            canvasActions.editText({
-                              id: selectedLayer.id,
-                              underline: "underline",
-                            }),
-                          );
-                        }
+                        dispatch(
+                          canvasActions.editText({
+                            id: selectedLayer.id,
+                            underline: !text.underline,
+                          }),
+                        );
                       }}
                       style={{
                         background:

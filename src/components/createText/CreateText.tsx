@@ -21,6 +21,8 @@ const CreatText = () => {
             underline: false,
             italic: false,
             width: 300,
+            lineHeight: 1,
+            textAlign : "center",
             height: 50,
             scaleX: 1,
             scaleY: 1,

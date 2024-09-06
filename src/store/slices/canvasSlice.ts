@@ -8,7 +8,6 @@ const initialState: CanvasSliceState = {
   selectedArticleIndex: 0,
   selectedLayer: null,
   readyToExport: false,
-  isEditingText: false,
 };
 
 const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
@@ -33,18 +32,25 @@ const canvasSlice = createSlice({
       getCurrentSide(state)?.texts.push(action.payload);
     },
     editText(state, action) {
-      const currentSide = getCurrentSide(state);
-      if (currentSide) {
-        currentSide.texts = currentSide.texts.map((text) =>
-          text.id === action.payload.id ? { ...text, ...action.payload } : text,
-        );
-        const selectedArticle = getCurrentArticle(state);
-        if (selectedArticle.active === "front") {
-          selectedArticle.articleFrontSideInfo.texts = currentSide.texts;
-        } else {
-          if (selectedArticle.articleBackSideInfo != null) {
-            selectedArticle.articleBackSideInfo.texts = currentSide.texts;
-          }
+      const currentArticle = getCurrentArticle(state);
+      const isExist = currentArticle.articleFrontSideInfo.texts.find(
+        (text) => text.id == action.payload.id,
+      );
+      if (isExist) {
+        currentArticle.articleFrontSideInfo.texts =
+          currentArticle.articleFrontSideInfo.texts.map((text) =>
+            text.id === action.payload.id
+              ? { ...text, ...action.payload }
+              : text,
+          );
+      } else {
+        if (currentArticle.articleBackSideInfo) {
+          currentArticle.articleBackSideInfo.texts =
+            currentArticle.articleFrontSideInfo.texts.map((text) =>
+              text.id === action.payload.id
+                ? { ...text, ...action.payload }
+                : text,
+            );
         }
       }
     },
@@ -58,20 +64,25 @@ const canvasSlice = createSlice({
       getCurrentSide(state)?.images.push(action.payload);
     },
     editImage(state, action) {
-      const currentSide = getCurrentSide(state);
-      if (currentSide) {
-        currentSide.images = currentSide.images.map((image) =>
-          image.id === action.payload.id
-            ? { ...image, ...action.payload }
-            : image,
-        );
-        const selectedArticle = getCurrentArticle(state);
-        if (selectedArticle.active === "front") {
-          selectedArticle.articleFrontSideInfo.images = currentSide.images;
-        } else {
-          if (selectedArticle.articleBackSideInfo != null) {
-            selectedArticle.articleBackSideInfo.images = currentSide.images;
-          }
+      const currentArticle = getCurrentArticle(state);
+      const isExist = currentArticle.articleFrontSideInfo.images.find(
+        (image) => image.id == action.payload.id,
+      );
+      if (isExist) {
+        currentArticle.articleFrontSideInfo.images =
+          currentArticle.articleFrontSideInfo.images.map((image) =>
+            image.id === action.payload.id
+              ? { ...image, ...action.payload }
+              : image,
+          );
+      } else {
+        if (currentArticle.articleBackSideInfo) {
+          currentArticle.articleBackSideInfo.images =
+            currentArticle.articleFrontSideInfo.images.map((image) =>
+              image.id === action.payload.id
+                ? { ...image, ...action.payload }
+                : image,
+            );
         }
       }
     },
@@ -94,17 +105,26 @@ const canvasSlice = createSlice({
       getCurrentArticle(state).active = action.payload;
       state.selectedLayer = null;
     },
+    
     changeArticle(state, action) {
+      const currentSide = getCurrentSide(state);
+      if (currentSide) {
+        if (state.articles[state.selectedArticleIndex].active === "front") {
+          state.articles[state.selectedArticleIndex].articleFrontSideInfo =
+            currentSide;
+        } else {
+          state.articles[state.selectedArticleIndex].articleBackSideInfo =
+            currentSide;
+        }
+      }
       const articleIndex = initialState.articles.findIndex(
         (article) => article.articleName === action.payload.articleName,
       );
       if (articleIndex !== -1) {
         state.selectedArticleIndex = articleIndex;
       }
+
       state.selectedLayer = null;
-    },
-    setIsEditingText(state, action) {
-      state.isEditingText = action.payload;
     },
   },
 });

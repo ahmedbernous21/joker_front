@@ -1,11 +1,10 @@
-import { ImageConfig } from "konva/lib/shapes/Image";
-import { TextConfig } from "konva/lib/shapes/Text";
+import { Image, Text } from "fabric/fabric-impl";
 
 interface ArticleSideInfo {
   name: string;
   src: string;
-  texts: TextConfig[];
-  images: ImageConfig[];
+  texts: Text[];
+  images: Image[];
 }
 
 interface Article {
@@ -26,7 +25,7 @@ interface CanvasSliceState {
   selectedArticleIndex: number;
   selectedLayer: SelectedLayer | null;
   readyToExport: boolean;
-  isEditingText: boolean;
+  // isEditing: boolean;
 }
 
 export type { CanvasSliceState, Article, SelectedLayer, ArticleSideInfo };

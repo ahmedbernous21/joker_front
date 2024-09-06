@@ -1,6 +1,4 @@
-import { useSelector } from "react-redux";
 import ColorPicker from "../colorPicker/ColorPicker";
-import { IRootState } from "../../store/store";
 
 const TextColorCustomize = () => {
   return (

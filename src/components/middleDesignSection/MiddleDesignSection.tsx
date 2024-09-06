@@ -1,16 +1,13 @@
-import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
-import Canvas from "../canvas/Canvas";
 import { getCurrentArticle } from "../../store/selectors/canvasSelectors";
-
-function MiddleSideCustomize() {
+import FabricCanvas from "../fabricCanvas/FabricCanvas";
+function MiddleDesignSection() {
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
   );
   const dispatch = useDispatch();
-  const { readyToExport } = useSelector((state: IRootState) => state.canvas);
   // const frontRef = useRef(null);
   // const backRef = useRef(null);
   // function downloadURI(uri: string, name: string) {
@@ -66,10 +63,10 @@ function MiddleSideCustomize() {
         )}
       </div>
       <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-        <Canvas />
+        <FabricCanvas />
       </div>
     </div>
   );
 }
 
-export default MiddleSideCustomize;
+export default MiddleDesignSection;

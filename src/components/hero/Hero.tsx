@@ -15,7 +15,7 @@ const Hero = () => {
           </p>
           {/* next time i will point it /design/:article dynamically */}
           <Link
-            to="/design/tshirt"
+            to="/design"
             className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-white shadow transition duration-300 hover:bg-blue-500 md:px-7 md:py-5"
           >
             Créez votre design personnalisé

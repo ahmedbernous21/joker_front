@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTshirt,
   faMugHot,
   faHatCowboy,
   faKey,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const articles = [
   { name: "T-shirt", icon: faTshirt, link: "/design/tshirt" },
