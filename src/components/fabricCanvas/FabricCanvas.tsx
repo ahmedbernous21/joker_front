@@ -8,7 +8,7 @@ import {
   getCurrentSide,
 } from "../../store/selectors/canvasSelectors";
 
-const CanvasTexts = () => {
+const FabricCanvas = () => {
   const canvasWidth = 320;
   const canvasHeight = 450;
   const dispatch = useDispatch();
@@ -55,6 +55,20 @@ const CanvasTexts = () => {
     };
   }, [dispatch]);
 
+  // remove image handler
+  useEffect(() => {
+    if (canvasRef.current) {
+      canvasRef.current.getObjects().forEach((obj) => {
+        const isExist = currentArticleSide?.images?.find(
+          (text) => text.id === obj.id,
+        );
+        if (!isExist && obj.type === "image") {
+          canvasRef.current?.remove(obj);
+        }
+      });
+    }
+  }, [currentArticleSide?.images]);
+
   useEffect(() => {
     if (canvasRef.current) {
       const objects = canvasRef.current.getObjects("textbox");
@@ -72,7 +86,7 @@ const CanvasTexts = () => {
           fill: canvasText.color,
           fontStyle: canvasText.style == "italic" ? "italic" : "normal",
           fontWeight: canvasText.fontWeight === "bold" ? "bold" : "normal",
-          underline: canvasText.underline ? false : true,
+          underline: canvasText.underline ? true : false,
           left: canvasText.x,
           top: canvasText.y,
           editable: true,
@@ -126,48 +140,59 @@ const CanvasTexts = () => {
   useEffect(() => {
     if (canvasRef.current) {
       const objects = canvasRef.current.getObjects("image");
-      objects.forEach((obj) => {
-        canvasRef.current?.remove(obj);
-      });
+      const existingImageIds = objects.map((obj) => obj.id);
+
       currentArticleSide?.images?.forEach((canvasImage) => {
-        const image = new Image();
-        image.src = canvasImage.src;
+        if (!existingImageIds.includes(canvasImage.id)) {
+          const image = new Image();
+          image.src = canvasImage.src;
 
-        image.onload = () => {
-          const canvasBGImage = new fabric.FabricImage(image, {
-            id: canvasImage.id,
-            left: canvasImage.x,
-            top: canvasImage.y,
-            angle: canvasImage.rotation,
-            scaleX: canvasImage.scaleX || 1,
-            scaleY: canvasImage.scaleY || 1,
-          });
+          image.onload = () => {
+            // Calculate scaling to fit the canvas
+            const scaleX = canvasWidth / image.width;
+            const scaleY = canvasHeight / image.height;
+            const scale = Math.min(scaleX, scaleY, 1); // Ensure the scale is not greater than 1
 
-          if (canvasRef.current) {
-            canvasRef.current.add(canvasBGImage);
-            canvasRef.current.renderAll();
-          }
-          canvasBGImage.on("selected", () => {
-            dispatch(
-              canvasActions.setSelectedLayer({
-                id: canvasBGImage.id,
-                type: "image",
-              }),
-            );
-          });
-          canvasBGImage.on("deselected", (e) => {
-            dispatch(
-              canvasActions.editImage({
-                id: e.target.id,
-                x: e.target.left,
-                y: e.target.top,
-                rotation: e.target.angle,
-                scaleX: e.target.scaleX,
-                scaleY: e.target.scaleY,
-              }),
-            );
-          });
-        };
+            const canvasBGImage = new fabric.Image(image, {
+              id: canvasImage.id,
+              left: canvasImage.x,
+              top: canvasImage.y,
+              angle: canvasImage.rotation,
+              scaleX: scale,
+              scaleY: scale,
+            });
+
+            canvasBGImage.on("selected", (e) => {
+              dispatch(
+                canvasActions.setSelectedLayer({
+                  id: canvasBGImage.id,
+                  type: "image",
+                }),
+              );
+            });
+
+            canvasBGImage.on("deselected", (e) => {
+              if (!e.target) {
+                return;
+              }
+
+              dispatch(
+                canvasActions.editImage({
+                  id: e.target.id,
+                  x: e.target.left,
+                  y: e.target.top,
+                  rotation: e.target.angle,
+                  scaleX: e.target.scaleX,
+                  scaleY: e.target.scaleY,
+                }),
+              );
+            });
+
+            if (canvasRef.current) {
+              canvasRef.current.add(canvasBGImage);
+            }
+          };
+        }
       });
 
       canvasRef.current.renderAll();
@@ -184,7 +209,7 @@ const CanvasTexts = () => {
     }
 
     image.onload = () => {
-      const canvasBGImage = new fabric.FabricImage(image);
+      const canvasBGImage = new fabric.Image(image);
       canvasBGImage.backgroundColor = currentArticle.articleBackground;
 
       // Calculate scaling to fit the canvas
@@ -193,6 +218,7 @@ const CanvasTexts = () => {
 
       canvasBGImage.scaleX = scaleX;
       canvasBGImage.scaleY = scaleY;
+
       // Center the image
       canvasBGImage.set({
         left: 320 / 2,
@@ -202,7 +228,6 @@ const CanvasTexts = () => {
       });
       if (canvasRef.current) {
         canvasRef.current.backgroundImage = canvasBGImage;
-        canvasRef.current.renderAll();
       }
     };
   }, [currentArticle.articleBackground, currentArticleSide?.src]);
@@ -219,4 +244,4 @@ const CanvasTexts = () => {
   );
 };
 
-export default CanvasTexts;
+export default FabricCanvas;

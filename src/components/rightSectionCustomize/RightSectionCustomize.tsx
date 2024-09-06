@@ -92,11 +92,11 @@ const RightSectionCustomize = () => {
                       }}
                       style={{
                         background:
-                          text?.underline == "underline"
+                          text?.underline
                             ? "rgb(59 130 246)"
                             : "transparent",
                         color:
-                          text?.underline == "underline" ? "white" : "black",
+                          text?.underline  ? "white" : "black",
                       }}
                       className="h-[25px] w-1/3 cursor-pointer p-1"
                     />

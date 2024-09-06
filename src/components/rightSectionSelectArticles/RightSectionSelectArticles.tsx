@@ -2,32 +2,35 @@ import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { Article } from "../../interfaces/CanvasSliceInterfaces";
+import { useEffect } from "react";
 
 const RightSectionSelectArticles = () => {
   const dispatch = useDispatch();
   const { articles } = useSelector((state: IRootState) => state.canvas);
-
-  const navigate = useNavigate();
   useEffect(() => {
-    const isArticleExist = articles.find(
+    const isExist = articles.find(
       (article: Article) =>
         article.articleName === location.pathname.split("/")[2],
     );
-
-    if (!isArticleExist) {
-      navigate(`/not-found`);
-      return;
+    if (!isExist) {
+      navigate("/notFound"); // Navigate to the default path if the article is not found
     }
-    dispatch(canvasActions.changeArticle(isArticleExist));
-  }, []);
+  }, [articles]);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedArticle = JSON.parse(e.target.value);
     dispatch(canvasActions.changeArticle(selectedArticle));
     navigate(`/design/${selectedArticle.articleName}`); // Navigate to the desired path based on the article
   };
+  useEffect(() => {
+    const selectedArticle = articles.find(
+      (article: Article) =>
+        article.articleName === location.pathname.split("/")[2],
+    );
+    dispatch(canvasActions.changeArticle(selectedArticle));
+  }, [location.pathname]);
   return (
     <select
       onChange={handleChange}
@@ -48,4 +51,5 @@ const RightSectionSelectArticles = () => {
     </select>
   );
 };
+
 export default RightSectionSelectArticles;

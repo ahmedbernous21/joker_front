@@ -4,6 +4,7 @@ import { CanvasSliceState } from "../../interfaces/CanvasSliceInterfaces";
 import { WritableDraft } from "immer";
 
 const initialState: CanvasSliceState = {
+  canvasRef: null,
   articles: articlesInitialState,
   selectedArticleIndex: 0,
   selectedLayer: null,
@@ -31,6 +32,9 @@ const canvasSlice = createSlice({
     createText(state, action) {
       getCurrentSide(state)?.texts.push(action.payload);
     },
+    createImage(state, action) {
+      getCurrentSide(state)?.images.push(action.payload);
+    },
     editText(state, action) {
       const currentArticle = getCurrentArticle(state);
       const isExist = currentArticle.articleFrontSideInfo.texts.find(
@@ -46,22 +50,13 @@ const canvasSlice = createSlice({
       } else {
         if (currentArticle.articleBackSideInfo) {
           currentArticle.articleBackSideInfo.texts =
-            currentArticle.articleFrontSideInfo.texts.map((text) =>
+            currentArticle.articleBackSideInfo.texts.map((text) =>
               text.id === action.payload.id
                 ? { ...text, ...action.payload }
                 : text,
             );
         }
       }
-    },
-    readyToExportToggle(state, action) {
-      state.readyToExport = action.payload === "1";
-    },
-    setSelectedLayer(state, action) {
-      state.selectedLayer = action.payload;
-    },
-    createImage(state, action) {
-      getCurrentSide(state)?.images.push(action.payload);
     },
     editImage(state, action) {
       const currentArticle = getCurrentArticle(state);
@@ -77,8 +72,8 @@ const canvasSlice = createSlice({
           );
       } else {
         if (currentArticle.articleBackSideInfo) {
-          currentArticle.articleBackSideInfo.images =
-            currentArticle.articleFrontSideInfo.images.map((image) =>
+          currentArticle.articleBackSideInfo.texts =
+            currentArticle.articleBackSideInfo.images.map((image) =>
               image.id === action.payload.id
                 ? { ...image, ...action.payload }
                 : image,
@@ -86,6 +81,13 @@ const canvasSlice = createSlice({
         }
       }
     },
+    readyToExportToggle(state, action) {
+      state.readyToExport = action.payload === "1";
+    },
+    setSelectedLayer(state, action) {
+      state.selectedLayer = action.payload;
+    },
+
     deleteLayer(state, action) {
       const currentSide = getCurrentSide(state);
       if (currentSide) {
@@ -105,17 +107,10 @@ const canvasSlice = createSlice({
       getCurrentArticle(state).active = action.payload;
       state.selectedLayer = null;
     },
-    
+
     changeArticle(state, action) {
-      const currentSide = getCurrentSide(state);
-      if (currentSide) {
-        if (state.articles[state.selectedArticleIndex].active === "front") {
-          state.articles[state.selectedArticleIndex].articleFrontSideInfo =
-            currentSide;
-        } else {
-          state.articles[state.selectedArticleIndex].articleBackSideInfo =
-            currentSide;
-        }
+      if (!action.payload) {
+        return;
       }
       const articleIndex = initialState.articles.findIndex(
         (article) => article.articleName === action.payload.articleName,
