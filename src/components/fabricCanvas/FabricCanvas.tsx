@@ -148,13 +148,18 @@ const FabricCanvas = () => {
           image.src = canvasImage.src;
 
           image.onload = () => {
-            const canvasBGImage = new fabric.FabricImage(image, {
+            // Calculate scaling to fit the canvas
+            const scaleX = canvasWidth / image.width;
+            const scaleY = canvasHeight / image.height;
+            const scale = Math.min(scaleX, scaleY, 1); // Ensure the scale is not greater than 1
+
+            const canvasBGImage = new fabric.Image(image, {
               id: canvasImage.id,
               left: canvasImage.x,
               top: canvasImage.y,
               angle: canvasImage.rotation,
-              scaleX : canvasImage.scaleX,
-              scaleY : canvasImage.scaleY,
+              scaleX: scale,
+              scaleY: scale,
             });
 
             canvasBGImage.on("selected", (e) => {
@@ -182,6 +187,7 @@ const FabricCanvas = () => {
                 }),
               );
             });
+
             if (canvasRef.current) {
               canvasRef.current.add(canvasBGImage);
             }
@@ -203,7 +209,7 @@ const FabricCanvas = () => {
     }
 
     image.onload = () => {
-      const canvasBGImage = new fabric.FabricImage(image);
+      const canvasBGImage = new fabric.Image(image);
       canvasBGImage.backgroundColor = currentArticle.articleBackground;
 
       // Calculate scaling to fit the canvas
@@ -222,7 +228,6 @@ const FabricCanvas = () => {
       });
       if (canvasRef.current) {
         canvasRef.current.backgroundImage = canvasBGImage;
-        canvasRef.current.renderAll();
       }
     };
   }, [currentArticle.articleBackground, currentArticleSide?.src]);

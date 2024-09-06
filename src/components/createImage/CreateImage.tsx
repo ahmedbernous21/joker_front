@@ -23,8 +23,9 @@ const CreateImage = () => {
                 src: imageSrc,
                 id: uuid(),
                 rotation: 0,
-                x: 115,
-                y: 100,
+                x: 30,
+                y: 60,
+                
               
               }),
             );
