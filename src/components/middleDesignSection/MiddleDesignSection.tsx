@@ -3,38 +3,13 @@ import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { getCurrentArticle } from "../../store/selectors/canvasSelectors";
 import FabricCanvas from "../fabricCanvas/FabricCanvas";
+import FabricCanvasFront from "../fabricCanvas/FabricCanvasFront";
+import FabricCanvasBack from "../fabricCanvas/FabricCanvasBack";
 function MiddleDesignSection() {
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
   );
   const dispatch = useDispatch();
-  // const frontRef = useRef(null);
-  // const backRef = useRef(null);
-  // function downloadURI(uri: string, name: string) {
-  //   const link = document.createElement("a");
-  //   link.download = name;
-  //   link.href = uri;
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // }
-
-  // const handleExport = () => {
-  //   if (frontRef.current) {
-  //     const uri = frontRef.current.toDataURL(); // Adjust the pixel ratio for higher resolution
-  //     downloadURI(uri, "frontTshirt.png");
-  //   }
-  //   if (backRef.current) {
-  //     const uri = backRef.current.toDataURL(); // Adjust the pixel ratio for higher resolution
-  //     downloadURI(uri, "backTshirt.png");
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (readyToExport) {
-  //     handleExport();
-  //     dispatch(canvasActions.readyToExportToggle("0"));
-  //   }
-  // }, [readyToExport]);
 
   return (
     <div className="flex flex-col-reverse items-center gap-6 md:flex-row md:items-start">
@@ -63,7 +38,9 @@ function MiddleDesignSection() {
         )}
       </div>
       <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-        <FabricCanvas />
+        {/* <FabricCanvas /> */}
+        <FabricCanvasFront  />
+        <FabricCanvasBack />
       </div>
     </div>
   );
