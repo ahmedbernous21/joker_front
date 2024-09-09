@@ -209,7 +209,7 @@ const FabricCanvas = () => {
     }
 
     image.onload = () => {
-      const canvasBGImage = new fabric.Image(image);
+      const canvasBGImage = new fabric.FabricImage(image);
       canvasBGImage.backgroundColor = currentArticle.articleBackground;
 
       // Calculate scaling to fit the canvas
