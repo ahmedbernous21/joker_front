@@ -8,7 +8,8 @@ const initialState: CanvasSliceState = {
   articles: articlesInitialState,
   selectedArticleIndex: 0,
   selectedLayer: null,
-  readyToExport: false,
+  frontCanvas: null,
+  backCanvas: null,
 };
 
 const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
@@ -81,9 +82,6 @@ const canvasSlice = createSlice({
         }
       }
     },
-    readyToExportToggle(state, action) {
-      state.readyToExport = action.payload === "1";
-    },
     setSelectedLayer(state, action) {
       state.selectedLayer = action.payload;
     },
@@ -120,6 +118,17 @@ const canvasSlice = createSlice({
       }
 
       state.selectedLayer = null;
+      if (
+        state.articles[state.selectedArticleIndex].articleBackSideInfo == null
+      ) {
+        state.backCanvas = null;
+      }
+    },
+    setFrontCanvas(state, action) {
+      state.frontCanvas = action.payload;
+    },
+    setBackCanvas(state, action) {
+      state.backCanvas = action.payload;
     },
   },
 });

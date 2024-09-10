@@ -26,8 +26,8 @@ interface CanvasSliceState {
   articles: Article[];
   selectedArticleIndex: number;
   selectedLayer: SelectedLayer | null;
-  readyToExport: boolean;
-  // isEditing: boolean;
+  frontCanvas: null | Canvas;
+  backCanvas: null | Canvas;
 }
 
 export type { CanvasSliceState, Article, SelectedLayer, ArticleSideInfo };
