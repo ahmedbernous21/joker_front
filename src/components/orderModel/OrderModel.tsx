@@ -1,14 +1,32 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { canvasActions } from "../../store/slices/canvasSlice";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import httpClient from "../../httpClient";
+import { IRootState } from "../../store/store";
 
 interface OrderModelProps {
   setIsModelOpen: (isOpen: boolean) => void;
 }
 const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
-  const dispatch = useDispatch();
+  const { frontCanvas, backCanvas } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
+
+  const downloadFilesHandler = () => {
+    console.log(frontCanvas);
+    if (frontCanvas) {
+      downloadFile(frontCanvas.toDataURL(), "front");
+    }
+    if (backCanvas) {
+      downloadFile(backCanvas.toDataURL(), "back");
+    }
+  };
+  const downloadFile = (canvas: any, side: string) => {
+    const link = document.createElement("a");
+    link.download = `${side}.png`;
+    link.href = canvas;
+    link.click();
+  };
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -41,7 +59,7 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
         className="container fixed mt-6 h-[80vh] w-[400px] overflow-auto rounded-2xl bg-white p-6 text-center sm:w-[50vw]"
       >
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-xl font-bold">Select T-Shirt Size</p>
+          <p className="text-xl font-bold">Select Size</p>
           <div className="mt-4 flex flex-wrap justify-center gap-4">
             {["S", "M", "L", "XL", "XXL"].map((size) => (
               <button
@@ -62,7 +80,7 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           <div className="flex gap-2">
             <button
-              onClick={() => dispatch(canvasActions.readyToExportToggle("1"))}
+              onClick={() => downloadFilesHandler()}
               className="mt-6 rounded-lg border border-blue-500 bg-white px-4 py-2 text-blue-500"
             >
               Download

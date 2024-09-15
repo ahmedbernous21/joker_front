@@ -8,7 +8,8 @@ const initialState: CanvasSliceState = {
   articles: articlesInitialState,
   selectedArticleIndex: 0,
   selectedLayer: null,
-  readyToExport: false,
+  frontCanvas: null,
+  backCanvas: null,
 };
 
 const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
@@ -72,7 +73,7 @@ const canvasSlice = createSlice({
           );
       } else {
         if (currentArticle.articleBackSideInfo) {
-          currentArticle.articleBackSideInfo.texts =
+          currentArticle.articleBackSideInfo.images =
             currentArticle.articleBackSideInfo.images.map((image) =>
               image.id === action.payload.id
                 ? { ...image, ...action.payload }
@@ -81,9 +82,7 @@ const canvasSlice = createSlice({
         }
       }
     },
-    readyToExportToggle(state, action) {
-      state.readyToExport = action.payload === "1";
-    },
+
     setSelectedLayer(state, action) {
       state.selectedLayer = action.payload;
     },
@@ -105,21 +104,31 @@ const canvasSlice = createSlice({
     },
     setActiveSide(state, action: PayloadAction<"front" | "back">) {
       getCurrentArticle(state).active = action.payload;
+
       state.selectedLayer = null;
     },
 
     changeArticle(state, action) {
-      if (!action.payload) {
-        return;
-      }
-      const articleIndex = initialState.articles.findIndex(
+      const articleIndex = state.articles.findIndex(
         (article) => article.articleName === action.payload.articleName,
       );
       if (articleIndex !== -1) {
         state.selectedArticleIndex = articleIndex;
       }
 
+      if (
+        state.articles[state.selectedArticleIndex].articleBackSideInfo == null
+      ) {
+        state.backCanvas = null;
+      }
+
       state.selectedLayer = null;
+    },
+    setFrontCanvas(state, action) {
+      state.frontCanvas = action.payload;
+    },
+    setBackCanvas(state, action) {
+      state.backCanvas = action.payload;
     },
   },
 });

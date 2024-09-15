@@ -2,7 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { getCurrentArticle } from "../../store/selectors/canvasSelectors";
-import FabricCanvas from "../fabricCanvas/FabricCanvas";
+import FabricCanvasBack from "../fabricCanvas/FabricCanvasBack";
+import FabricCanvasFront from "../fabricCanvas/FabricCanvasFront";
 function MiddleDesignSection() {
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
@@ -63,7 +64,8 @@ function MiddleDesignSection() {
         )}
       </div>
       <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-        <FabricCanvas />
+        <FabricCanvasFront />
+        <FabricCanvasBack />
       </div>
     </div>
   );

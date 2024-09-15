@@ -30,3 +30,12 @@ export const getCurrentSelectedImage = (state: IRootState) =>
   getCurrentSideImages(state).find(
     (image) => image.id === state.canvas.selectedLayer?.id,
   );
+
+export const getCurrentFrontSide = (state: IRootState) => {
+  const article = getCurrentArticle(state);
+  return article.articleFrontSideInfo;
+};
+export const getCurrentBackSide = (state: IRootState) => {
+  const article = getCurrentArticle(state);
+  return article.articleBackSideInfo;
+};

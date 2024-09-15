@@ -1,24 +1,24 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import * as fabric from "fabric";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
 import {
   getCurrentArticle,
-  getCurrentSide,
+  getCurrentFrontSide,
 } from "../../store/selectors/canvasSelectors";
 
-const FabricCanvas = () => {
+const FabricCanvasFront = () => {
   const canvasWidth = 320;
   const canvasHeight = 450;
   const dispatch = useDispatch();
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
   );
-  const currentArticleSide = useSelector((state: IRootState) =>
-    getCurrentSide(state),
+  const currentArticleFrontSide = useSelector((state: IRootState) =>
+    getCurrentFrontSide(state),
   );
-  const canvasRef = useRef<fabric.Canvas | null>(null);
+  const { frontCanvas } = useSelector((state: IRootState) => state.canvas);
 
   useEffect(() => {
     const fixScrolling = () => {
@@ -35,52 +35,56 @@ const FabricCanvas = () => {
     };
     fixScrolling();
 
-    let canvas = new fabric.Canvas("canvas", {
+    const frontCanvasInstance = new fabric.Canvas("frontCanvas", {
       selection: false,
       allowTouchScrolling: true,
     });
-    dispatch(canvasActions.setSelectedLayer(null));
-    canvas.on("mouse:down", (e) => {
+
+    frontCanvasInstance.on("mouse:down", (e) => {
       if (!e.target) {
         dispatch(canvasActions.setSelectedLayer(null));
       }
     });
 
-    canvasRef.current = canvas;
+    dispatch(canvasActions.setFrontCanvas(frontCanvasInstance));
 
-    canvas.renderAll();
-
+    frontCanvasInstance.renderAll();
     return () => {
-      canvas.dispose();
+      frontCanvasInstance.dispose();
     };
   }, [dispatch]);
 
+
   // remove image handler
   useEffect(() => {
-    if (canvasRef.current) {
-      canvasRef.current.getObjects().forEach((obj) => {
-        const isExist = currentArticleSide?.images?.find(
+    const removeImages = (canvas: fabric.Canvas) => {
+      canvas.getObjects().forEach((obj) => {
+        const isExist = currentArticleFrontSide?.images?.find(
           (text) => text.id === obj.id,
         );
         if (!isExist && obj.type === "image") {
-          canvasRef.current?.remove(obj);
+          canvas.remove(obj);
         }
       });
+    };
+
+    if (frontCanvas) {
+      removeImages(frontCanvas);
     }
-  }, [currentArticleSide?.images]);
+  }, [currentArticleFrontSide?.images, frontCanvas]);
 
   useEffect(() => {
-    if (canvasRef.current) {
-      const objects = canvasRef.current.getObjects("textbox");
+    if (frontCanvas) {
+      const objects = frontCanvas.getObjects("textbox");
       objects.forEach((obj) => {
-        canvasRef.current?.remove(obj);
+        frontCanvas.remove(obj);
       });
-      currentArticleSide?.texts?.forEach((canvasText) => {
+      currentArticleFrontSide?.texts?.forEach((canvasText) => {
         const text = new fabric.Textbox(canvasText.text || "", {
           id: canvasText.id,
           width: canvasText.width,
           fontSize: canvasText.fontSize,
-          textAlign: canvasText.textAlign,
+          textAlign: canvasText.textAlign || "center",
           fontFamily: canvasText.fontFamily,
           splitByGrapheme: true,
           fill: canvasText.color,
@@ -119,7 +123,7 @@ const FabricCanvas = () => {
               fontFamily: e.target.fontFamily,
               width: e.target.width,
               lineHeight: e.target.lineHeight,
-              textAlign: e.target.textAlign,
+              textAlign: e.target.textAlign || "center",
               height: e.target.height,
               scaleX: e.target.scaleX,
               scaleY: e.target.scaleY,
@@ -127,39 +131,35 @@ const FabricCanvas = () => {
           );
         });
 
-        if (canvasRef.current) {
-          canvasRef.current.add(text);
-        }
+        frontCanvas.add(text);
       });
 
-      canvasRef.current.renderAll();
+      frontCanvas.renderAll();
     }
-  }, [currentArticleSide?.texts, dispatch]);
+  }, [currentArticleFrontSide?.texts, dispatch, frontCanvas]);
 
   // add images
   useEffect(() => {
-    if (canvasRef.current) {
-      const objects = canvasRef.current.getObjects("image");
+    const addImages = (canvas) => {
+      const objects = canvas.getObjects("image");
       const existingImageIds = objects.map((obj) => obj.id);
 
-      currentArticleSide?.images?.forEach((canvasImage) => {
+      currentArticleFrontSide?.images?.forEach((canvasImage) => {
         if (!existingImageIds.includes(canvasImage.id)) {
           const image = new Image();
           image.src = canvasImage.src;
 
           image.onload = () => {
             // Calculate scaling to fit the canvas
-            const scaleX = canvasWidth / image.width;
-            const scaleY = canvasHeight / image.height;
-            const scale = Math.min(scaleX, scaleY, 1); // Ensure the scale is not greater than 1
+            // Ensure the scale is not greater than 1
 
-            const canvasBGImage = new fabric.Image(image, {
+            const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
               left: canvasImage.x,
               top: canvasImage.y,
               angle: canvasImage.rotation,
-              scaleX: scale,
-              scaleY: scale,
+              scaleX: canvasImage.scaleX || 1,
+              scaleY: canvasImage.scaleY || 1,
             });
 
             canvasBGImage.on("selected", (e) => {
@@ -188,60 +188,69 @@ const FabricCanvas = () => {
               );
             });
 
-            if (canvasRef.current) {
-              canvasRef.current.add(canvasBGImage);
-            }
+            canvas.add(canvasBGImage);
           };
         }
       });
 
-      canvasRef.current.renderAll();
+      canvas.renderAll();
+    };
+
+    if (frontCanvas) {
+      addImages(frontCanvas);
     }
-  }, [currentArticleSide?.images, dispatch]);
+  }, [currentArticleFrontSide?.images, dispatch, frontCanvas]);
 
   // add main image bg
   useEffect(() => {
-    const imageUrl = currentArticleSide?.src;
-
-    const image = new Image();
-    if (imageUrl) {
-      image.src = imageUrl;
-    }
-
-    image.onload = () => {
-      const canvasBGImage = new fabric.FabricImage(image);
-      canvasBGImage.backgroundColor = currentArticle.articleBackground;
-
-      // Calculate scaling to fit the canvas
-      const scaleX = canvasWidth / image.width;
-      const scaleY = canvasHeight / image.height;
-
-      canvasBGImage.scaleX = scaleX;
-      canvasBGImage.scaleY = scaleY;
-
-      // Center the image
-      canvasBGImage.set({
-        left: 320 / 2,
-        top: 450 / 2,
-        originX: "center",
-        originY: "center",
-      });
-      if (canvasRef.current) {
-        canvasRef.current.backgroundImage = canvasBGImage;
+    const addMainImageBg = (canvas, imageUrl) => {
+      const image = new Image();
+      if (imageUrl) {
+        image.src = imageUrl;
       }
+
+      image.onload = () => {
+        const canvasBGImage = new fabric.FabricImage(image);
+        canvasBGImage.backgroundColor = currentArticle.articleBackground;
+
+        // Calculate scaling to fit the canvas
+        const scaleX = canvasWidth / image.width;
+        const scaleY = canvasHeight / image.height;
+
+        canvasBGImage.scaleX = scaleX;
+        canvasBGImage.scaleY = scaleY;
+
+        // Center the image
+        canvasBGImage.set({
+          left: 320 / 2,
+          top: 450 / 2,
+          originX: "center",
+          originY: "center",
+        });
+        canvas.backgroundImage = canvasBGImage;
+        canvas.renderAll();
+      };
     };
-  }, [currentArticle.articleBackground, currentArticleSide?.src]);
+
+    if (frontCanvas) {
+      addMainImageBg(frontCanvas, currentArticleFrontSide?.src);
+    }
+  }, [
+    currentArticle.articleBackground,
+    currentArticleFrontSide?.src,
+    frontCanvas,
+  ]);
 
   return (
-    <div>
+    <div className={currentArticle.active == "front" ? "" : "absolute -z-10"}>
       <canvas
-        id="canvas"
+        id="frontCanvas"
         width={canvasWidth}
         height={canvasHeight}
-        className="relative rounded-xl border-2"
+        className={`relative rounded-xl border-2`}
       />
     </div>
   );
 };
 
-export default FabricCanvas;
+export default FabricCanvasFront;
