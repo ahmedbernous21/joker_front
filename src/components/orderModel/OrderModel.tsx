@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { canvasActions } from "../../store/slices/canvasSlice";
+import { useDispatch } from "react-redux";
 import httpClient from "../../httpClient";
 import { IRootState } from "../../store/store";
 
@@ -30,6 +31,8 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
 
+
+  
   const handleSizeSelection = (size: string) => {
     setSelectedSize(size);
   };

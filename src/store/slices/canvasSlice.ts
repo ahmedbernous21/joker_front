@@ -10,6 +10,8 @@ const initialState: CanvasSliceState = {
   selectedLayer: null,
   frontCanvas: null,
   backCanvas: null,
+  frontCanvas: null,
+  backCanvas: null,
 };
 
 const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
