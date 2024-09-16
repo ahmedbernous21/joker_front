@@ -7,7 +7,9 @@ import { useEffect } from "react";
 
 const RightSectionSelectArticles = () => {
   const dispatch = useDispatch();
-  const { articles } = useSelector((state: IRootState) => state.canvas);
+  const { articles, frontCanvas, backCanvas } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
   useEffect(() => {
     const isExist = articles.find(
       (article: Article) =>
@@ -21,7 +23,10 @@ const RightSectionSelectArticles = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedArticle = JSON.parse(e.target.value);
+    backCanvas?.discardActiveObject();
+    frontCanvas?.discardActiveObject();
     dispatch(canvasActions.changeArticle(selectedArticle));
+
     navigate(`/design/${selectedArticle.articleName}`); // Navigate to the desired path based on the article
   };
   useEffect(() => {
@@ -29,6 +34,7 @@ const RightSectionSelectArticles = () => {
       (article: Article) =>
         article.articleName === location.pathname.split("/")[2],
     );
+
     dispatch(canvasActions.changeArticle(selectedArticle));
   }, [location.pathname]);
   return (

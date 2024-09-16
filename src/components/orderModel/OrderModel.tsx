@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { canvasActions } from "../../store/slices/canvasSlice";
+import { useDispatch } from "react-redux";
 import httpClient from "../../httpClient";
 import { IRootState } from "../../store/store";
 
@@ -8,8 +9,6 @@ interface OrderModelProps {
   setIsModelOpen: (isOpen: boolean) => void;
 }
 const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState("");
   const { frontCanvas, backCanvas } = useSelector(
     (state: IRootState) => state.canvas,
   );
@@ -25,10 +24,15 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
   };
   const downloadFile = (canvas: any, side: string) => {
     const link = document.createElement("a");
-    link.download = `tshirt-${side}.png`;
+    link.download = `${side}.png`;
     link.href = canvas;
     link.click();
   };
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+
+  
   const handleSizeSelection = (size: string) => {
     setSelectedSize(size);
   };

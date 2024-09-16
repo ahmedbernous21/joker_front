@@ -47,12 +47,13 @@ const FabricCanvasFront = () => {
     });
 
     dispatch(canvasActions.setFrontCanvas(frontCanvasInstance));
-    frontCanvasInstance.renderAll();
 
+    frontCanvasInstance.renderAll();
     return () => {
       frontCanvasInstance.dispose();
     };
   }, [dispatch]);
+
 
   // remove image handler
   useEffect(() => {
@@ -150,17 +151,15 @@ const FabricCanvasFront = () => {
 
           image.onload = () => {
             // Calculate scaling to fit the canvas
-            const scaleX = canvasWidth / image.width;
-            const scaleY = canvasHeight / image.height;
-            const scale = Math.min(scaleX, scaleY, 1); // Ensure the scale is not greater than 1
+            // Ensure the scale is not greater than 1
 
-            const canvasBGImage = new fabric.Image(image, {
+            const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
               left: canvasImage.x,
               top: canvasImage.y,
               angle: canvasImage.rotation,
-              scaleX: scale,
-              scaleY: scale,
+              scaleX: canvasImage.scaleX || 1,
+              scaleY: canvasImage.scaleY || 1,
             });
 
             canvasBGImage.on("selected", (e) => {

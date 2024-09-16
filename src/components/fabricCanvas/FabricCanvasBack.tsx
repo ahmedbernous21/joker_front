@@ -6,7 +6,6 @@ import { IRootState } from "../../store/store";
 import {
   getCurrentArticle,
   getCurrentBackSide,
-  getCurrentSide,
 } from "../../store/selectors/canvasSelectors";
 
 const FabricCanvasBack = () => {
@@ -50,7 +49,6 @@ const FabricCanvasBack = () => {
     dispatch(canvasActions.setBackCanvas(backCanvasInstance));
 
     backCanvasInstance.renderAll();
-
     return () => {
       backCanvasInstance.dispose();
     };
@@ -152,17 +150,15 @@ const FabricCanvasBack = () => {
 
           image.onload = () => {
             // Calculate scaling to fit the canvas
-            const scaleX = canvasWidth / image.width;
-            const scaleY = canvasHeight / image.height;
-            const scale = Math.min(scaleX, scaleY, 1); // Ensure the scale is not greater than 1
+            // Ensure the scale is not greater than 1
 
-            const canvasBGImage = new fabric.Image(image, {
+            const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
               left: canvasImage.x,
               top: canvasImage.y,
               angle: canvasImage.rotation,
-              scaleX: scale,
-              scaleY: scale,
+              scaleX: canvasImage.scaleX || 1,
+              scaleY: canvasImage.scaleY || 1,
             });
 
             canvasBGImage.on("selected", (e) => {

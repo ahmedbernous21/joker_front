@@ -38,3 +38,4 @@ export const getCurrentSelectedImage = (state: IRootState) =>
   getCurrentSideImages(state).find(
     (image) => image.id === state.canvas.selectedLayer?.id,
   );
+
