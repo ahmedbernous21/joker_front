@@ -10,9 +10,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const articles = [
   { name: "T-shirt", icon: faTshirt, link: "/design/tshirt" },
-  { name: "Mug", icon: faMugHot, link: "/design/mug" },
-  { name: "Cap", icon: faHatCowboy, link: "/design/cap" },
-  { name: "Key Ring", icon: faKey, link: "/design/keyring" },
+  { name: "sweet-shirt", icon: faTshirt, link: "/design/tshirt" },
+  { name: "hoodie", icon: faTshirt, link: "/design/tshirt" },
+  { name: "Chope", icon: faMugHot, link: "/design/mug" },
+  { name: "Casquette", icon: faHatCowboy, link: "/design/cap" },
+  { name: "Porte clés", icon: faKey, link: "/design/keyring" },
 ];
 
 const Articles = () => {
@@ -20,7 +22,7 @@ const Articles = () => {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-16">
       <div className="container mx-auto">
         <h2 className="mb-12 text-center text-4xl font-bold text-gray-800">
-          Explore Our Products
+          Découvrez nos produits
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {articles.map((article, index) => (
