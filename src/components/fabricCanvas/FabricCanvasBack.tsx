@@ -84,7 +84,9 @@ const FabricCanvasBack = () => {
           width: canvasText.width,
           fontSize: canvasText.fontSize,
           textAlign: canvasText.textAlign || "center",
-          fontFamily: canvasText.fontFamily,
+          fontFamily: canvasText.fontFamily
+            ? canvasText.fontFamily
+            : '"Moderustic", sans-serif', 
           splitByGrapheme: true,
           fill: canvasText.color,
           fontStyle: canvasText.style == "italic" ? "italic" : "normal",

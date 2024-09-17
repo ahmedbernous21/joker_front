@@ -3,12 +3,12 @@ import { IRootState } from "../../store/store";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import SubmitOrderButton from "../submitOrderButton/SubmitOrderButton";
 import { FaBold, FaItalic, FaTrash, FaUnderline } from "react-icons/fa6";
-import TextFontFamily from "../textFontFamily/TextFontFamily";
+import FontFamilyCustomize from "../textCustomize/FontFamilyCustomize";
 import FontSizeCustomize from "../textCustomize/FontSizeCustomize";
 import TextColorCustomize from "../textCustomize/TextColorCustomize";
 import { getCurrentSelectedText } from "../../store/selectors/canvasSelectors";
 
-const RightSectionCustomize = () => {
+const   RightSectionCustomize = () => {
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const text = useSelector((state: IRootState) =>
@@ -91,12 +91,10 @@ const RightSectionCustomize = () => {
                         );
                       }}
                       style={{
-                        background:
-                          text?.underline
-                            ? "rgb(59 130 246)"
-                            : "transparent",
-                        color:
-                          text?.underline  ? "white" : "black",
+                        background: text?.underline
+                          ? "rgb(59 130 246)"
+                          : "transparent",
+                        color: text?.underline ? "white" : "black",
                       }}
                       className="h-[25px] w-1/3 cursor-pointer p-1"
                     />
@@ -104,7 +102,7 @@ const RightSectionCustomize = () => {
                 </div>
                 <div className="flex flex-col">
                   <p>Font Family</p>
-                  <TextFontFamily />
+                  <FontFamilyCustomize canvasText={text}/>
                 </div>
               </>
             )}

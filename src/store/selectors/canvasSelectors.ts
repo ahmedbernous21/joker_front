@@ -38,4 +38,13 @@ export const getCurrentSelectedImage = (state: IRootState) =>
   getCurrentSideImages(state).find(
     (image) => image.id === state.canvas.selectedLayer?.id,
   );
-
+export const getTextById = (state: IRootState) => {
+  const article = getCurrentArticle(state);
+  const frontText = article.articleFrontSideInfo.texts.find(
+    (text) => text.id === state.canvas.selectedLayer?.id,
+  );
+  if (frontText) return frontText;
+  return article.articleBackSideInfo?.texts.find(
+    (text) => text.id === state.canvas.selectedLayer?.id,
+  );
+};

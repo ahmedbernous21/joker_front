@@ -18,7 +18,11 @@ const FabricCanvasFront = () => {
   const currentArticleFrontSide = useSelector((state: IRootState) =>
     getCurrentFrontSide(state),
   );
-  const { frontCanvas } = useSelector((state: IRootState) => state.canvas);
+  const { frontCanvas, selectedLayer } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
+
+  let isObjectBeingSelected = false;
 
   useEffect(() => {
     const fixScrolling = () => {
@@ -54,8 +58,7 @@ const FabricCanvasFront = () => {
     };
   }, [dispatch]);
 
-
-  // remove image handler
+  // Remove images handler
   useEffect(() => {
     const removeImages = (canvas: fabric.Canvas) => {
       canvas.getObjects().forEach((obj) => {
@@ -73,12 +76,14 @@ const FabricCanvasFront = () => {
     }
   }, [currentArticleFrontSide?.images, frontCanvas]);
 
+  // Add text objects
   useEffect(() => {
     if (frontCanvas) {
       const objects = frontCanvas.getObjects("textbox");
       objects.forEach((obj) => {
         frontCanvas.remove(obj);
       });
+
       currentArticleFrontSide?.texts?.forEach((canvasText) => {
         const text = new fabric.Textbox(canvasText.text || "", {
           id: canvasText.id,
@@ -94,41 +99,37 @@ const FabricCanvasFront = () => {
           left: canvasText.x,
           top: canvasText.y,
           editable: true,
-
           angle: canvasText.rotation,
           selectable: true,
           scaleX: canvasText.scaleX || 1,
           scaleY: canvasText.scaleY || 1,
         });
 
+        // Handle text selection
         text.on("selected", (e) => {
+          isObjectBeingSelected = true; // Prevents deselected event from interfering
           dispatch(
             canvasActions.setSelectedLayer({ id: canvasText.id, type: "text" }),
           );
         });
-        text.on("editing:exited", (e) => {
-          dispatch(canvasActions.editText({ id: text.id, text: text.text }));
-        });
 
+        // Handle text deselection
         text.on("deselected", (e) => {
-          if (!e.target) {
-            return;
-          }
+          // Proceed with state update for deselected object
           dispatch(
             canvasActions.editText({
               id: e.target.id,
               x: e.target.left,
-              rotation: e.target.angle,
               y: e.target.top,
-              fontFamily: e.target.fontFamily,
-              width: e.target.width,
-              lineHeight: e.target.lineHeight,
-              textAlign: e.target.textAlign || "center",
-              height: e.target.height,
+              rotation: e.target.angle,
               scaleX: e.target.scaleX,
               scaleY: e.target.scaleY,
             }),
           );
+        });
+
+        text.on("editing:exited", (e) => {
+          dispatch(canvasActions.editText({ id: text.id, text: text.text }));
         });
 
         frontCanvas.add(text);
@@ -138,7 +139,7 @@ const FabricCanvasFront = () => {
     }
   }, [currentArticleFrontSide?.texts, dispatch, frontCanvas]);
 
-  // add images
+  // Add images
   useEffect(() => {
     const addImages = (canvas) => {
       const objects = canvas.getObjects("image");
@@ -150,9 +151,6 @@ const FabricCanvasFront = () => {
           image.src = canvasImage.src;
 
           image.onload = () => {
-            // Calculate scaling to fit the canvas
-            // Ensure the scale is not greater than 1
-
             const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
               left: canvasImage.x,
@@ -200,7 +198,6 @@ const FabricCanvasFront = () => {
       addImages(frontCanvas);
     }
   }, [currentArticleFrontSide?.images, dispatch, frontCanvas]);
-
   // add main image bg
   useEffect(() => {
     const addMainImageBg = (canvas, imageUrl) => {
