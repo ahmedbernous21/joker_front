@@ -10,7 +10,6 @@ const initialState: CanvasSliceState = {
   selectedLayer: null,
   frontCanvas: null,
   backCanvas: null,
- 
 };
 
 const getCurrentArticle = (state: WritableDraft<CanvasSliceState>) => {
@@ -107,6 +106,7 @@ const canvasSlice = createSlice({
       getCurrentArticle(state).active = action.payload;
 
       state.selectedLayer = null;
+      
     },
 
     changeArticle(state, action) {

@@ -49,27 +49,27 @@ const ColorPicker = ({ type }: ColorPickerProps) => {
   return (
     <div className="flex w-full justify-center">
       <div className="flex w-[230px] flex-wrap justify-center gap-2">
-        {popularColors.map((color, index) => (
+        {popularColors.map((fill, index) => (
           <button
-            key={color + index + type} // Use color as a stable key
+            key={fill + index + type} // Use color as a stable key
             onClick={() => {
               if (type == "articleBackGround") {
-                dispatch(canvasActions.setArticleBackground(color));
+                dispatch(canvasActions.setArticleBackground(fill));
               } else {
                 dispatch(
-                  canvasActions.editText({ id: selectedLayer?.id, color }),
+                  canvasActions.editText({ id: selectedLayer?.id, fill }),
                 );
               }
             }}
             className="h-6 w-6 rounded-full text-white outline outline-1 outline-black"
             style={{
-              backgroundColor: color,
+              backgroundColor: fill,
               outline:
                 type == "articleBackGround"
-                  ? color == currentArticle.articleBackground
+                  ? fill == currentArticle.articleBackground
                     ? "3px solid black"
                     : ""
-                  : color == selectedText?.color
+                  : fill == selectedText?.fill
                     ? "3px solid black"
                     : "",
             }}

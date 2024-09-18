@@ -9,12 +9,19 @@ function MiddleDesignSection() {
     getCurrentArticle(state),
   );
   const dispatch = useDispatch();
+  const { frontCanvas, backCanvas } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
 
   return (
     <div className="flex flex-col-reverse items-center gap-6 md:flex-row md:items-start">
       <div className="flex gap-6 md:flex-col">
         <div
-          onClick={() => dispatch(canvasActions.setActiveSide("front"))}
+          onClick={() => {
+            dispatch(canvasActions.setActiveSide("front"));
+            backCanvas?.discardActiveObject();
+            backCanvas?.renderAll();
+          }}
           className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${currentArticle.active === "front" ? "outline-solid outline outline-2 outline-blue-500" : ""}`}
         >
           <img
@@ -25,7 +32,11 @@ function MiddleDesignSection() {
         {currentArticle.articleBackSideInfo != null && (
           <>
             <div
-              onClick={() => dispatch(canvasActions.setActiveSide("back"))}
+              onClick={() => {
+                dispatch(canvasActions.setActiveSide("back"));
+                frontCanvas?.discardActiveObject();
+                frontCanvas?.renderAll();
+              }}
               className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${currentArticle.active === "back" ? "outline-solid outline outline-2 outline-blue-500" : ""}`}
             >
               <img

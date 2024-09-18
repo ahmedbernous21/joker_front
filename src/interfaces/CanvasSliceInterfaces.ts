@@ -1,11 +1,24 @@
-import { Canvas, Image, Text } from "fabric/fabric-impl";
+import {
+  Canvas,
+  IImageOptions,
+  Image,
+  TextOptions,
+  Text,
+} from "fabric/fabric-impl";
 import { Ref } from "react";
+
+interface TextOptionsId extends TextOptions {
+  id: string;
+}
+interface IImageOptionsId extends IImageOptions {
+  id: string;
+}
 
 interface ArticleSideInfo {
   name: string;
   src: string;
-  texts: Text[];
-  images: Image[];
+  texts: TextOptionsId[];
+  images: IImageOptionsId[];
 }
 
 interface Article {
@@ -30,4 +43,11 @@ interface CanvasSliceState {
   backCanvas: null | Canvas;
 }
 
-export type { CanvasSliceState, Article, SelectedLayer, ArticleSideInfo };
+export type {
+  CanvasSliceState,
+  Article,
+  SelectedLayer,
+  ArticleSideInfo,
+  TextOptionsId,
+  IImageOptionsId,
+};

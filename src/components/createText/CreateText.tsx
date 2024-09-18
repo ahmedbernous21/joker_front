@@ -13,21 +13,21 @@ const CreatText = () => {
           canvasActions.createText({
             id: uuid(),
             text: "édite-moi",
-            fontFamily: '"Moderustic", sans-serif',
+            fontFamily: '"Inter", sans-serif', //"Times New Roman" : this is the defalt font family in fabric.js
             fontSize: 30,
-            color: "#000000",
+            fill: "#000000",
             bold: false,
-            rotation: 0,
+            angle: 0,
             underline: false,
-            italic: false,
             width: 300,
             lineHeight: 1,
-            textAlign : "center",
+            textAlign: "center",
+            fontStyle: "normal",
             height: 50,
             scaleX: 1,
             scaleY: 1,
-            x: 10,
-            y: 20,
+            left: 10,
+            top: 20,
           }),
         );
         toast.success("Text added successfully");

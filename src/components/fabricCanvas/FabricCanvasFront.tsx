@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as fabric from "fabric";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
@@ -7,6 +7,8 @@ import {
   getCurrentArticle,
   getCurrentFrontSide,
 } from "../../store/selectors/canvasSelectors";
+import fixScrolling from "../../utils/FabricScrolling";
+import FontFaceObserver from "fontfaceobserver";
 
 const FabricCanvasFront = () => {
   const canvasWidth = 320;
@@ -22,34 +24,17 @@ const FabricCanvasFront = () => {
     (state: IRootState) => state.canvas,
   );
 
-  let isObjectBeingSelected = false;
-
   useEffect(() => {
-    const fixScrolling = () => {
-      var defaultOnTouchStartHandler = fabric.Canvas.prototype._onTouchStart;
-      Object.assign(fabric.Canvas.prototype, {
-        _onTouchStart: function (e) {
-          var target = this.findTarget(e);
-          if (this.allowTouchScrolling && !target && !this.isDrawingMode) {
-            return;
-          }
-          defaultOnTouchStartHandler.call(this, e);
-        },
-      });
-    };
     fixScrolling();
-
     const frontCanvasInstance = new fabric.Canvas("frontCanvas", {
       selection: false,
       allowTouchScrolling: true,
     });
-
     frontCanvasInstance.on("mouse:down", (e) => {
       if (!e.target) {
         dispatch(canvasActions.setSelectedLayer(null));
       }
     });
-
     dispatch(canvasActions.setFrontCanvas(frontCanvasInstance));
 
     frontCanvasInstance.renderAll();
@@ -58,23 +43,38 @@ const FabricCanvasFront = () => {
     };
   }, [dispatch]);
 
-  // Remove images handler
+  // Add main image bg
   useEffect(() => {
-    const removeImages = (canvas: fabric.Canvas) => {
-      canvas.getObjects().forEach((obj) => {
-        const isExist = currentArticleFrontSide?.images?.find(
-          (text) => text.id === obj.id,
-        );
-        if (!isExist && obj.type === "image") {
-          canvas.remove(obj);
-        }
-      });
-    };
-
     if (frontCanvas) {
-      removeImages(frontCanvas);
+      const image = new Image();
+      image.src = currentArticleFrontSide?.src;
+      image.onload = () => {
+        const canvasBGImage = new fabric.FabricImage(image);
+        canvasBGImage.backgroundColor = currentArticle.articleBackground;
+
+        // Calculate scaling to fit the canvas
+        const scaleX = canvasWidth / image.width;
+        const scaleY = canvasHeight / image.height;
+
+        canvasBGImage.scaleX = scaleX;
+        canvasBGImage.scaleY = scaleY;
+
+        // Center the image
+        canvasBGImage.set({
+          left: 320 / 2,
+          top: 450 / 2,
+          originX: "center",
+          originY: "center",
+        });
+        frontCanvas.backgroundImage = canvasBGImage as any;
+        frontCanvas.renderAll();
+      };
     }
-  }, [currentArticleFrontSide?.images, frontCanvas]);
+  }, [
+    currentArticle.articleBackground,
+    currentArticleFrontSide?.src,
+    frontCanvas,
+  ]);
 
   // Add text objects
   useEffect(() => {
@@ -84,44 +84,58 @@ const FabricCanvasFront = () => {
         frontCanvas.remove(obj);
       });
 
-      currentArticleFrontSide?.texts?.forEach((canvasText) => {
+      for (const canvasText of currentArticleFrontSide?.texts || []) {
         const text = new fabric.Textbox(canvasText.text || "", {
           id: canvasText.id,
           width: canvasText.width,
           fontSize: canvasText.fontSize,
-          textAlign: canvasText.textAlign || "center",
-          fontFamily: canvasText.fontFamily,
+          textAlign: canvasText.textAlign,
           splitByGrapheme: true,
-          fill: canvasText.color,
-          fontStyle: canvasText.style == "italic" ? "italic" : "normal",
+          fill: canvasText.fill as string,
+          fontStyle: canvasText.fontStyle,
           fontWeight: canvasText.fontWeight === "bold" ? "bold" : "normal",
           underline: canvasText.underline ? true : false,
-          left: canvasText.x,
-          top: canvasText.y,
-          editable: true,
-          angle: canvasText.rotation,
-          selectable: true,
+          left: canvasText.left,
+          top: canvasText.top,
+          angle: canvasText.angle,
           scaleX: canvasText.scaleX || 1,
           scaleY: canvasText.scaleY || 1,
+        });
+        if (selectedLayer?.id == text.id) {
+          frontCanvas.setActiveObject(text);
+        }
+
+        // Ensure font is loaded before applying it
+        const font = new FontFaceObserver(
+          canvasText.fontFamily?.split(`"`)[1] as string,
+        );
+        font.load().then(() => {
+          text.set("fontFamily", canvasText.fontFamily as string);
+          text._clearCache();
+          text.initDimensions();
+          frontCanvas.renderAll();
         });
 
         // Handle text selection
         text.on("selected", (e) => {
-          isObjectBeingSelected = true; // Prevents deselected event from interfering
           dispatch(
-            canvasActions.setSelectedLayer({ id: canvasText.id, type: "text" }),
+            canvasActions.setSelectedLayer({
+              id: canvasText.id,
+              type: "text",
+            }),
           );
         });
 
-        // Handle text deselection
-        text.on("deselected", (e) => {
-          // Proceed with state update for deselected object
+        text.on("modified", (e) => {
+          if (!e.target) {
+            return;
+          }
           dispatch(
             canvasActions.editText({
               id: e.target.id,
-              x: e.target.left,
-              y: e.target.top,
-              rotation: e.target.angle,
+              left: e.target.left,
+              top: e.target.top,
+              angle: e.target.angle,
               scaleX: e.target.scaleX,
               scaleY: e.target.scaleY,
             }),
@@ -133,18 +147,16 @@ const FabricCanvasFront = () => {
         });
 
         frontCanvas.add(text);
-      });
-
+      }
       frontCanvas.renderAll();
     }
   }, [currentArticleFrontSide?.texts, dispatch, frontCanvas]);
 
   // Add images
   useEffect(() => {
-    const addImages = (canvas) => {
-      const objects = canvas.getObjects("image");
+    if (frontCanvas) {
+      const objects = frontCanvas.getObjects("image");
       const existingImageIds = objects.map((obj) => obj.id);
-
       currentArticleFrontSide?.images?.forEach((canvasImage) => {
         if (!existingImageIds.includes(canvasImage.id)) {
           const image = new Image();
@@ -153,9 +165,9 @@ const FabricCanvasFront = () => {
           image.onload = () => {
             const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
-              left: canvasImage.x,
-              top: canvasImage.y,
-              angle: canvasImage.rotation,
+              left: canvasImage.left,
+              top: canvasImage.top,
+              angle: canvasImage.angle,
               scaleX: canvasImage.scaleX || 1,
               scaleY: canvasImage.scaleY || 1,
             });
@@ -177,66 +189,37 @@ const FabricCanvasFront = () => {
               dispatch(
                 canvasActions.editImage({
                   id: e.target.id,
-                  x: e.target.left,
-                  y: e.target.top,
-                  rotation: e.target.angle,
+                  left: e.target.left,
+                  top: e.target.top,
+                  angle: e.target.angle,
                   scaleX: e.target.scaleX,
                   scaleY: e.target.scaleY,
                 }),
               );
             });
 
-            canvas.add(canvasBGImage);
+            frontCanvas.add(canvasBGImage);
           };
         }
       });
 
-      canvas.renderAll();
-    };
-
-    if (frontCanvas) {
-      addImages(frontCanvas);
+      frontCanvas.renderAll();
     }
   }, [currentArticleFrontSide?.images, dispatch, frontCanvas]);
-  // add main image bg
+
+  // Remove images handler
   useEffect(() => {
-    const addMainImageBg = (canvas, imageUrl) => {
-      const image = new Image();
-      if (imageUrl) {
-        image.src = imageUrl;
-      }
-
-      image.onload = () => {
-        const canvasBGImage = new fabric.FabricImage(image);
-        canvasBGImage.backgroundColor = currentArticle.articleBackground;
-
-        // Calculate scaling to fit the canvas
-        const scaleX = canvasWidth / image.width;
-        const scaleY = canvasHeight / image.height;
-
-        canvasBGImage.scaleX = scaleX;
-        canvasBGImage.scaleY = scaleY;
-
-        // Center the image
-        canvasBGImage.set({
-          left: 320 / 2,
-          top: 450 / 2,
-          originX: "center",
-          originY: "center",
-        });
-        canvas.backgroundImage = canvasBGImage;
-        canvas.renderAll();
-      };
-    };
-
     if (frontCanvas) {
-      addMainImageBg(frontCanvas, currentArticleFrontSide?.src);
+      frontCanvas.getObjects().forEach((obj) => {
+        const isExist = currentArticleFrontSide?.images?.find(
+          (text) => text.id === obj.id,
+        );
+        if (!isExist && obj.type === "image") {
+          frontCanvas.remove(obj);
+        }
+      });
     }
-  }, [
-    currentArticle.articleBackground,
-    currentArticleFrontSide?.src,
-    frontCanvas,
-  ]);
+  }, [currentArticleFrontSide?.images, frontCanvas]);
 
   return (
     <div className={currentArticle.active == "front" ? "" : "absolute -z-10"}>

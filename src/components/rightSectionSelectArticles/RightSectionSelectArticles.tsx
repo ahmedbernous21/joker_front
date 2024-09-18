@@ -25,6 +25,7 @@ const RightSectionSelectArticles = () => {
     const selectedArticle = JSON.parse(e.target.value);
     backCanvas?.discardActiveObject();
     frontCanvas?.discardActiveObject();
+    frontCanvas?.renderAll();
     dispatch(canvasActions.changeArticle(selectedArticle));
 
     navigate(`/design/${selectedArticle.articleName}`); // Navigate to the desired path based on the article

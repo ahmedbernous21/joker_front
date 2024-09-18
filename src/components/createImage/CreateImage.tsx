@@ -69,9 +69,9 @@ const CreateImage = () => {
         canvasActions.createImage({
           src: resizedImageSrc,
           id: uuid(),
-          rotation: 0,
-          x: 30,
-          y: 60,
+          angle: 0,
+          left: 30,
+          top: 60,
           width: newWidth,
           height: newHeight,
         }),
