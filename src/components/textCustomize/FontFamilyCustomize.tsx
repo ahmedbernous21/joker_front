@@ -1,62 +1,17 @@
-// import { useDispatch, useSelector } from "react-redux";
-// import { canvasActions } from "../../store/slices/canvasSlice";
-// import { IRootState } from "../../store/store";
-// import {
-//   getCurrentSelectedText,
-//   getTextById,
-// } from "../../store/selectors/canvasSelectors";
-// import { useEffect } from "react";
-
-// const FontFamilyCustomize = () => {
-//   const dispatch = useDispatch();
-//   const { selectedLayer, frontCanvas, backCanvas } = useSelector(
-//     (state: IRootState) => state.canvas,
-//   );
-
-//   const text = useSelector((state) => getTextById(state));
-//   useEffect(() => {
-//     console.log(text?.fontFamily);
-//   }, [text?.fontFamily]);
-
-//   return (
-//     <select
-//       value={text?.fontFamily}
-//       onChange={(e) => {
-//         console.log(e.target.value);
-//         // backCanvas?.discardActiveObject();
-//         // frontCanvas?.discardActiveObject();
-//         dispatch(
-//           canvasActions.editText({
-//             id: text?.id,
-//             fontFamily: e.target.value,
-//           }),
-//         );
-//       }}
-//       className="cursor-pointer rounded-xl px-4 py-1"
-//     >
-//       {fonts.map((font, index) => (
-//         <option key={index} value={font.value}>
-//           {font.name}
-//         </option>
-//       ))}
-//     </select>
-//   );
-// };
-// export default FontFamilyCustomize;
-
-import { Range } from "react-range";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
-import { Text } from "fabric/fabric-impl";
+import { TextOptionsId } from "../../interfaces/CanvasSliceInterfaces";
+import FontFaceObserver from "fontfaceobserver";
 
 interface FontFamilyCustomizeProps {
-  canvasText: Text;
+  canvasText: TextOptionsId;
 }
 
 const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const dispatch = useDispatch();
+
   const fonts = [
     { name: "Grey Qo", value: '"Grey Qo", cursive' },
     { name: "Inter", value: '"Inter", sans-serif' },
@@ -64,17 +19,22 @@ const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
     { name: "Moderustic", value: '"Moderustic", sans-serif' },
     { name: "New Amsterdam", value: '"New Amsterdam", sans-serif' },
   ];
+
+  const handleFontChange = async (fontFamily: string) => {
+    const font = new FontFaceObserver(fontFamily.split(`"`)[1]);
+    await font.load();
+    dispatch(
+      canvasActions.editText({
+        id: selectedLayer?.id,
+        fontFamily,
+      }),
+    );
+  };
+
   return (
     <select
       value={canvasText?.fontFamily}
-      onChange={(e) => {
-        dispatch(
-          canvasActions.editText({
-            id: selectedLayer?.id,
-            fontFamily: e.target.value,
-          }),
-        );
-      }}
+      onChange={(e) => handleFontChange(e.target.value)}
       className="cursor-pointer rounded-xl px-4 py-1"
     >
       {fonts.map((font, index) => (
@@ -85,4 +45,5 @@ const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
     </select>
   );
 };
+
 export default FontFamilyCustomize;

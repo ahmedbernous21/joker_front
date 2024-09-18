@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as fabric from "fabric";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
@@ -7,6 +7,8 @@ import {
   getCurrentArticle,
   getCurrentBackSide,
 } from "../../store/selectors/canvasSelectors";
+import fixScrolling from "../../utils/FabricScrolling";
+import FontFaceObserver from "fontfaceobserver";
 
 const FabricCanvasBack = () => {
   const canvasWidth = 320;
@@ -18,34 +20,21 @@ const FabricCanvasBack = () => {
   const currentArticleBackSide = useSelector((state: IRootState) =>
     getCurrentBackSide(state),
   );
-  const { backCanvas } = useSelector((state: IRootState) => state.canvas);
+  const { backCanvas, selectedLayer } = useSelector(
+    (state: IRootState) => state.canvas,
+  );
 
   useEffect(() => {
-    const fixScrolling = () => {
-      var defaultOnTouchStartHandler = fabric.Canvas.prototype._onTouchStart;
-      Object.assign(fabric.Canvas.prototype, {
-        _onTouchStart: function (e) {
-          var target = this.findTarget(e);
-          if (this.allowTouchScrolling && !target && !this.isDrawingMode) {
-            return;
-          }
-          defaultOnTouchStartHandler.call(this, e);
-        },
-      });
-    };
     fixScrolling();
-
     const backCanvasInstance = new fabric.Canvas("backCanvas", {
       selection: false,
       allowTouchScrolling: true,
     });
-
     backCanvasInstance.on("mouse:down", (e) => {
       if (!e.target) {
         dispatch(canvasActions.setSelectedLayer(null));
       }
     });
-
     dispatch(canvasActions.setBackCanvas(backCanvasInstance));
 
     backCanvasInstance.renderAll();
@@ -54,111 +43,135 @@ const FabricCanvasBack = () => {
     };
   }, [dispatch]);
 
-  // remove image handler
+  // Add main image bg
   useEffect(() => {
-    const removeImages = (canvas: fabric.Canvas) => {
-      canvas.getObjects().forEach((obj) => {
-        const isExist = currentArticleBackSide?.images?.find(
-          (text) => text.id === obj.id,
-        );
-        if (!isExist && obj.type === "image") {
-          canvas.remove(obj);
-        }
-      });
-    };
-
     if (backCanvas) {
-      removeImages(backCanvas);
-    }
-  }, [currentArticleBackSide?.images, backCanvas]);
+      const image = new Image();
+      if (currentArticleBackSide && currentArticleBackSide.src) {
+        image.src = currentArticleBackSide?.src;
+      }
+      image.onload = () => {
+        const canvasBGImage = new fabric.FabricImage(image);
+        canvasBGImage.backgroundColor = currentArticle.articleBackground;
 
+        // Calculate scaling to fit the canvas
+        const scaleX = canvasWidth / image.width;
+        const scaleY = canvasHeight / image.height;
+
+        canvasBGImage.scaleX = scaleX;
+        canvasBGImage.scaleY = scaleY;
+
+        // Center the image
+        canvasBGImage.set({
+          left: 320 / 2,
+          top: 450 / 2,
+          originX: "center",
+          originY: "center",
+        });
+        backCanvas.backgroundImage = canvasBGImage as any;
+        backCanvas.renderAll();
+      };
+    }
+  }, [
+    currentArticle.articleBackground,
+    currentArticleBackSide?.src,
+    backCanvas,
+  ]);
+
+  // Add text objects
   useEffect(() => {
     if (backCanvas) {
       const objects = backCanvas.getObjects("textbox");
       objects.forEach((obj) => {
         backCanvas.remove(obj);
       });
-      currentArticleBackSide?.texts?.forEach((canvasText) => {
+
+      for (const canvasText of currentArticleBackSide?.texts || []) {
         const text = new fabric.Textbox(canvasText.text || "", {
           id: canvasText.id,
           width: canvasText.width,
           fontSize: canvasText.fontSize,
-          textAlign: canvasText.textAlign || "center",
-          fontFamily: canvasText.fontFamily
-            ? canvasText.fontFamily
-            : '"Moderustic", sans-serif', 
+          textAlign: canvasText.textAlign,
           splitByGrapheme: true,
-          fill: canvasText.color,
-          fontStyle: canvasText.style == "italic" ? "italic" : "normal",
+          // fontFamily: canvasText.fontFamily,
+          fill: canvasText.fill as string,
+          fontStyle: canvasText.fontStyle,
           fontWeight: canvasText.fontWeight === "bold" ? "bold" : "normal",
           underline: canvasText.underline ? true : false,
-          left: canvasText.x,
-          top: canvasText.y,
-          editable: true,
-
-          angle: canvasText.rotation,
-          selectable: true,
+          left: canvasText.left,
+          top: canvasText.top,
+          angle: canvasText.angle,
           scaleX: canvasText.scaleX || 1,
           scaleY: canvasText.scaleY || 1,
         });
+        if (selectedLayer?.id == text.id) {
+          backCanvas.setActiveObject(text);
+        }
 
+        // Ensure font is loaded before applying it
+
+        const font = new FontFaceObserver(
+          canvasText.fontFamily?.split(`"`)[1] as string,
+        );
+        font.load().then(() => {
+          text.set("fontFamily", canvasText.fontFamily as string);
+          text._clearCache();
+          text.initDimensions();
+          backCanvas.renderAll();
+        });
+
+        // Handle text selection
         text.on("selected", (e) => {
           dispatch(
-            canvasActions.setSelectedLayer({ id: canvasText.id, type: "text" }),
+            canvasActions.setSelectedLayer({
+              id: canvasText.id,
+              type: "text",
+            }),
           );
         });
-        text.on("editing:exited", (e) => {
-          dispatch(canvasActions.editText({ id: text.id, text: text.text }));
-        });
 
-        text.on("deselected", (e) => {
+        text.on("modified", (e) => {
           if (!e.target) {
             return;
           }
           dispatch(
             canvasActions.editText({
               id: e.target.id,
-              x: e.target.left,
-              rotation: e.target.angle,
-              y: e.target.top,
-              fontFamily: e.target.fontFamily,
-              width: e.target.width,
-              lineHeight: e.target.lineHeight,
-              textAlign: e.target.textAlign || "center",
-              height: e.target.height,
+              left: e.target.left,
+              top: e.target.top,
+              angle: e.target.angle,
               scaleX: e.target.scaleX,
               scaleY: e.target.scaleY,
             }),
           );
         });
 
-        backCanvas.add(text);
-      });
+        text.on("editing:exited", (e) => {
+          dispatch(canvasActions.editText({ id: text.id, text: text.text }));
+        });
 
+        backCanvas.add(text);
+      }
       backCanvas.renderAll();
     }
   }, [currentArticleBackSide?.texts, dispatch, backCanvas]);
 
-  // add images
+  // Add images
   useEffect(() => {
-    const addImages = (canvas) => {
-      const objects = canvas.getObjects("image");
+    if (backCanvas) {
+      const objects = backCanvas.getObjects("image");
       const existingImageIds = objects.map((obj) => obj.id);
-
       currentArticleBackSide?.images?.forEach((canvasImage) => {
         if (!existingImageIds.includes(canvasImage.id)) {
           const image = new Image();
           image.src = canvasImage.src;
 
           image.onload = () => {
-            // Calculate scaling to fit the canvas
-            // Ensure the scale is not greater than 1
-
             const canvasBGImage = new fabric.FabricImage(image, {
               id: canvasImage.id,
-              left: canvasImage.x,
-              top: canvasImage.y,
-              angle: canvasImage.rotation,
+              left: canvasImage.left,
+              top: canvasImage.top,
+              angle: canvasImage.angle,
               scaleX: canvasImage.scaleX || 1,
               scaleY: canvasImage.scaleY || 1,
             });
@@ -180,67 +193,37 @@ const FabricCanvasBack = () => {
               dispatch(
                 canvasActions.editImage({
                   id: e.target.id,
-                  x: e.target.left,
-                  y: e.target.top,
-                  rotation: e.target.angle,
+                  left: e.target.left,
+                  top: e.target.top,
+                  angle: e.target.angle,
                   scaleX: e.target.scaleX,
                   scaleY: e.target.scaleY,
                 }),
               );
             });
 
-            canvas.add(canvasBGImage);
+            backCanvas.add(canvasBGImage);
           };
         }
       });
 
-      canvas.renderAll();
-    };
-
-    if (backCanvas) {
-      addImages(backCanvas);
+      backCanvas.renderAll();
     }
   }, [currentArticleBackSide?.images, dispatch, backCanvas]);
 
-  // add main image bg
+  // Remove images handler
   useEffect(() => {
-    const addMainImageBg = (canvas, imageUrl) => {
-      const image = new Image();
-      if (imageUrl) {
-        image.src = imageUrl;
-      }
-
-      image.onload = () => {
-        const canvasBGImage = new fabric.FabricImage(image);
-        canvasBGImage.backgroundColor = currentArticle.articleBackground;
-
-        // Calculate scaling to fit the canvas
-        const scaleX = canvasWidth / image.width;
-        const scaleY = canvasHeight / image.height;
-
-        canvasBGImage.scaleX = scaleX;
-        canvasBGImage.scaleY = scaleY;
-
-        // Center the image
-        canvasBGImage.set({
-          left: 320 / 2,
-          top: 450 / 2,
-          originX: "center",
-          originY: "center",
-        });
-        canvas.backgroundImage = canvasBGImage;
-        canvas.renderAll();
-      };
-    };
-
     if (backCanvas) {
-      addMainImageBg(backCanvas, currentArticleBackSide?.src);
+      backCanvas.getObjects().forEach((obj) => {
+        const isExist = currentArticleBackSide?.images?.find(
+          (text) => text.id === obj.id,
+        );
+        if (!isExist && obj.type === "image") {
+          backCanvas.remove(obj);
+        }
+      });
     }
-  }, [
-    currentArticle.articleBackground,
-    currentArticleBackSide?.src,
-    backCanvas,
-  ]);
+  }, [currentArticleBackSide?.images, backCanvas]);
 
   return (
     <div className={currentArticle.active == "back" ? "" : "absolute -z-10"}>

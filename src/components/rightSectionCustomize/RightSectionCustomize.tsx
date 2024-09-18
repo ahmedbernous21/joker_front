@@ -8,7 +8,7 @@ import FontSizeCustomize from "../textCustomize/FontSizeCustomize";
 import TextColorCustomize from "../textCustomize/TextColorCustomize";
 import { getCurrentSelectedText } from "../../store/selectors/canvasSelectors";
 
-const   RightSectionCustomize = () => {
+const RightSectionCustomize = () => {
   const dispatch = useDispatch();
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const text = useSelector((state: IRootState) =>
@@ -31,24 +31,24 @@ const   RightSectionCustomize = () => {
                       className="h-[25px] w-1/3 cursor-pointer bg-blue-500 p-1 text-white"
                       style={{
                         background:
-                          text?.style == "italic"
+                          text?.fontStyle == "italic"
                             ? "rgb(59 130 246)"
                             : "transparent",
-                        color: text?.style == "italic" ? "white" : "black",
+                        color: text?.fontStyle == "italic" ? "white" : "black",
                       }}
                       onClick={() => {
-                        if (text?.style == "italic") {
+                        if (text?.fontStyle == "italic") {
                           dispatch(
                             canvasActions.editText({
                               id: selectedLayer.id,
-                              style: "normal",
+                              fontStyle: "normal",
                             }),
                           );
                         } else {
                           dispatch(
                             canvasActions.editText({
                               id: selectedLayer.id,
-                              style: "italic",
+                              fontStyle: "italic",
                             }),
                           );
                         }
@@ -102,7 +102,7 @@ const   RightSectionCustomize = () => {
                 </div>
                 <div className="flex flex-col">
                   <p>Font Family</p>
-                  <FontFamilyCustomize canvasText={text}/>
+                  <FontFamilyCustomize canvasText={text} />
                 </div>
               </>
             )}
