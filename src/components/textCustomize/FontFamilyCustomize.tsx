@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
 import { TextOptionsId } from "../../interfaces/CanvasSliceInterfaces";
-import FontFaceObserver from "fontfaceobserver";
 
 interface FontFamilyCustomizeProps {
   canvasText: TextOptionsId;
@@ -25,7 +24,6 @@ const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
     { name: "Raleway", value: '"Raleway", sans-serif' },
     { name: "Fira Sans", value: '"Fira Sans", sans-serif' },
   ];
-
   const handleFontChange = async (fontFamily: string) => {
     dispatch(
       canvasActions.editText({
