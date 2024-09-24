@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { canvasActions } from "../../store/slices/canvasSlice";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import httpClient from "../../httpClient";
 import { IRootState } from "../../store/store";
 
@@ -12,9 +11,14 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
   const { frontCanvas, backCanvas } = useSelector(
     (state: IRootState) => state.canvas,
   );
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSizeSelection = (size: string) => {
+    setSelectedSize(size);
+  };
 
   const downloadFilesHandler = () => {
-    console.log(frontCanvas);
     if (frontCanvas) {
       downloadFile(frontCanvas.toDataURL(), "front");
     }
@@ -22,19 +26,11 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
       downloadFile(backCanvas.toDataURL(), "back");
     }
   };
-  const downloadFile = (canvas: any, side: string) => {
+  const downloadFile = (canvas: string, side: string) => {
     const link = document.createElement("a");
     link.download = `${side}.png`;
     link.href = canvas;
     link.click();
-  };
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState("");
-
-
-  
-  const handleSizeSelection = (size: string) => {
-    setSelectedSize(size);
   };
   const createOrder = async () => {
     if (!selectedSize) {

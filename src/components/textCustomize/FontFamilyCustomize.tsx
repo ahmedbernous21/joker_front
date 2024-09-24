@@ -14,7 +14,7 @@ const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
 
   const fonts = [
     // { name: "Normal", value: "sans-serif" },
-    // { name: "Times New Roman", value: '"Times New Roman", ' },
+    { name: "Times New Roman", value: '"Times New Roman", ' },
     { name: "Dancing Script", value: '"Dancing Script", sans-serif' },
     // { name: "Impact", value: '"Impact", sans-serif' },
     { name: "Lobster", value: '"Lobster", cursive' },

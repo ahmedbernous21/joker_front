@@ -66,7 +66,7 @@ const FabricCanvasFront = () => {
           originX: "center",
           originY: "center",
         });
-        frontCanvas.backgroundImage = canvasBGImage as any;
+        frontCanvas.backgroundImage = canvasBGImage ;
         frontCanvas.renderAll();
       };
     }
@@ -105,17 +105,11 @@ const FabricCanvasFront = () => {
           frontCanvas.setActiveObject(text);
         }
 
-        if (canvasText.fontFamily?.split(`"`)[1] == "Times New Roman") {
-          text.fontFamily = canvasText.fontFamily;
-          text.set("fontFamily", canvasText.fontFamily);
-          text._clearCache();
-          text.initDimensions();
-          // frontCanvas.renderAll();
-        } else {
-          const font = new FontFaceObserver(
-            canvasText.fontFamily?.split(`"`)[1] as string,
-          );
-          font.load(null, 1000000000).then(() => {
+        const font = new FontFaceObserver(
+          canvasText.fontFamily?.split(`"`)[1] as string,
+        );
+        if (canvasText.fontFamily?.split(`"`)[1] != "Times New Roman") {
+          font.load(null, 10000).then(() => {
             text.set("fontFamily", canvasText.fontFamily as string);
             text._clearCache();
             text.initDimensions();
@@ -123,7 +117,7 @@ const FabricCanvasFront = () => {
           });
         }
         // Handle text selection
-        text.on("selected", (e) => {
+        text.on("selected", () => {
           dispatch(
             canvasActions.setSelectedLayer({
               id: canvasText.id,
@@ -148,7 +142,7 @@ const FabricCanvasFront = () => {
           );
         });
 
-        text.on("editing:exited", (e) => {
+        text.on("editing:exited", () => {
           dispatch(canvasActions.editText({ id: text.id, text: text.text }));
         });
 
@@ -178,7 +172,7 @@ const FabricCanvasFront = () => {
               scaleY: canvasImage.scaleY || 1,
             });
 
-            canvasBGImage.on("selected", (e) => {
+            canvasBGImage.on("selected", () => {
               dispatch(
                 canvasActions.setSelectedLayer({
                   id: canvasBGImage.id,

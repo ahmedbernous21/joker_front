@@ -11,7 +11,6 @@ const Design = () => {
       >
         <LeftSideCustomize />
         <MiddleDesignSection />
-
         <RightSection />
       </div>
     </div>
