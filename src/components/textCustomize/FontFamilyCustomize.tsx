@@ -13,16 +13,20 @@ const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
   const dispatch = useDispatch();
 
   const fonts = [
-    { name: "Grey Qo", value: '"Grey Qo", cursive' },
-    { name: "Inter", value: '"Inter", sans-serif' },
-    { name: "Lora", value: '"Lora", serif' },
-    { name: "Moderustic", value: '"Moderustic", sans-serif' },
-    { name: "New Amsterdam", value: '"New Amsterdam", sans-serif' },
+    // { name: "Normal", value: "sans-serif" },
+    // { name: "Times New Roman", value: '"Times New Roman", ' },
+    { name: "Dancing Script", value: '"Dancing Script", sans-serif' },
+    // { name: "Impact", value: '"Impact", sans-serif' },
+    { name: "Lobster", value: '"Lobster", cursive' },
+    { name: "Pacifico", value: '"Pacifico", cursive' },
+    { name: "Montserrat", value: '"Montserrat", sans-serif' },
+    { name: "Oswald", value: '"Oswald", sans-serif' },
+    { name: "Playfair Display", value: '"Playfair Display", serif' },
+    { name: "Raleway", value: '"Raleway", sans-serif' },
+    { name: "Fira Sans", value: '"Fira Sans", sans-serif' },
   ];
 
   const handleFontChange = async (fontFamily: string) => {
-    const font = new FontFaceObserver(fontFamily.split(`"`)[1]);
-    await font.load();
     dispatch(
       canvasActions.editText({
         id: selectedLayer?.id,

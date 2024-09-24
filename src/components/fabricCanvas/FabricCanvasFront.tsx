@@ -105,17 +105,23 @@ const FabricCanvasFront = () => {
           frontCanvas.setActiveObject(text);
         }
 
-        // Ensure font is loaded before applying it
-        const font = new FontFaceObserver(
-          canvasText.fontFamily?.split(`"`)[1] as string,
-        );
-        font.load().then(() => {
-          text.set("fontFamily", canvasText.fontFamily as string);
+        if (canvasText.fontFamily?.split(`"`)[1] == "Times New Roman") {
+          text.fontFamily = canvasText.fontFamily;
+          text.set("fontFamily", canvasText.fontFamily);
           text._clearCache();
           text.initDimensions();
-          frontCanvas.renderAll();
-        });
-
+          // frontCanvas.renderAll();
+        } else {
+          const font = new FontFaceObserver(
+            canvasText.fontFamily?.split(`"`)[1] as string,
+          );
+          font.load(null, 1000000000).then(() => {
+            text.set("fontFamily", canvasText.fontFamily as string);
+            text._clearCache();
+            text.initDimensions();
+            frontCanvas.renderAll();
+          });
+        }
         // Handle text selection
         text.on("selected", (e) => {
           dispatch(
