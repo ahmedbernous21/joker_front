@@ -6,10 +6,15 @@ import Header from "./components/header/Header";
 import Admin from "./pages/Admin/admin";
 import Login from "./pages/LoginAdmin/LoginAdmin";
 import Home from "./pages/home/Home";
+import Shop from "./pages/Shop/Shop"
 import { useEffect } from "react";
 // import "./registerServiceWorker";
 import Dashboard from "./pages/Dashboard/dashboard";
 import Articles from "./pages/Articles/Articles";
+import ContactForm from "./contact/Contact";
+import ShoppingCart from "./components/cart/ShoppingCart";
+import { Path } from "fabric";
+import AboutUs from "./components/about/AboutUs";
 
 function App() {
   // useEffect(() => {
@@ -63,6 +68,10 @@ function App() {
         <Route element={<Dashboard />} path="/dashboard/overview/" />
         <Route element={<Admin />} path="/dashboard/articles/" />
         <Route element={<NotFound />} path="*" />
+        <Route element={<ContactForm />} path="/contact/" />
+        <Route element={<ShoppingCart/>} path="/cart/" />
+        <Route element={<AboutUs/>} path="/about/" />
+        <Route element={<Shop/>} path="/shop/" />
       </Routes>
     </BrowserRouter>
   );

@@ -10,9 +10,7 @@ import {
 import fixScrolling from "../../utils/FabricScrolling";
 import FontFaceObserver from "fontfaceobserver";
 
-const FabricCanvasBack = () => {
-  const canvasWidth = 320;
-  const canvasHeight = 450;
+const FabricCanvasBack = ({canvasWidth,canvasHeight}:{canvasWidth: number,canvasHeight:number}) => {
   const dispatch = useDispatch();
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
@@ -82,7 +80,7 @@ const FabricCanvasBack = () => {
   useEffect(() => {
     if (backCanvas) {
       const objects = backCanvas.getObjects("textbox");
-      objects.forEach((obj) => {
+      objects.forEach((obj:any) => {
         backCanvas.remove(obj);
       });
 
@@ -214,7 +212,7 @@ const FabricCanvasBack = () => {
   // Remove images handler
   useEffect(() => {
     if (backCanvas) {
-      backCanvas.getObjects().forEach((obj) => {
+      backCanvas.getObjects().forEach((obj:any) => {
         const isExist = currentArticleBackSide?.images?.find(
           (text) => text.id === obj.id,
         );
@@ -226,12 +224,12 @@ const FabricCanvasBack = () => {
   }, [currentArticleBackSide?.images, backCanvas]);
 
   return (
-    <div className={currentArticle.active == "back" ? "" : "absolute -z-10"}>
+    <div className={currentArticle.active == "back" ? "" : "hidden"}>
       <canvas
         id="backCanvas"
         width={canvasWidth}
         height={canvasHeight}
-        className={`relative rounded-xl border-2`}
+        className={`relative bg-transparent`}
       />
     </div>
   );
