@@ -37,7 +37,7 @@ const FontFamilyCustomize = ({ canvasText }: FontFamilyCustomizeProps) => {
     <select
       value={canvasText?.fontFamily}
       onChange={(e) => handleFontChange(e.target.value)}
-      className="cursor-pointer rounded-xl px-4 py-1"
+      className="cursor-pointer px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#33AA15] transition duration-200 ease-in-out"
     >
       {fonts.map((font, index) => (
         <option key={index} value={font.value}>

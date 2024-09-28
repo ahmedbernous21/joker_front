@@ -7,6 +7,9 @@ export default {
         center: true,
         padding : "2rem"
       },
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'], // Replace with your Google Font name
+      },
     },
   },
   plugins: [],

@@ -1,51 +1,144 @@
 import { HashLink } from "react-router-hash-link";
-import { useState } from "react";
-import { FaBars, FaX } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { IoCloseOutline } from "react-icons/io5";
+import { useLocation } from "react-router-dom";
+import classNames from "classnames";
+import CartAndSearch from "./HeaderIcon";
 
-const HeaderRight = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+interface NavLink {
+  name: string;
+  link: string;
+  src: string;
+}
 
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+const navLinks: NavLink[] = [
+  { name: "Acceuil", link: "/" ,src: "sidebar1.svg"},
+  { name: "À propos", link: "/#about" ,src: "sidebar2.svg"},
+  { name: "Nos services", link: "/#services" ,src: "sidebar3.svg"},
+  { name: "shop", link: "/shop" ,src: "sidebar5.svg"},
+  { name: "Contact ", link: "/contact" ,src: "sidebar4.svg"},
+];
+
+const HeaderRight: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const location = useLocation();
+
+  const toggleMenu = (): void => setIsMenuOpen((prev) => !prev);
+
+  const closeMenu = (): void => setIsMenuOpen(false);
+
+  const isActive = (link: string): boolean => {
+    if (link.startsWith("#")) {
+      return location.hash === link; 
+    }
+    return location.pathname === link; 
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
     <>
-      <div className="sm:hidden">
-        {isMenuOpen ? (
-          <>
-            <div
-              className="fixed inset-0 h-screen w-screen"
+      <div className="lg:hidden flex justify-end pr-4 pt-4">
+          <button className="cursor-pointer absolute top-8 right-8 text-2xl">
+            <svg
+              className="w-6 h-6"
+              aria-hidden="true"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
               onClick={toggleMenu}
-            ></div>
-            <FaX className="faX relative cursor-pointer" onClick={toggleMenu} />
-          </>
-        ) : (
-          <FaBars className="faBars cursor-pointer" onClick={toggleMenu} />
-        )}
+              aria-label="Open menu"
+            >
+              <path
+                clipRule="evenodd"
+                fillRule="evenodd"
+                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
+              ></path>
+            </svg>
+          </button>
       </div>
 
-      <ul
-        className={`menu absolute -bottom-32 right-2 w-[200px] flex-col gap-8 rounded-xl border border-gray-300 bg-white text-gray-700 duration-500 sm:static sm:flex sm:w-auto sm:flex-row sm:border-none sm:bg-transparent ${
-          isMenuOpen ? "clip-open" : "clip-closed"
-        }`}
+      <aside
+        ref={menuRef}
+        className={classNames(
+          "fixed inset-0 z-40 w-64 h-screen pt-20 transition-transform  border-gray-200 bg-[#F9F9F9]",
+          {
+            "translate-x-0": isMenuOpen,
+            "-translate-x-full": !isMenuOpen,
+          }
+        )}
       >
-        {[
-          { name: "about", link: "/#about" },
-          { name: "services", link: "/#services" },
-          { name: "contact", link: "/#contact" },
-          // { name: "login", link: "/kedache/" },
-        ].map((section) => (
-          <li key={section.link} className="p-2 hover:text-gray-900 sm:p-0">
+        <IoCloseOutline
+            className="cursor-pointer text-4xl absolute top-4 right-6 "
+            onClick={toggleMenu}
+        />
+        <ul className="space-y-3 font-medium pt-6">
+          {navLinks.map((section) => (
+            <li key={section.link}
+              className={classNames(
+                "p-2  gap-4 pl-10 flex",
+                {
+                  "bg-[#FBEBEB]": isActive(section.link),
+                }
+              )}
+            >
+              <img className="h-5" src={section.src} alt="section icon" />
+              <HashLink
+                onClick={closeMenu}
+                to={section.link}
+                className={classNames(
+                  "flex items-center capitalize duration-300 hover:text-gray-600 "
+                )}
+              >
+                {section.name}
+              </HashLink>
+            </li>
+          ))}
+        </ul>
+        <div className="pl-10 pt-10">
+          <CartAndSearch />
+        </div>
+      </aside>
+
+      <ul className="hidden lg:flex sm:gap-6 lg:justify-center lg:items-center lg:px-9">
+        {navLinks.map((section) => (
+          <li key={section.link} className="p-2">
             <HashLink
-              onClick={toggleMenu}
               to={section.link}
-              className="inline-block w-full capitalize duration-300 hover:text-blue-500"
+              className={classNames(
+                "capitalize duration-300 hover:text-[#DB3F40] font-medium",
+                {
+                  "text-red-500": isActive(section.link),
+                }
+              )}
             >
               {section.name}
             </HashLink>
           </li>
         ))}
       </ul>
+      <div className={isMenuOpen ? "hidden" : "hidden lg:block "}>
+        <CartAndSearch />
+      </div>
     </>
   );
 };
+
 export default HeaderRight;
