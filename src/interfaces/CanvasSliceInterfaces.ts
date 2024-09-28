@@ -1,10 +1,4 @@
-import {
-  Canvas,
-  IImageOptions,
-  Image,
-  TextOptions,
-  Text,
-} from "fabric/fabric-impl";
+import { Canvas, IImageOptions, TextOptions } from "fabric/fabric-impl";
 import { Ref } from "react";
 
 interface TextOptionsId extends TextOptions {

@@ -2,13 +2,12 @@ import { Range } from "react-range";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
-import { TextOptionsId } from "../../interfaces/CanvasSliceInterfaces";
+import { getCurrentSelectedText } from "../../store/selectors/canvasSelectors";
 
-interface FontSizeCustomizeProps {
-  canvasText: TextOptionsId;
-}
-
-const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
+const FontSizeCustomize = () => {
+  const text = useSelector((state: IRootState) =>
+    getCurrentSelectedText(state),
+  );
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const dispatch = useDispatch();
   return (
@@ -19,7 +18,7 @@ const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
           step={0.1}
           min={0}
           max={100}
-          values={[canvasText?.fontSize || 0]}
+          values={[text?.fontSize || 0]}
           onChange={(value) => {
             dispatch(
               canvasActions.editText({
@@ -36,8 +35,8 @@ const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
                 height: "6px",
                 width: "100%",
                 background: `linear-gradient(to right, #007bff ${
-                  canvasText?.fontSize
-                }%, #ddd ${canvasText?.fontSize}%)`,
+                  text?.fontSize
+                }%, #ddd ${text?.fontSize}%)`,
               }}
             >
               {children}
@@ -58,7 +57,7 @@ const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
         />
         {/* Display the current value */}
         <div className="flex">
-          <span>{canvasText?.fontSize}</span>
+          <span>{text?.fontSize}</span>
           <span>px</span>
         </div>
       </div>

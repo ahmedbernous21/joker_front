@@ -66,7 +66,7 @@ const FabricCanvasFront = () => {
           originX: "center",
           originY: "center",
         });
-        frontCanvas.backgroundImage = canvasBGImage as any;
+        frontCanvas.backgroundImage = canvasBGImage ;
         frontCanvas.renderAll();
       };
     }
@@ -105,19 +105,19 @@ const FabricCanvasFront = () => {
           frontCanvas.setActiveObject(text);
         }
 
-        // Ensure font is loaded before applying it
         const font = new FontFaceObserver(
           canvasText.fontFamily?.split(`"`)[1] as string,
         );
-        font.load().then(() => {
-          text.set("fontFamily", canvasText.fontFamily as string);
-          text._clearCache();
-          text.initDimensions();
-          frontCanvas.renderAll();
-        });
-
+        if (canvasText.fontFamily?.split(`"`)[1] != "Times New Roman") {
+          font.load(null, 10000).then(() => {
+            text.set("fontFamily", canvasText.fontFamily as string);
+            text._clearCache();
+            text.initDimensions();
+            frontCanvas.renderAll();
+          });
+        }
         // Handle text selection
-        text.on("selected", (e) => {
+        text.on("selected", () => {
           dispatch(
             canvasActions.setSelectedLayer({
               id: canvasText.id,
@@ -142,7 +142,7 @@ const FabricCanvasFront = () => {
           );
         });
 
-        text.on("editing:exited", (e) => {
+        text.on("editing:exited", () => {
           dispatch(canvasActions.editText({ id: text.id, text: text.text }));
         });
 
@@ -172,7 +172,7 @@ const FabricCanvasFront = () => {
               scaleY: canvasImage.scaleY || 1,
             });
 
-            canvasBGImage.on("selected", (e) => {
+            canvasBGImage.on("selected", () => {
               dispatch(
                 canvasActions.setSelectedLayer({
                   id: canvasBGImage.id,
