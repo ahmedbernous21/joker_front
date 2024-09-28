@@ -1,4 +1,3 @@
-import { FaUpload } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 import { canvasActions } from "../../store/slices/canvasSlice";
@@ -82,7 +81,11 @@ const CreateImage = () => {
   return (
     <>
       <label htmlFor="add-image">
-        <FaUpload className="h-6 w-6 cursor-pointer rounded-full border-2 border-black text-2xl text-black" />
+        <img
+          className="cursor-pointer"
+          src="/empty_image.png"
+          alt="upload image placeholder"
+        />
       </label>
       <input
         type="file"

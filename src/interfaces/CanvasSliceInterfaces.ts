@@ -22,6 +22,7 @@ interface Article {
   articleBackSideInfo: ArticleSideInfo | null;
   active: "front" | "back";
   articleBackground: string;
+  articlePrice: number;
 }
 interface SelectedLayer {
   type: "text" | "image";

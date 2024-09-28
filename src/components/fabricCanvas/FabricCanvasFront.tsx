@@ -10,9 +10,7 @@ import {
 import fixScrolling from "../../utils/FabricScrolling";
 import FontFaceObserver from "fontfaceobserver";
 
-const FabricCanvasFront = () => {
-  const canvasWidth = 320;
-  const canvasHeight = 450;
+const FabricCanvasFront = ({canvasWidth,canvasHeight}:{canvasWidth: number,canvasHeight:number}) => {
   const dispatch = useDispatch();
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
@@ -80,7 +78,7 @@ const FabricCanvasFront = () => {
   useEffect(() => {
     if (frontCanvas) {
       const objects = frontCanvas.getObjects("textbox");
-      objects.forEach((obj) => {
+      objects.forEach((obj:any) => {
         frontCanvas.remove(obj);
       });
 
@@ -156,7 +154,7 @@ const FabricCanvasFront = () => {
   useEffect(() => {
     if (frontCanvas) {
       const objects = frontCanvas.getObjects("image");
-      const existingImageIds = objects.map((obj) => obj.id);
+      const existingImageIds = objects.map((obj:any) => obj.id);
       currentArticleFrontSide?.images?.forEach((canvasImage) => {
         if (!existingImageIds.includes(canvasImage.id)) {
           const image = new Image();
@@ -210,7 +208,7 @@ const FabricCanvasFront = () => {
   // Remove images handler
   useEffect(() => {
     if (frontCanvas) {
-      frontCanvas.getObjects().forEach((obj) => {
+      frontCanvas.getObjects().forEach((obj:any) => {
         const isExist = currentArticleFrontSide?.images?.find(
           (text) => text.id === obj.id,
         );
@@ -222,12 +220,12 @@ const FabricCanvasFront = () => {
   }, [currentArticleFrontSide?.images, frontCanvas]);
 
   return (
-    <div className={currentArticle.active == "front" ? "" : "absolute -z-10"}>
+    <div className={currentArticle.active == "front" ? "" : "hidden"}>
       <canvas
         id="frontCanvas"
         width={canvasWidth}
         height={canvasHeight}
-        className={`relative rounded-xl border-2`}
+        className={`relative bg-transparent`}
       />
     </div>
   );

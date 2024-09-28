@@ -1,67 +1,42 @@
-import { Range } from "react-range";
 import { useDispatch, useSelector } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { IRootState } from "../../store/store";
-import { getCurrentSelectedText } from "../../store/selectors/canvasSelectors";
+import { TextOptionsId } from "../../interfaces/CanvasSliceInterfaces";
 
-const FontSizeCustomize = () => {
-  const text = useSelector((state: IRootState) =>
-    getCurrentSelectedText(state),
-  );
+interface FontSizeCustomizeProps {
+  canvasText: TextOptionsId;
+}
+
+const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
+
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const dispatch = useDispatch();
+
   return (
     <div className="flex flex-col">
-      <p className="font-bold">Font Size</p>
-      <div className="flex items-center gap-2">
-        <Range
-          step={0.1}
+      <p className="font-medium mb-1">Font Size</p>
+      <div className="flex items-center gap-3">
+        <input
+          type="number"
+          className="w-20 p-1  text-center bg-gray-100 border border-gray-300 rounded-lg  focus:outline-none focus:ring-2 focus:ring-[#141E46] focus:border-transparent transition-all"
+          placeholder="16"
           min={0}
           max={100}
-          values={[text?.fontSize || 0]}
+
+          value={canvasText?.fontSize}
           onChange={(value) => {
             dispatch(
               canvasActions.editText({
                 id: selectedLayer?.id,
-                fontSize: value[0],
-              }),
+                fontSize: parseInt(value.target.value),
+              })
             );
           }}
-          renderTrack={({ props, children }) => (
-            <div
-              {...props}
-              style={{
-                ...props.style,
-                height: "6px",
-                width: "100%",
-                background: `linear-gradient(to right, #007bff ${
-                  text?.fontSize
-                }%, #ddd ${text?.fontSize}%)`,
-              }}
-            >
-              {children}
-            </div>
-          )}
-          renderThumb={({ props }) => (
-            <div
-              {...props}
-              key={props.key}
-              style={{
-                ...props.style,
-                height: "12px",
-                width: "12px",
-              }}
-              className="rounded-full bg-blue-500"
-            />
-          )}
+
         />
-        {/* Display the current value */}
-        <div className="flex">
-          <span>{text?.fontSize}</span>
-          <span>px</span>
-        </div>
       </div>
     </div>
   );
 };
+
 export default FontSizeCustomize;
