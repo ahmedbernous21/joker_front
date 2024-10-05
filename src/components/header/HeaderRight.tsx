@@ -1,132 +1,96 @@
 import { HashLink } from "react-router-hash-link";
 import { useState, useEffect, useRef } from "react";
-import { IoCloseOutline } from "react-icons/io5";
 import { useLocation } from "react-router-dom";
 import classNames from "classnames";
 import CartAndSearch from "./HeaderIcon";
+import {
+  MdDashboardCustomize,
+  MdShoppingCart,
+  MdCall,
+  MdHome,
+  MdAdd,
+} from "react-icons/md";
 
 interface NavLink {
   name: string;
   link: string;
-  src: string;
+}
+
+interface MobileNavLink {
+  name: string;
+  link: string;
+  icon: JSX.Element;
 }
 
 const navLinks: NavLink[] = [
-  { name: "Acceuil", link: "/" ,src: "sidebar1.svg"},
-  { name: "À propos", link: "/#about" ,src: "sidebar2.svg"},
-  { name: "Nos services", link: "/#services" ,src: "sidebar3.svg"},
-  { name: "shop", link: "/shop" ,src: "sidebar5.svg"},
-  { name: "Contact ", link: "/contact" ,src: "sidebar4.svg"},
+  { name: "Acceuil", link: "/" },
+  { name: "À propos", link: "/#about" },
+  { name: "Services", link: "/#services" },
+  { name: "shop", link: "/shop" },
+  { name: "Contact", link: "/contact" },
 ];
 
-const HeaderRight: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+const mobileNavLinks: MobileNavLink[] = [
+  { name: "Home", link: "/", icon: <MdHome /> },
+  { name: "shop", link: "/shop", icon: <MdDashboardCustomize /> },
+  { name: "Nos services", link: "/#services", icon: <MdAdd /> }, 
+  { name: "Cart", link: "/cart", icon: <MdShoppingCart /> },
+  { name: "Contact", link: "/contact", icon: <MdCall /> },
+];
+
+const HeaderRight = () => {
+  const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<string>(""); 
   const menuRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
 
-  const toggleMenu = (): void => setIsMenuOpen((prev) => !prev);
-
-  const closeMenu = (): void => setIsMenuOpen(false);
-
+  // helper function to check active section
   const isActive = (link: string): boolean => {
-    if (link.startsWith("#")) {
-      return location.hash === link; 
+    const [path, hash] = link.split("#");
+    if (link === "/") {
+      return location.pathname === "/" && !location.hash && !activeSection;
     }
-    return location.pathname === link; 
+    if (activeSection && hash === activeSection) {
+      return true;
+    }
+    if (hash) {
+      return (
+        location.pathname === path &&
+        location.hash === `#${hash}` &&
+        !activeSection
+      );
+    }
+    return location.pathname === link;
   };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+        setIsMenuVisible(true);
+        setTimeout(() => setIsMenuVisible(false), 5000);
       }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
+  const handleHomeClick = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setActiveSection("");
+  };
 
   return (
     <>
-      <div className="lg:hidden flex justify-end pr-4 pt-4">
-          <button className="cursor-pointer absolute top-8 right-8 text-2xl">
-            <svg
-              className="w-6 h-6"
-              aria-hidden="true"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-              onClick={toggleMenu}
-              aria-label="Open menu"
-            >
-              <path
-                clipRule="evenodd"
-                fillRule="evenodd"
-                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-              ></path>
-            </svg>
-          </button>
-      </div>
-
-      <aside
-        ref={menuRef}
-        className={classNames(
-          "fixed inset-0 z-40 w-64 h-screen pt-20 transition-transform  border-gray-200 bg-[#F9F9F9]",
-          {
-            "translate-x-0": isMenuOpen,
-            "-translate-x-full": !isMenuOpen,
-          }
-        )}
-      >
-        <IoCloseOutline
-            className="cursor-pointer text-4xl absolute top-4 right-6 "
-            onClick={toggleMenu}
-        />
-        <ul className="space-y-3 font-medium pt-6">
-          {navLinks.map((section) => (
-            <li key={section.link}
-              className={classNames(
-                "p-2  gap-4 pl-10 flex",
-                {
-                  "bg-[#FBEBEB]": isActive(section.link),
-                }
-              )}
-            >
-              <img className="h-5" src={section.src} alt="section icon" />
-              <HashLink
-                onClick={closeMenu}
-                to={section.link}
-                className={classNames(
-                  "flex items-center capitalize duration-300 hover:text-gray-600 "
-                )}
-              >
-                {section.name}
-              </HashLink>
-            </li>
-          ))}
-        </ul>
-        <div className="pl-10 pt-10">
-          <CartAndSearch />
-        </div>
-      </aside>
-
-      <ul className="hidden lg:flex sm:gap-6 lg:justify-center lg:items-center lg:px-9">
+      <ul className="hidden sm:gap-6 lg:flex lg:items-center lg:justify-center lg:px-9">
         {navLinks.map((section) => (
           <li key={section.link} className="p-2">
             <HashLink
               to={section.link}
               className={classNames(
-                "capitalize duration-300 hover:text-[#DB3F40] font-medium",
+                "font-medium capitalize duration-300 hover:text-[#DB3F40]",
                 {
-                  "text-red-500": isActive(section.link),
-                }
+                  "text-[#DB3F40]": isActive(section.link),
+                },
               )}
             >
               {section.name}
@@ -134,9 +98,53 @@ const HeaderRight: React.FC = () => {
           </li>
         ))}
       </ul>
-      <div className={isMenuOpen ? "hidden" : "hidden lg:block "}>
+
+      <div className="hidden lg:block">
         <CartAndSearch />
       </div>
+
+      {/* mobile bottom nav*/}
+      <nav
+        ref={menuRef}
+        className={classNames(
+          "fixed bottom-0 left-0 right-0 z-50 border-t border-[#f9f9f9] bg-[#fffdfd] transition-transform duration-500 ease-in-out lg:hidden",
+          {
+            "translate-y-0": isMenuVisible,
+            "translate-y-full": !isMenuVisible,
+          },
+        )}
+      >
+        <ul className="flex items-center justify-around py-4">
+          {mobileNavLinks.map((section) => (
+            <li key={section.link}>
+              <HashLink
+                to={section.link}
+                onClick={() => {
+                  if (section.link === "/") handleHomeClick();
+                }}
+                className={classNames(
+                  "flex items-center justify-center rounded-full p-3 duration-300 hover:bg-gray-100",
+                  {
+                    "text-[#DB3F40]": isActive(section.link),
+                    "text-gray-500": !isActive(section.link),
+                    "bg-red-200": section.name === "Nos services",
+                  },
+                )}
+              >
+                <section.icon.type
+                  className={classNames(
+                    "h-9 w-9",
+                    isActive(section.link) ? "text-[#DB3F40]" : "text-gray-500",
+                    {
+                      "text-red-500": section.name === "Nos services",
+                    },
+                  )}
+                />
+              </HashLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </>
   );
 };

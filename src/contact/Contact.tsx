@@ -144,7 +144,7 @@ const ContactForm: React.FC = () => {
 
             <button
               type="submit"
-              className="bg-[#09223A] text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
+              className="bg-[#09223A] text-white py-2 px-6 rounded-lg hover:opacity-80 transition duration-300"
             >
               Send Message
             </button>

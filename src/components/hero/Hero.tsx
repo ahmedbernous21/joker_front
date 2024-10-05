@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 
 const Hero = () => {
   return (
@@ -13,12 +14,12 @@ const Hero = () => {
             assiettes, et plus encore avec les images et symboles de votre
             choix.
           </p>
-          <Link
-            to="/shop/"
+          <HashLink
+            to="#services"
             className="inline-block rounded-full bg-[#141E46] px-4 py-2 text-white shadow transition duration-300 hover:bg-blue-500 md:px-9 md:py-4"
           >
             Démarrer
-          </Link>
+          </HashLink>
         </div>
 
         <div className="w-full align-middle md:w-1/2">
