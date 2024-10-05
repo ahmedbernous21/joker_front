@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import { canvasActions } from "../../store/slices/canvasSlice";
 import { v4 as uuid } from "uuid";
 import toast from "react-hot-toast";
+import { IoIosAdd } from "react-icons/io";
 
 const CreateText = () => {
   const dispatch = useDispatch();
@@ -39,23 +40,21 @@ const CreateText = () => {
   return (
     <button
       onClick={handleCreateText}
-      className="flex items-center gap-2 bg-[#33AA15] text-white p-3 rounded-md  hover:bg-[#2a8f12] active:bg-[#22760f] transition-colors duration-300"
+      className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#349b11] px-4 py-2 text-white duration-300 hover:opacity-80"
       aria-label="Add Text"
     >
-      <div className="rounded-full bg-white p-1 flex items-center justify-center">
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M15.666 9.61H9.60601V15.82H6.42601V9.61H0.366011V6.73H6.42601V0.519998H9.60601V6.73H15.666V9.61Z"
-            fill="#33AA15"
-          />
-        </svg>
-      </div>
+<svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+              >
+            <path
+              d="M15.666 9.61H9.60601V15.82H6.42601V9.61H0.366011V6.73H6.42601V0.519998H9.60601V6.73H15.666V9.61Z"
+              fill="white"
+            />
+        </svg>    <span className="block md:hidden">Ajouter</span> <span className="hidden md:block">Ajouter du text</span>
     </button>
   );
 };

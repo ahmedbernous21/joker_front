@@ -14,11 +14,10 @@ const FontSizeCustomize = ({ canvasText }: FontSizeCustomizeProps) => {
 
   return (
     <div className="flex flex-col">
-      <p className="font-medium mb-1">Font Size</p>
       <div className="flex items-center gap-3">
         <input
           type="number"
-          className="w-20 p-1  text-center bg-gray-100 border border-gray-300 rounded-lg  focus:outline-none focus:ring-2 focus:ring-[#141E46] focus:border-transparent transition-all"
+          className="w-12 gap-2 py-2 px-3 text-center bg-white border border-gray-300 rounded-lg  focus:outline-none focus:ring-2 focus:ring-[#141E46] focus:border-transparent transition-all"
           placeholder="16"
           min={0}
           max={100}

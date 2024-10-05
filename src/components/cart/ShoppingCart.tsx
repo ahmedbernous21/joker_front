@@ -95,7 +95,7 @@ const ShoppingCart: React.FC = () => {
                 <span>{total} DA</span>
               </div>
             </div>
-            <button className="w-full bg-red-500 text-white py-2 lg:py-3 rounded-lg hover:bg-red-700 transition duration-300 mt-6 lg:text-lg">
+            <button className="w-full bg-[#141E46] text-white py-2 lg:py-3 rounded-lg hover:opacity-80 transition duration-300 mt-6 lg:text-lg">
               Valider
             </button>
           </div>

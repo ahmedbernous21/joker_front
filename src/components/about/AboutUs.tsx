@@ -1,7 +1,7 @@
 
 const AboutUs = () => {
   return (
-    <div id="about" className="bg-[#DB3F40] text-white py-24  px-8 md:px-3 lg:px-16">
+    <div id="about" className="bg-[#DB3F40] text-white py-24 px-8 md:px-12 lg:px-16">
       <div className="max-w-3xl mx-4">
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-10 lg:mb-8">À propos de nous</h2>
         <p className="text-lg md:text-xl lg:text-2xl font-bold mb-4 lg:mb-6">

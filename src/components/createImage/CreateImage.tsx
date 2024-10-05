@@ -1,7 +1,8 @@
+import { IoIosAdd } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 import { canvasActions } from "../../store/slices/canvasSlice";
-
+import { IoCloudUploadSharp } from "react-icons/io5";
 const CreateImage = () => {
   const dispatch = useDispatch();
 
@@ -59,10 +60,8 @@ const CreateImage = () => {
         file,
         canvasWidth,
         canvasHeight,
-        quality,
+        quality
       );
-
-      console.log("after resize", newWidth, newHeight);
 
       dispatch(
         canvasActions.createImage({
@@ -73,20 +72,22 @@ const CreateImage = () => {
           top: 60,
           width: newWidth,
           height: newHeight,
-        }),
+        })
       );
     }
   };
 
   return (
     <>
+      {/* Clickable icon to trigger file input */}
       <label htmlFor="add-image">
-        <img
-          className="cursor-pointer"
-          src="/empty_image.png"
-          alt="upload image placeholder"
-        />
+        <div className="flex items-center cursor-pointer py-3 transition-all duration-300 hover:scale-110 h-12 w-auto ">
+        <IoCloudUploadSharp 
+        className="text-4xl text-[#33AA15]" />
+        </div>
       </label>
+      
+      {/* Hidden file input */}
       <input
         type="file"
         id="add-image"

@@ -91,21 +91,23 @@ const Services: React.FC = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-12 px-6 md:px-20">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-12 px-6 md:px-10">
         {displayedServices.map((service: ServiceItem) => (
           <div
             key={service.id}
-            className="relative bg-[#D9D9D9] p-4 md:p-6 rounded-2xl text-center group "
+            className="relative bg-[#D9D9D9] p-4 md:p-2 rounded-2xl text-center group "
           >
             <div className="w-full h-40 md:h-60 rounded-lg overflow-hidden relative">
+              <Link to="/shop">
               <img
                 src={service.image}
                 alt={service.name}
                 className="w-full h-full object-contain object-center"
               />
+              </Link>
 
               <Link to="/shop">
-              <button className="hidden md:inline-block absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-red-500 text-white py-1 md:py-2 px-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="hidden md:inline-block absolute bottom-0 w-full left-1/2 transform -translate-x-1/2 bg-[#DB3F40] text-white py-1 md:py-2 px-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                 Personnaliser
               </button></Link>
              
