@@ -33,14 +33,14 @@ const navLinks: NavLink[] = [
 const mobileNavLinks: MobileNavLink[] = [
   { name: "Home", link: "/", icon: <MdHome /> },
   { name: "shop", link: "/shop", icon: <MdDashboardCustomize /> },
-  { name: "Nos services", link: "/#services", icon: <MdAdd /> }, 
+  { name: "Nos services", link: "/#services", icon: <MdAdd /> },
   { name: "Cart", link: "/cart", icon: <MdShoppingCart /> },
   { name: "Contact", link: "/contact", icon: <MdCall /> },
 ];
 
 const HeaderRight = () => {
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
-  const [activeSection, setActiveSection] = useState<string>(""); 
+  const [activeSection, setActiveSection] = useState<string>("");
   const menuRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
 
@@ -108,10 +108,6 @@ const HeaderRight = () => {
         ref={menuRef}
         className={classNames(
           "fixed bottom-0 left-0 right-0 z-50 border-t border-[#f9f9f9] bg-[#fffdfd] transition-transform duration-500 ease-in-out lg:hidden",
-          {
-            "translate-y-0": isMenuVisible,
-            "translate-y-full": !isMenuVisible,
-          },
         )}
       >
         <ul className="flex items-center justify-around py-4">

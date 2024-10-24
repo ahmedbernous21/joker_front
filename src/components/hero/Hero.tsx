@@ -3,8 +3,8 @@ import { HashLink } from "react-router-hash-link";
 
 const Hero = () => {
   return (
-    <section className="relative mx-auto flex flex-col sm:flex-row  items-center justify-center bg-[#F1F1F1]  min-h-auto sm:min-h-auto  md:bg-[#DB3F40] md:pt-10 overflow-hidden">
-      <div className="flex flex-col-reverse items-center px-12 text-white md:flex-row md:gap-12 ">
+    <section className="min-h-auto sm:min-h-auto relative mx-auto flex flex-col items-center justify-center overflow-hidden bg-[#F1F1F1] sm:flex-row md:bg-[#DB3F40] md:pt-10">
+      <div className="flex flex-col-reverse items-center px-12 text-white md:flex-row md:gap-12">
         <div className="hidden w-full md:inline-block md:w-1/2 md:text-left">
           <h1 className="mb-8 text-2xl font-medium md:text-3xl xl:text-5xl">
             Bienvenue chez Joker Graphics
@@ -24,13 +24,15 @@ const Hero = () => {
 
         <div className="w-full align-middle md:w-1/2">
           <img
-            src="/model.png"
+            src="/joker_bg.png"
             alt="model image"
             className="h-auto object-contain"
           />
         </div>
       </div>
-      <p className="absolute bottom-6 z-10 text-white text-2xl md:hidden font-medium leading-relaxed ml-10">Créez votre Design <br/> <span className="ml-10"> Personnalisé</span></p>
+      <p className="absolute bottom-6 z-10 ml-10 text-2xl font-medium leading-relaxed text-white md:hidden">
+        Créez votre Design <br /> <span className="ml-10"> Personnalisé</span>
+      </p>
       <div className="custom-shape-divider-bottom-1727200539 absolute bottom-0 md:hidden">
         <svg
           data-name="Layer 1"

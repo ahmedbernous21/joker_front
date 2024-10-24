@@ -3,8 +3,8 @@ import HeaderRight from "./HeaderRight";
 
 const Header = () => {
   return (
-    <header className="relative w-full md:bg-[#F9F9F9] bg-[#F1F1F1] z-50">
-      <nav className="max-w-screen-xl mx-auto flex items-center justify-between px-4 md:px-8 py-2">
+    <header className="relative z-50 w-full bg-[#F1F1F1] md:bg-[#F9F9F9]">
+      <nav className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-2 md:px-8">
         <HeaderLeft />
         <HeaderRight />
       </nav>
