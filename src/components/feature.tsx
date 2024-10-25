@@ -1,42 +1,38 @@
 const Features = () => {
   return (
-    <div className="flex flex-col lg:flex-row justify-around items-center py-8 bg-[#F9F9F9]">
-      <div className="text-center flex flex-col items-center lg:w-1/3 mb-8 lg:mb-0">
-        <div className="flex justify-center mb-9">
+    <div className="flex flex-col items-center justify-around bg-[#F9F9F9] py-8 lg:flex-row">
+      <div className="mb-8 flex flex-col items-center text-center lg:mb-0 lg:w-1/3">
+        <div className="mb-9 flex justify-center">
           <img
             src="/check.PNG"
             alt="Certified Results Icon"
-            className="h-24 w-30 aspect-auto "
+            className="w-30 aspect-auto h-24"
           />
         </div>
-        <p className="text-sm text-[#DB3F40] w-4/5 lg:w-2/3">
-          Des créations certifiées, pour des résultats fiables.
+        <p className="w-4/5 text-sm text-[#DB3F40] lg:w-2/3">
+          Serving +1000 satisfied clients.
         </p>
       </div>
 
-      <div className="text-center flex flex-col items-center lg:w-1/3 mb-8 lg:mb-0">
-        <div className="flex justify-center mb-4">
+      <div className="mb-8 flex flex-col items-center text-center lg:mb-0 lg:w-1/3">
+        <div className="mb-4 flex justify-center">
           <img
             src="/service.PNG"
             alt="Customer Service Icon"
-            className="w-full h-full object-contain"
+            className="h-full w-full object-contain"
           />
         </div>
-        <p className="text-sm text-[#DB3F40] w-4/5 lg:w-2/3">
-          À l'écoute avec un service client réactif.
+        <p className="w-4/5 text-sm text-[#DB3F40] lg:w-2/3">
+          Attentive with responsive customer service.
         </p>
       </div>
 
-      <div className="text-center flex flex-col items-center lg:w-1/3">
-        <div className="flex justify-center mb-4">
-          <img
-            src="/contact.PNG"
-            alt="Creativity Icon"
-            className="w-28 h-28"
-          />
+      <div className="flex flex-col items-center text-center lg:w-1/3">
+        <div className="mb-4 flex justify-center">
+          <img src="/contact.PNG" alt="Creativity Icon" className="h-28 w-28" />
         </div>
-        <p className="text-sm text-[#DB3F40] w-4/5 lg:w-2/3">
-          Créativité rapide et sur-mesure.
+        <p className="w-4/5 text-sm text-[#DB3F40] lg:w-2/3">
+          Fast, customized creativity.
         </p>
       </div>
     </div>

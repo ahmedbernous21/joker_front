@@ -3,22 +3,21 @@ import { HashLink } from "react-router-hash-link";
 
 const Hero = () => {
   return (
-    <section className="min-h-auto sm:min-h-auto relative mx-auto flex flex-col items-center justify-center overflow-hidden bg-[#F1F1F1] sm:flex-row md:bg-[#DB3F40] md:pt-10">
+    <section className="min-h-auto sm:min-h-auto relative mx-auto flex flex-col items-center justify-center overflow-hidden bg-[#F1F1F1] sm:flex-row md:bg-[#DB3F40]">
       <div className="flex flex-col-reverse items-center px-12 text-white md:flex-row md:gap-12">
         <div className="hidden w-full md:inline-block md:w-1/2 md:text-left">
           <h1 className="mb-8 text-2xl font-medium md:text-3xl xl:text-5xl">
-            Bienvenue chez Joker Graphics
+            Welcome to Joker Graphics
           </h1>
           <p className="mb-8 text-base md:text-lg">
-            Personnalisez vos t-shirts (coton, polyester), casquettes, sandales,
-            assiettes, et plus encore avec les images et symboles de votre
-            choix.
+            Customize your t-shirts,Hoodies, caps, plates, and more with images
+            and symbols of your choice.
           </p>
           <HashLink
             to="#services"
             className="inline-block rounded-full bg-[#141E46] px-4 py-2 text-white shadow transition duration-300 hover:bg-blue-500 md:px-9 md:py-4"
           >
-            Démarrer
+            Get Started
           </HashLink>
         </div>
 
@@ -31,7 +30,7 @@ const Hero = () => {
         </div>
       </div>
       <p className="absolute bottom-6 z-10 ml-10 text-2xl font-medium leading-relaxed text-white md:hidden">
-        Créez votre Design <br /> <span className="ml-10"> Personnalisé</span>
+        Create Your <br /> <span className="ml-10">Custom Design</span>
       </p>
       <div className="custom-shape-divider-bottom-1727200539 absolute bottom-0 md:hidden">
         <svg

@@ -17,7 +17,7 @@ const Shop = () => {
     <div className="flex min-h-screen flex-col gap-5 bg-[#f9f9f9] px-5 py-8 text-sm font-medium md:p-1 lg:p-10">
       {/* Heading */}
       <p className="mb-4 hidden pl-4 text-lg font-semibold md:block md:pl-9 md:text-xl lg:mb-6 lg:text-3xl">
-        Personnaliser ma commande
+        Customize my order
       </p>
 
       {/* Grid Layout */}
