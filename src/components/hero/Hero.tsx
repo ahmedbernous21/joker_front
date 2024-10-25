@@ -24,7 +24,7 @@ const Hero = () => {
 
         <div className="w-full align-middle md:w-1/2">
           <img
-            src="/joker_bg.png"
+            src="/joker_bg.webp"
             alt="model image"
             className="h-auto object-contain"
           />
