@@ -101,7 +101,7 @@ const HeaderRight = () => {
       <nav
         ref={menuRef}
         className={classNames(
-          "fixed bottom-0 left-0 right-0 z-50 border-t border-[#f9f9f9] bg-[#fffdfd] transition-transform duration-500 ease-in-out lg:hidden",
+          "z-99 fixed bottom-0 left-0 right-0 mt-2 border-t border-[#f9f9f9] bg-[#fffdfd] p-0 transition-transform duration-500 ease-in-out lg:hidden",
         )}
       >
         <ul className="flex items-center justify-around py-4">
@@ -113,7 +113,7 @@ const HeaderRight = () => {
                   if (section.link === "/") handleHomeClick();
                 }}
                 className={classNames(
-                  "flex items-center justify-center rounded-full p-3 duration-300 hover:bg-gray-100",
+                  "flex items-center justify-center rounded-full p-2 duration-300 hover:bg-gray-100",
                   {
                     "text-[#DB3F40]": isActive(section.link),
                     "text-gray-500": !isActive(section.link),

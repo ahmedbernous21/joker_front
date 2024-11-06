@@ -118,7 +118,7 @@ const TextCustomize = () => {
         </>
       ) : (
         <p className="w-full text-center text-gray-600">
-          Sélectionnez le texte à modifier
+          Choose the text you want to edit
         </p>
       )}
     </div>
