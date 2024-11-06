@@ -84,10 +84,10 @@ const Shop = () => {
                   )}
                 </div>
               </div>
-              <SubmitOrderButton />
             </div>
           )}
         </div>
+        <SubmitOrderButton />
       </div>
     </div>
   );

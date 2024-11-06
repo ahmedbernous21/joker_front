@@ -7,11 +7,17 @@ import { IRootState } from "../../store/store";
 interface OrderModelProps {
   setIsModelOpen: (isOpen: boolean) => void;
 }
+
 const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
   const { frontCanvas, backCanvas } = useSelector(
     (state: IRootState) => state.canvas,
   );
+
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [uuid, setUuid] = useState<string>(""); // Populate this with actual user UUID if available
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSizeSelection = (size: string) => {
@@ -26,25 +32,35 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
       downloadFile(backCanvas.toDataURL(), "back");
     }
   };
+
   const downloadFile = (canvas: string, side: string) => {
     const link = document.createElement("a");
     link.download = `${side}.png`;
     link.href = canvas;
     link.click();
   };
+
   const createOrder = async () => {
-    if (!selectedSize) {
-      return toast.error("Please select a size");
+    if (!selectedSize || !phone || !city || !name) {
+      return toast.error("Please fill in all fields");
     }
+
     try {
       const response = await httpClient.post("requests/", {
         size: selectedSize,
+        phone,
+        city,
+        name,
+        uuid,
       });
       if (response) {
-        console.log(response);
+        console.log("Order created successfully:", response);
+        toast.success("Order created successfully!");
       }
     } catch (error) {
-      setErrorMessage(error.message || "An error occurred during login");
+      setErrorMessage(
+        error.message || "An error occurred while creating the order",
+      );
     }
   };
 
@@ -74,12 +90,47 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
               </button>
             ))}
           </div>
+
           <p className="mt-4">Selected Size: {selectedSize || "None"}</p>
+
+          {/* Form Fields for Additional Information */}
+          <div className="mt-4 flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-lg border p-2"
+            />
+            <input
+              type="text"
+              placeholder="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-lg border p-2"
+            />
+            <input
+              type="text"
+              placeholder="City"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full rounded-lg border p-2"
+            />
+            <input
+              type="text"
+              placeholder="UUID"
+              value={uuid}
+              onChange={(e) => setUuid(e.target.value)}
+              className="w-full rounded-lg border p-2"
+            />
+          </div>
+
           <p className="mt-4">Price: {"0 DZD"}</p>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
           <div className="flex gap-2">
             <button
-              onClick={() => downloadFilesHandler()}
+              onClick={downloadFilesHandler}
               className="mt-6 rounded-lg border border-blue-500 bg-white px-4 py-2 text-blue-500"
             >
               Download
