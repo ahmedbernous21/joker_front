@@ -17,30 +17,26 @@ const TextCustomize = () => {
   );
 
   return (
-    <div className="flex flex-wrap gap-6 p-6 bg-[#fcfbfb] rounded-md shadow-md md:p-6 md:px-">
+    <div className="md:px- flex flex-wrap gap-6 rounded-md bg-[#fcfbfb] p-6 shadow-md md:p-6">
       {/* Top Buttons (Add and Delete) */}
-      <div className="flex justify-between w-full gap-4">
-  <CreatText />
-  {selectedLayer && selectedLayer.type === "text" && (
-   <DeleteLayer/>
-  )}
-</div>
-
+      <div className="flex w-full justify-between gap-4">
+        <CreatText />
+        {selectedLayer && selectedLayer.type === "text" && <DeleteLayer />}
+      </div>
 
       {/* Main Content: Only show when a text layer is selected */}
       {selectedLayer && selectedLayer.type === "text" && text ? (
         <>
           {/* Flexbox for font size, text style, and font family */}
-          <div className="flex flex-col w-full gap-6">
-          <div className="flex flex-col gap-3">
+          <div className="flex w-full flex-col gap-6">
+            <div className="flex flex-col gap-3">
               <p className="font-medium text-gray-700">Couleur du texte</p>
               <div className="flex gap-2">
                 <TextColorCustomize />
               </div>
             </div>
             {/* Font Size, Font Family, and Text Style Customization */}
-            <div className="flex flex-wrap gap-6 w-full">
-       
+            <div className="flex w-full flex-wrap gap-6">
               {/* Font Size Customization */}
               <div className="flex flex-col gap-3">
                 <p className="font-medium text-gray-700">Taille de la police</p>
@@ -58,7 +54,7 @@ const TextCustomize = () => {
                 <p className="font-medium text-gray-700">Style du texte</p>
                 <div className="flex gap-2">
                   <button
-                    className={`flex items-center justify-center h-8 w-8 rounded-md p-2 transition-colors ${
+                    className={`flex h-8 w-8 items-center justify-center rounded-md p-2 transition-colors ${
                       text?.fontStyle === "italic"
                         ? "bg-[#141E46] text-white"
                         : "bg-gray-200 text-gray-800"
@@ -78,7 +74,7 @@ const TextCustomize = () => {
                   </button>
 
                   <button
-                    className={`flex items-center justify-center h-8 w-8 rounded-md p-2 transition-colors ${
+                    className={`flex h-8 w-8 items-center justify-center rounded-md p-2 transition-colors ${
                       text?.fontWeight === "bold"
                         ? "bg-[#141E46] text-white"
                         : "bg-gray-200 text-gray-800"
@@ -98,7 +94,7 @@ const TextCustomize = () => {
                   </button>
 
                   <button
-                    className={`flex items-center justify-center h-8 w-8 rounded-md p-2 transition-colors ${
+                    className={`flex h-8 w-8 items-center justify-center rounded-md p-2 transition-colors ${
                       text?.underline
                         ? "bg-[#141E46] text-white"
                         : "bg-gray-200 text-gray-800"
@@ -121,7 +117,7 @@ const TextCustomize = () => {
           </div>
         </>
       ) : (
-        <p className="text-center w-full text-gray-600">
+        <p className="w-full text-center text-gray-600">
           Sélectionnez le texte à modifier
         </p>
       )}

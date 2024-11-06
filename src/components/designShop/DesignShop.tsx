@@ -15,19 +15,20 @@ function DesignShop() {
   );
 
   return (
-    <div className="flex flex-col  items-center gap-6 rounded-lh bg-[#f9f9f9]">
-      <div className="flex flex-col items-center justify-center gap-2 ">
-        <FabricCanvasFront canvasWidth={320} canvasHeight={450} />
-        <FabricCanvasBack canvasWidth={320} canvasHeight={450}/>
-      </div>
-      <div className="flex gap-6 ">
+    <div className="rounded-lh flex flex-col items-center gap-6 bg-[#f9f9f9]">
+      {/* Move the front/back button selection above the canvases */}
+      <div className="mt-4 flex gap-6">
         <div
           onClick={() => {
             dispatch(canvasActions.setActiveSide("front"));
             backCanvas?.discardActiveObject();
             backCanvas?.renderAll();
           }}
-          className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${currentArticle.active === "front" ? "outline-solid outline outline-2 outline-[#141E46]" : ""}`}
+          className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${
+            currentArticle.active === "front"
+              ? "outline-solid outline outline-2 outline-[#141E46]"
+              : ""
+          }`}
         >
           <img
             src={currentArticle.articleFrontSideInfo.src}
@@ -35,22 +36,30 @@ function DesignShop() {
           />
         </div>
         {currentArticle.articleBackSideInfo != null && (
-          <>
-            <div
-              onClick={() => {
-                dispatch(canvasActions.setActiveSide("back"));
-                frontCanvas?.discardActiveObject();
-                frontCanvas?.renderAll();
-              }}
-              className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${currentArticle.active === "back" ? "outline-solid outline outline-2 outline-[#141E46]" : ""}`}
-            >
-              <img
-                src={currentArticle.articleBackSideInfo.src}
-                alt={currentArticle.articleBackSideInfo.name}
-              />
-            </div>
-          </>
+          <div
+            onClick={() => {
+              dispatch(canvasActions.setActiveSide("back"));
+              frontCanvas?.discardActiveObject();
+              frontCanvas?.renderAll();
+            }}
+            className={`flex w-14 cursor-pointer items-center justify-center overflow-hidden rounded-xl ${
+              currentArticle.active === "back"
+                ? "outline-solid outline outline-2 outline-[#141E46]"
+                : ""
+            }`}
+          >
+            <img
+              src={currentArticle.articleBackSideInfo.src}
+              alt={currentArticle.articleBackSideInfo.name}
+            />
+          </div>
         )}
+      </div>
+
+      {/* Canvas display */}
+      <div className="flex flex-col items-center justify-center gap-2">
+        <FabricCanvasFront canvasWidth={320} canvasHeight={450} />
+        <FabricCanvasBack canvasWidth={320} canvasHeight={450} />
       </div>
     </div>
   );
