@@ -8,12 +8,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const articles = [
-  { name: "T-shirt", icon: faTshirt, link: "/design/tshirt" },
-  { name: "sweet-shirt", icon: faTshirt, link: "/design/tshirt" },
-  { name: "hoodie", icon: faTshirt, link: "/design/tshirt" },
-  { name: "Chope", icon: faMugHot, link: "/design/mug" },
-  { name: "Casquette", icon: faHatCowboy, link: "/design/cap" },
-  { name: "Porte clés", icon: faKey, link: "/design/keyring" },
+  { name: "T-shirt", icon: faTshirt, link: "/shop/tshirt" },
+  { name: "sweet-shirt", icon: faTshirt, link: "/shop/tshirt" },
+  { name: "hoodie", icon: faTshirt, link: "/shop/tshirt" },
+  { name: "Chope", icon: faMugHot, link: "/shop/mug" },
+  { name: "Casquette", icon: faHatCowboy, link: "/shop/cap" },
+  { name: "Porte clés", icon: faKey, link: "/shop/keyring" },
 ];
 
 const Articles = () => {

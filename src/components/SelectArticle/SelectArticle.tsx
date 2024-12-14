@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Article } from "../../interfaces/CanvasSliceInterfaces";
 import { useEffect } from "react";
 
-const RightSectionSelectArticles = () => {
+const SelectArticle = () => {
   const dispatch = useDispatch();
   const { articles, frontCanvas, backCanvas } = useSelector(
     (state: IRootState) => state.canvas,
   );
+
   useEffect(() => {
     const isExist = articles.find(
       (article: Article) =>
@@ -28,7 +29,7 @@ const RightSectionSelectArticles = () => {
     frontCanvas?.renderAll();
     dispatch(canvasActions.changeArticle(selectedArticle));
 
-    navigate(`/design/${selectedArticle.articleName}`); // Navigate to the desired path based on the article
+    navigate(`/shop/${selectedArticle.articleName}`); // Navigate to the desired path based on the article
   };
   useEffect(() => {
     const selectedArticle = articles.find(
@@ -42,7 +43,7 @@ const RightSectionSelectArticles = () => {
     <select
       onChange={handleChange}
       name="articlesSelect"
-      className="w-full rounded-xl py-2 text-center outline-none"
+      className="w-[200px] rounded-xl py-2 text-center outline-none"
       value={JSON.stringify(
         articles.find(
           (article: Article) =>
@@ -59,4 +60,4 @@ const RightSectionSelectArticles = () => {
   );
 };
 
-export default RightSectionSelectArticles;
+export default SelectArticle;

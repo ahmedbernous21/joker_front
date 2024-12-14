@@ -58,8 +58,8 @@ function DesignShop() {
 
       {/* Canvas display */}
       <div className="flex flex-col items-center justify-center gap-2">
-        <FabricCanvasFront canvasWidth={320} canvasHeight={450} />
-        <FabricCanvasBack canvasWidth={320} canvasHeight={450} />
+        <FabricCanvasFront canvasWidth={320} canvasHeight={390} />
+        <FabricCanvasBack canvasWidth={320} canvasHeight={390} />
       </div>
     </div>
   );

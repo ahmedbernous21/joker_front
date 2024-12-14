@@ -7,6 +7,9 @@ export default {
         center: true,
         padding : "2rem"
       },
+      colors : {
+        "primaryColor" : "#DB3F40",
+      },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'], // Replace with your Google Font name
       },

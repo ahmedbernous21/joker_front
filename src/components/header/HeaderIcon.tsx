@@ -7,13 +7,17 @@ import { HashLink } from "react-router-hash-link";
 
 const CartAndSearch = () => {
   const [showSearch, setShowSearch] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); 
-  const [filteredArticles, setFilteredArticles] = useState(articlesInitialState); 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredArticles, setFilteredArticles] =
+    useState(articlesInitialState);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowSearch(false);
       }
     };
@@ -29,7 +33,7 @@ const CartAndSearch = () => {
       setFilteredArticles(articlesInitialState);
     } else {
       const filtered = articlesInitialState.filter((article) =>
-        article.articleName.toLowerCase().includes(searchTerm.toLowerCase())
+        article.articleName.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFilteredArticles(filtered);
     }
@@ -40,7 +44,7 @@ const CartAndSearch = () => {
       <div className="relative" ref={searchRef}>
         <IoMdSearch
           onClick={() => setShowSearch(!showSearch)}
-          className="size-6 cursor-pointer duration-300 hover:text-[#DB3F40] md:inline-block "
+          className="size-6 cursor-pointer duration-300 hover:text-[#DB3F40] md:inline-block"
           aria-label="Search"
         />
 
@@ -48,8 +52,8 @@ const CartAndSearch = () => {
           className={
             !showSearch
               ? "hidden"
-              : "absolute top-10 h-96 w-64 overflow-y-auto overflow-x-hidden rounded-lg border border-gray-300 bg-white p-2"
-          } 
+              : "absolute -left-44 top-10 h-96 w-64 overflow-y-auto overflow-x-hidden rounded-lg border border-gray-300 bg-white p-2"
+          }
         >
           <input
             type="text"
@@ -64,24 +68,25 @@ const CartAndSearch = () => {
               {filteredArticles.length > 0 ? (
                 filteredArticles.map((article) => (
                   <div key={article.id} className="py-4">
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       <div className="flex flex-1 flex-col gap-2">
                         <p>{article.articleName}</p>
-                        <p className="text-red-500">Price: {article.articlePrice}</p>
+                        <p className="text-red-500">
+                          Price: {article.articlePrice}
+                        </p>
                       </div>
-                      <HashLink to={"/shop?id="+article.id}> 
+                      <HashLink to={"/shop?id=" + article.id}>
                         <img
                           className="h-28"
                           src={article.articleFrontSideInfo.src}
                           alt={article.articleName}
                         />
                       </HashLink>
-                      
                     </div>
                   </div>
                 ))
               ) : (
-                <p>No items found</p> 
+                <p>No items found</p>
               )}
             </div>
           </div>

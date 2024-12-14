@@ -1,5 +1,5 @@
 import RightSectionCustomize from "../rightSectionCustomize/RightSectionCustomize";
-import RightSectionSelectArticles from "../rightSectionSelectArticles/RightSectionSelectArticles";
+import RightSectionSelectArticles from "../SelectArticle/SelectArticle";
 
 const RightSection = () => {
   return (

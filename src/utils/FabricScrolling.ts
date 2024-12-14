@@ -1,4 +1,3 @@
-
 import * as fabric from "fabric";
 // fix error from the library itself
 const fixScrolling = () => {

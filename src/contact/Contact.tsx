@@ -37,7 +37,10 @@ const ContactForm: React.FC = () => {
 
   if (formSubmitted) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#f9f9f9]">
+      <div
+        style={{ minHeight: "calc(100vh - 112px)" }}
+        className="flex items-center justify-center bg-[#f9f9f9]"
+      >
         <div className="mx-10 -mt-40 max-w-md text-center md:mx-auto">
           <h1 className="text-2xl font-bold">Votre message a été envoyé</h1>
           <p className="mb-10 mt-4 text-gray-500 md:mb-8">
@@ -54,7 +57,10 @@ const ContactForm: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full min-h-screen items-center justify-center bg-[#f9f9f9] px-4 py-8">
+    <div
+      style={{ minHeight: "calc(100vh - 112px)" }}
+      className="flex h-full min-h-screen items-center justify-center bg-[#f9f9f9] px-4 py-8"
+    >
       <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-lg lg:flex-row">
         <div className="relative w-full space-y-8 bg-[#DB3F40] p-8 text-white lg:w-1/3 lg:space-y-10">
           <div className="absolute inset-0 bg-gradient-to-b from-[#DB3F40] to-[#c12d2d] opacity-90"></div>
