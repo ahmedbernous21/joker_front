@@ -17,7 +17,7 @@ const TextCustomize = () => {
   );
 
   return (
-    <div className="md:px- flex flex-wrap gap-6 rounded-md bg-[#fcfbfb] p-6 shadow-md md:p-6">
+    <div className="md:px- flex flex-wrap gap-1 sm:gap-6 rounded-md bg-[#fcfbfb] p-6 shadow-md md:p-6">
       {/* Top Buttons (Add and Delete) */}
       <div className="flex w-full justify-between gap-4">
         <CreatText />

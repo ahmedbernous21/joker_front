@@ -1,6 +1,5 @@
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Design from "./pages/design/Design";
 import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
 import Admin from "./pages/Admin/admin";
@@ -19,16 +18,15 @@ function App() {
       <Header />
       <Routes>
         <Route element={<Home />} path="/" />
-        <Route element={<Design />} path="/design/:article" />
         <Route element={<Articles />} path="/design/" />
         <Route element={<Login />} path="/kedache/" />
         <Route element={<Dashboard />} path="/dashboard/overview/" />
         <Route element={<Admin />} path="/dashboard/articles/" />
-        <Route element={<NotFound />} path="*" />
         <Route element={<ContactForm />} path="/contact/" />
         <Route element={<ShoppingCart/>} path="/cart/" />
         <Route element={<AboutUs/>} path="/about/" />
-        <Route element={<Shop/>} path="/shop/" />
+        <Route element={<Shop/>} path="/shop/:item" />
+        <Route element={<NotFound />} path="*" />
       </Routes>
     </BrowserRouter>
   );

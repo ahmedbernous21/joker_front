@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DesignShop from "../../components/designShop/DesignShop";
 import ColorPicker from "../../components/colorPicker/ColorPicker";
 import CreateImage from "../../components/createImage/CreateImage";
@@ -9,18 +9,26 @@ import { useSelector } from "react-redux";
 import { IRootState } from "../../store/store";
 import DeleteLayer from "../../components/deleteLayer/DeleteLayer";
 import { FaTextHeight, FaPaintBrush, FaImage } from "react-icons/fa";
+import SelectArticle from "../../components/SelectArticle/SelectArticle";
+import { getCurrentArticle } from "../../store/selectors/canvasSelectors";
 
 const Shop = () => {
   const [quantity, setQuantity] = useState(1);
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const [activeTab, setActiveTab] = useState("text");
+  const currentArticle = useSelector((state: IRootState) =>
+    getCurrentArticle(state),
+  );
 
   return (
     <div className="flex min-h-screen flex-col gap-5 bg-[#f9f9f9] px-5 py-8 text-sm font-medium md:p-1 lg:p-10">
       {/* Heading */}
-      <p className="mb-4 hidden pl-4 text-lg font-semibold md:block md:pl-9 md:text-xl lg:mb-6 lg:text-3xl">
-        Customize my order
-      </p>
+      <div className="flex items-center">
+        <p className="mb-4 hidden flex-1 pl-4 text-lg font-semibold md:block md:pl-9 md:text-xl lg:mb-6 lg:text-3xl">
+          Customize my order
+        </p>
+        <SelectArticle />
+      </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {/* Left Section - Design */}
@@ -31,6 +39,7 @@ const Shop = () => {
         {/* Right Section - Customization for Desktop */}
         <div className="hidden flex-col gap-6 rounded-lg bg-white px-6 py-6 md:flex md:p-10 md:py-10 lg:p-10">
           <DesktopCustomization
+            article={currentArticle}
             quantity={quantity}
             setQuantity={setQuantity}
             selectedLayer={selectedLayer}
@@ -38,7 +47,7 @@ const Shop = () => {
         </div>
 
         {/* Customization for Mobile */}
-        <div className="flex flex-col gap-4 md:hidden">
+        <div className="flex flex-col gap-1 sm:gap-4 md:hidden">
           {/* Tabs for switching between customization options */}
           <div className="flex justify-around border-b border-gray-300 pb-2">
             <button
@@ -93,11 +102,16 @@ const Shop = () => {
   );
 };
 
-const DesktopCustomization = ({ quantity, setQuantity, selectedLayer }) => (
+const DesktopCustomization = ({
+  article,
+  quantity,
+  setQuantity,
+  selectedLayer,
+}) => (
   <>
     <div className="flex items-center justify-between">
-      <p className="text-lg font-semibold">Sport T-shirts</p>
-      <p className="font-bold text-[#DB3F40]">1900Da</p>
+      <p className="text-lg font-semibold">{article.articleName}</p>
+      <p className="font-bold text-[#DB3F40]">{article.articlePrice}Da</p>
     </div>
     <div className="flex flex-col gap-4">
       <p className="font-light">Text</p>

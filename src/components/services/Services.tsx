@@ -3,6 +3,7 @@ import { servicesData, ServiceItem } from "./products";
 import { categories, Category } from "./categories";
 import { FaCircleChevronRight } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import LoaderWithImage from "../loaders/LoaderWithImage";
 
 const Services: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(
@@ -101,21 +102,29 @@ const Services: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-3 px-6 md:grid-cols-3 md:gap-12 md:px-10">
+        {displayedServices.length === 0 && (
+          <div className="col-span-3 flex h-36 items-center justify-center">
+            <p className="col-span-3 h-5 text-center text-gray-600">
+              No services found.
+            </p>
+          </div>
+        )}
         {displayedServices.map((service: ServiceItem) => (
           <div
             key={service.id}
             className="group relative rounded-2xl bg-[#D9D9D9] p-4 text-center md:p-2"
           >
             <div className="relative h-40 w-full overflow-hidden rounded-lg md:h-60">
-              <Link to="/shop">
-                <img
-                  src={service.image}
-                  alt={service.name}
-                  className="h-full w-full object-contain object-center"
+              <Link to={`/shop/${service.id}`}>
+                <LoaderWithImage
+                  imageSrc={service.image}
+                  imageAlt={service.name}
+                  imageClassName="h-full w-full object-contain object-center"
+                  loaderClassName="w-10 h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 stroke-[#DB3F40]"
                 />
               </Link>
 
-              <Link to="/shop">
+              <Link to={`/shop/tshirt`}>
                 <button className="absolute bottom-0 left-1/2 hidden w-full -translate-x-1/2 transform rounded-full bg-[#DB3F40] px-3 py-1 text-white opacity-0 transition-opacity group-hover:opacity-100 md:inline-block md:py-2">
                   Customize
                 </button>

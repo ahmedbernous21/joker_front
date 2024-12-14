@@ -1,9 +1,13 @@
-import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
+import heroImage from "/joker_bg.webp";
+import LoaderWithImage from "../loaders/LoaderWithImage";
 
 const Hero = () => {
   return (
-    <section className="min-h-auto sm:min-h-auto relative mx-auto flex flex-col items-center justify-center overflow-hidden bg-[#F1F1F1] sm:flex-row md:bg-[#DB3F40]">
+    <section
+      className="relative mx-auto flex flex-col items-center justify-center overflow-hidden bg-[#F1F1F1] sm:flex-row md:bg-[#DB3F40]"
+      style={{ minHeight: "calc(100vh - 112px)" }}
+    >
       <div className="flex flex-col-reverse items-center px-12 text-white md:flex-row md:gap-12">
         <div className="hidden w-full md:inline-block md:w-1/2 md:text-left">
           <h1 className="mb-8 text-2xl font-medium md:text-3xl xl:text-5xl">
@@ -22,10 +26,11 @@ const Hero = () => {
         </div>
 
         <div className="w-full align-middle md:w-1/2">
-          <img
-            src="/joker_bg.webp"
-            alt="model image"
-            className="h-auto object-contain"
+          <LoaderWithImage
+            imageSrc={heroImage}
+            imageAlt="heroImage"
+            imageClassName="object-contain"
+            loaderClassName="w-20 h-20 md:w-32 md:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48 sm:stroke-[#fff] stroke-[#DB3F40] "
           />
         </div>
       </div>

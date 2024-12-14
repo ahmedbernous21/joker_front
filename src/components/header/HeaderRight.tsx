@@ -26,7 +26,7 @@ const navLinks: NavLink[] = [
   { name: "Home", link: "/" },
   { name: "About", link: "/#about" },
   { name: "Services", link: "/#services" },
-  { name: "shop", link: "/shop" },
+  { name: "shop", link: "/shop/tshirt" },
   { name: "Contact", link: "/contact" },
 ];
 
@@ -81,9 +81,9 @@ const HeaderRight = () => {
             <HashLink
               to={section.link}
               className={classNames(
-                "font-medium capitalize duration-300 hover:text-[#DB3F40]",
+                "hover:text-primaryColor font-medium capitalize duration-300",
                 {
-                  "text-[#DB3F40]": isActive(section.link),
+                  "text-primaryColor": isActive(section.link),
                 },
               )}
             >
@@ -115,7 +115,7 @@ const HeaderRight = () => {
                 className={classNames(
                   "flex items-center justify-center rounded-full p-2 duration-300 hover:bg-gray-100",
                   {
-                    "text-[#DB3F40]": isActive(section.link),
+                    "text-primaryColor": isActive(section.link),
                     "text-gray-500": !isActive(section.link),
                     "bg-red-200": section.name === "Nos services",
                   },
@@ -124,9 +124,11 @@ const HeaderRight = () => {
                 <section.icon.type
                   className={classNames(
                     "h-9 w-9",
-                    isActive(section.link) ? "text-[#DB3F40]" : "text-gray-500",
+                    isActive(section.link)
+                      ? "text-primaryColor"
+                      : "text-gray-500",
                     {
-                      "text-red-500": section.name === "Nos services",
+                      "text-primaryColor": section.name === "Nos services",
                     },
                   )}
                 />
