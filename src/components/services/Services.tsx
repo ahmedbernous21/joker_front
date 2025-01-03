@@ -114,7 +114,10 @@ const Services: React.FC = () => {
             className="group relative rounded-2xl bg-[#D9D9D9] p-4 text-center md:p-2"
           >
             <div className="relative h-40 w-full overflow-hidden rounded-lg md:h-60">
-              <Link to={`/shop/${service.id}`}>
+              <Link
+                to={`/shop/tshirt`}
+                // to={`/shop/${service.id}`}
+              >
                 <img
                   src={service.image}
                   alt={service.name}
