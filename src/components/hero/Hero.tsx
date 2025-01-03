@@ -28,18 +28,7 @@ const Hero = () => {
         </div>
 
         <div className="w-full align-middle md:w-1/2">
-          <img
-            src={heroImage}
-            alt="heroImage"
-            className="object-contain"
-          />
-          {/* <img src="" />
-          <LoaderWithImage
-            imageSrc={heroImage}
-            imageAlt="heroImage"
-            imageClassName="object-contain"
-            loaderClassName="w-20 h-20 md:w-32 md:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48 sm:stroke-[#fff] stroke-[#DB3F40] "
-          /> */}
+          <img src={heroImage} alt="heroImage" className="object-contain" />
         </div>
       </div>
       <p className="absolute bottom-6 z-10 ml-10 text-2xl font-medium leading-relaxed text-white md:hidden">

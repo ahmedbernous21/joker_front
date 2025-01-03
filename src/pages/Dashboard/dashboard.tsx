@@ -71,7 +71,7 @@ const Dashboard = () => {
 
         <div className="mb-6">
           <label className="mb-2 block text-gray-700">Select Date Range:</label>
-          <div className="flex space-x-4">
+          <div className="flex flex-col gap-y-3 flex-wrap sm:flex-row sm:flex-nowrap gap-x-3 ">
             <input
               type="date"
               value={startDate}

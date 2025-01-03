@@ -3,7 +3,6 @@ import { servicesData, ServiceItem } from "./products";
 import { categories, Category } from "./categories";
 import { FaCircleChevronRight } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import LoaderWithImage from "../loaders/LoaderWithImage";
 
 const Services: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(
@@ -116,11 +115,10 @@ const Services: React.FC = () => {
           >
             <div className="relative h-40 w-full overflow-hidden rounded-lg md:h-60">
               <Link to={`/shop/${service.id}`}>
-                <LoaderWithImage
-                  imageSrc={service.image}
-                  imageAlt={service.name}
-                  imageClassName="h-full w-full object-contain object-center"
-                  loaderClassName="w-10 h-10 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 stroke-[#DB3F40]"
+                <img
+                  src={service.image}
+                  alt={service.name}
+                  className="h-full w-full object-contain object-center"
                 />
               </Link>
 
