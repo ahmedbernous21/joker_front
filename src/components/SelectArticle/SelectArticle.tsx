@@ -17,7 +17,7 @@ const SelectArticle = () => {
         article.articleName === location.pathname.split("/")[2],
     );
     if (!isExist) {
-      navigate("/notFound"); // Navigate to the default path if the article is not found
+      // navigate("/notFound"); // Navigate to the default path if the article is not found
     }
   }, [articles]);
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DesignShop from "../../components/designShop/DesignShop";
 import ColorPicker from "../../components/colorPicker/ColorPicker";
 import CreateImage from "../../components/createImage/CreateImage";
@@ -11,15 +11,17 @@ import DeleteLayer from "../../components/deleteLayer/DeleteLayer";
 import { FaTextHeight, FaPaintBrush, FaImage } from "react-icons/fa";
 import SelectArticle from "../../components/SelectArticle/SelectArticle";
 import { getCurrentArticle } from "../../store/selectors/canvasSelectors";
+import OrderModel from "../../components/orderModel/OrderModel";
 
 const Shop = () => {
+  const [isModelOpen, setIsModelOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const { selectedLayer } = useSelector((state: IRootState) => state.canvas);
   const [activeTab, setActiveTab] = useState("text");
   const currentArticle = useSelector((state: IRootState) =>
     getCurrentArticle(state),
   );
-
+  // return null;
   return (
     <div className="flex min-h-screen flex-col gap-5 bg-[#f9f9f9] px-5 py-8 text-sm font-medium md:p-1 lg:p-10">
       {/* Heading */}
@@ -41,6 +43,8 @@ const Shop = () => {
           <DesktopCustomization
             article={currentArticle}
             quantity={quantity}
+            isModelOpen={isModelOpen}
+            setIsModelOpen={setIsModelOpen}
             setQuantity={setQuantity}
             selectedLayer={selectedLayer}
           />
@@ -95,8 +99,16 @@ const Shop = () => {
               </div>
             </div>
           )}
+          <>
+            <SubmitOrderButton setIsModelOpen={setIsModelOpen} />
+            {isModelOpen && (
+              <OrderModel
+                setIsModelOpen={setIsModelOpen}
+                price={currentArticle.articlePrice * quantity}
+              />
+            )}
+          </>
         </div>
-        <SubmitOrderButton />
       </div>
     </div>
   );
@@ -105,6 +117,8 @@ const Shop = () => {
 const DesktopCustomization = ({
   article,
   quantity,
+  isModelOpen,
+  setIsModelOpen,
   setQuantity,
   selectedLayer,
 }) => (
@@ -153,7 +167,15 @@ const DesktopCustomization = ({
           />
         </div>
       </div>
-      <SubmitOrderButton />
+      <>
+        <SubmitOrderButton setIsModelOpen={setIsModelOpen} />
+        {isModelOpen && (
+          <OrderModel
+            setIsModelOpen={setIsModelOpen}
+            price={article.articlePrice * quantity}
+          />
+        )}
+      </>
     </div>
   </>
 );

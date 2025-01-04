@@ -6,9 +6,10 @@ import { IRootState } from "../../store/store";
 
 interface OrderModelProps {
   setIsModelOpen: (isOpen: boolean) => void;
+  price: number;
 }
 
-const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
+const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
   const { frontCanvas, backCanvas } = useSelector(
     (state: IRootState) => state.canvas,
   );
@@ -17,7 +18,6 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
   const [phone, setPhone] = useState<string>("");
   const [city, setCity] = useState<string>("");
   const [name, setName] = useState<string>("");
-  const [uuid, setUuid] = useState<string>(""); // Populate this with actual user UUID if available
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSizeSelection = (size: string) => {
@@ -45,17 +45,21 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
       return toast.error("Please fill in all fields");
     }
 
+    // Convert the canvas to base64 images
+    const frontImage = frontCanvas ? frontCanvas.toDataURL() : null;
+    const backImage = backCanvas ? backCanvas.toDataURL() : null;
+
     try {
       const response = await httpClient.post("requests/", {
         size: selectedSize,
         phone,
         city,
         name,
-        uuid,
+        frontImage, // Add front image to the request
+        backImage, // Add back image to the request
       });
       if (response) {
         console.log("Order created successfully:", response);
-        // here is the request ..
         toast.success("Order created successfully!");
       }
     } catch (error) {
@@ -117,16 +121,9 @@ const OrderModel = ({ setIsModelOpen }: OrderModelProps) => {
               onChange={(e) => setCity(e.target.value)}
               className="w-full rounded-lg border p-2"
             />
-            <input
-              type="text"
-              placeholder="UUID"
-              value={uuid}
-              onChange={(e) => setUuid(e.target.value)}
-              className="w-full rounded-lg border p-2"
-            />
           </div>
 
-          <p className="mt-4">Price: {"0 DZD"}</p>
+          <p className="mt-4">Price: {price}DZD</p>
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
           <div className="flex gap-2">

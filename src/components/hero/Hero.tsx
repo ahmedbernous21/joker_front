@@ -1,8 +1,10 @@
 import { HashLink } from "react-router-hash-link";
 import heroImage from "/joker_bg.webp";
-import LoaderWithImage from "../loaders/LoaderWithImage";
+import { useDispatch } from "react-redux";
+import { loadersActions } from "../../store/slices/lodersSlice";
 
 const Hero = () => {
+  const dispatch = useDispatch();
   return (
     <section
       className="relative mx-auto flex flex-col items-center justify-center overflow-hidden bg-[#F1F1F1] sm:flex-row md:bg-[#DB3F40]"
@@ -26,12 +28,7 @@ const Hero = () => {
         </div>
 
         <div className="w-full align-middle md:w-1/2">
-          <LoaderWithImage
-            imageSrc={heroImage}
-            imageAlt="heroImage"
-            imageClassName="object-contain"
-            loaderClassName="w-20 h-20 md:w-32 md:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48 sm:stroke-[#fff] stroke-[#DB3F40] "
-          />
+          <img src={heroImage} alt="heroImage" className="object-contain" />
         </div>
       </div>
       <p className="absolute bottom-6 z-10 ml-10 text-2xl font-medium leading-relaxed text-white md:hidden">

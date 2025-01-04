@@ -1,9 +1,10 @@
-const ImageLoader = ({
+const Loader = ({
   isLoading = true,
   width = 50,
   height = 50,
   color = "#fff",
   backgroundColor = "#DB3F40",
+  className = "",
 }) => {
   // Only render the loader if isLoading is true
   if (!isLoading) {
@@ -12,7 +13,7 @@ const ImageLoader = ({
 
   return (
     <div
-      className="flex h-full w-full items-center justify-center"
+      className={className}
       style={{ backgroundColor }}
     >
       <svg
@@ -43,4 +44,4 @@ const ImageLoader = ({
   );
 };
 
-export default ImageLoader;
+export default Loader;
