@@ -1,37 +1,37 @@
-import { useState } from "react";
-import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useState, useEffect, useContext } from "react";
 import httpClient from "../../httpClient";
-import { IRootState } from "../../store/store";
+import toast from "react-hot-toast";
+import { ShopContext } from "../../contexts/ShopContext";
+import { useNavigate } from "react-router-dom";
+import Loader from "../loaders/Loader";
 
 interface OrderModelProps {
-  setIsModelOpen: (isOpen: boolean) => void;
+  setIsModelOpen: (value: boolean) => void;
   price: number;
 }
 
 const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
-  const { frontCanvas, backCanvas } = useSelector(
-    (state: IRootState) => state.canvas,
-  );
-
+  const navigate = useNavigate();
+  const { currentArticle, frontCanvas, backCanvas } = useContext(ShopContext);
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [city, setCity] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSizeSelection = (size: string) => {
     setSelectedSize(size);
   };
 
-  const downloadFilesHandler = () => {
-    if (frontCanvas) {
-      downloadFile(frontCanvas.toDataURL(), "front");
-    }
-    if (backCanvas) {
-      downloadFile(backCanvas.toDataURL(), "back");
-    }
-  };
+  useEffect(() => {
+    // Close on escape key
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsModelOpen(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [setIsModelOpen]);
 
   const downloadFile = (canvas: string, side: string) => {
     const link = document.createElement("a");
@@ -45,27 +45,70 @@ const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
       return toast.error("Please fill in all fields");
     }
 
-    // Convert the canvas to base64 images
-    const frontImage = frontCanvas ? frontCanvas.toDataURL() : null;
-    const backImage = backCanvas ? backCanvas.toDataURL() : null;
+    if (!phone.match(/^(0|(\+213))([567][0-9]{8}|[0-9]{9})$/)) {
+      return toast.error("Please enter a valid Algerian phone number");
+    }
+
+    setIsLoading(true);
+    setErrorMessage("");
 
     try {
-      const response = await httpClient.post("requests/", {
+      // Convert the canvas to base64 images
+      const frontImage = frontCanvas ? frontCanvas.toDataURL() : null;
+      const backImage = backCanvas ? backCanvas.toDataURL() : null;
+
+      const orderData = {
+        article: currentArticle.articleType || "t_shirt",
         size: selectedSize,
         phone,
         city,
         name,
-        frontImage, // Add front image to the request
-        backImage, // Add back image to the request
-      });
+        color: currentArticle.articleColor || "white",
+        price: price || currentArticle.articlePrice,
+        description: `Order for ${currentArticle.articleName}`,
+        frontImage,
+        backImage,
+        text: currentArticle.articleFrontSide?.texts?.[0]?.text || "",
+        // Add any additional fields required by your backend
+        creation_date: new Date().toISOString(),
+        is_seen: false,
+        state: "unseen",
+        is_delivered: false,
+      };
+
+      console.log("Sending order data:", orderData);
+      const response = await httpClient.post("requests/", orderData);
+
       if (response) {
-        console.log("Order created successfully:", response);
         toast.success("Order created successfully!");
+        // Save order ID in localStorage for reference
+        if (response.id) {
+          const savedOrders = JSON.parse(
+            localStorage.getItem("orders") || "[]",
+          );
+          savedOrders.push({
+            id: response.id,
+            date: new Date().toISOString(),
+            name: currentArticle.articleName,
+            price,
+          });
+          localStorage.setItem("orders", JSON.stringify(savedOrders));
+        }
+
+        // Redirect to a success page or home
+        setTimeout(() => {
+          setIsModelOpen(false);
+          navigate("/");
+        }, 2000);
       }
     } catch (error) {
+      console.error("Error creating order:", error);
       setErrorMessage(
         error.message || "An error occurred while creating the order",
       );
+      toast.error("Failed to create order. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,68 +119,89 @@ const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="container fixed mt-6 h-[80vh] w-[400px] overflow-auto rounded-2xl bg-white p-6 text-center sm:w-[50vw]"
+        className="container fixed mt-6 h-[80vh] w-[90%] max-w-[500px] overflow-auto rounded-2xl bg-white p-6 text-center sm:w-[50vw]"
       >
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-xl font-bold">Select Size</p>
-          <div className="mt-4 flex flex-wrap justify-center gap-4">
-            {["S", "M", "L", "XL", "XXL"].map((size) => (
-              <button
-                key={size}
-                onClick={() => handleSizeSelection(size)}
-                className={`rounded-lg border-2 px-4 py-2 ${
-                  selectedSize === size
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-black"
-                } transition duration-300 hover:bg-blue-500 hover:text-white`}
-              >
-                {size}
-              </button>
-            ))}
+          <h2 className="text-2xl font-bold">Complete Your Order</h2>
+          <p className="text-gray-600">Product: {currentArticle.articleName}</p>
+          <p className="text-gray-600">Price: {price} DA</p>
+
+          <div className="mt-4 w-full">
+            <p className="mb-2 text-left font-semibold">Select Size</p>
+            <div className="mt-2 flex flex-wrap justify-center gap-4">
+              {["S", "M", "L", "XL", "XXL"].map((size) => (
+                <button
+                  key={size}
+                  onClick={() => handleSizeSelection(size)}
+                  className={`rounded-lg border-2 px-4 py-2 ${
+                    selectedSize === size
+                      ? "bg-blue-500 text-white"
+                      : "bg-white text-black"
+                  } transition duration-300 hover:bg-blue-500 hover:text-white`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <p className="mt-4">Selected Size: {selectedSize || "None"}</p>
-
-          {/* Form Fields for Additional Information */}
-          <div className="mt-4 flex flex-col gap-4">
-            <input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border p-2"
-            />
-            <input
-              type="text"
-              placeholder="Phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-lg border p-2"
-            />
-            <input
-              type="text"
-              placeholder="City"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="w-full rounded-lg border p-2"
-            />
+          <div className="mt-6 w-full">
+            <p className="mb-2 text-left font-semibold">Your Information</p>
+            <div className="mt-2 flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="City/Wilaya"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
-          <p className="mt-4">Price: {price}DZD</p>
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          {errorMessage && (
+            <div className="mt-4 w-full rounded-lg bg-red-100 p-3 text-red-700">
+              {errorMessage}
+            </div>
+          )}
 
-          <div className="flex gap-2">
+          <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
             <button
-              onClick={downloadFilesHandler}
-              className="mt-6 rounded-lg border border-blue-500 bg-white px-4 py-2 text-blue-500"
+              onClick={() => setIsModelOpen(false)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-700 transition duration-300 hover:bg-gray-100 sm:w-1/2"
             >
-              Download
+              Cancel
             </button>
             <button
               onClick={createOrder}
-              className="mt-6 rounded-lg bg-blue-500 px-4 py-2 text-white"
+              disabled={isLoading}
+              className="w-full rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition duration-300 hover:bg-blue-700 disabled:bg-blue-400 sm:w-1/2"
             >
-              Confirm
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <Loader
+                    backgroundColor="transparent"
+                    color="white"
+                    className="mr-2 h-5 w-5"
+                  />
+                  Processing...
+                </div>
+              ) : (
+                "Submit Order"
+              )}
             </button>
           </div>
         </div>

@@ -4,17 +4,30 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
-const SideBar = ({ title = "Admin Dashboard", menuItems = [] }) => {
+interface MenuItem {
+  label: string;
+  href: string;
+}
+
+interface SideBarProps {
+  title?: string;
+  menuItems?: MenuItem[];
+}
+
+const SideBar: React.FC<SideBarProps> = ({
+  title = "Admin Dashboard",
+  menuItems = [],
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  const sidebarRef = useRef(null);
-  const buttonRef = useRef(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const checkIsMobile = () => {
+    const checkIsMobile = (): void => {
       setIsMobile(window.innerWidth < 1024);
     };
     checkIsMobile();
@@ -23,12 +36,12 @@ const SideBar = ({ title = "Admin Dashboard", menuItems = [] }) => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (
         sidebarRef.current &&
-        !sidebarRef.current.contains(event.target) &&
+        !sidebarRef.current.contains(event.target as Node) &&
         buttonRef.current &&
-        !buttonRef.current.contains(event.target)
+        !buttonRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -47,16 +60,16 @@ const SideBar = ({ title = "Admin Dashboard", menuItems = [] }) => {
     (item) => location.pathname === item.href,
   );
 
-  const toggleSidebar = () => setIsOpen(!isOpen);
+  const toggleSidebar = (): void => setIsOpen(!isOpen);
 
-  const logoutHandler = async () => {
+  const logoutHandler = async (): Promise<void> => {
     try {
       // const { data } = await fetch.post("/auth/logout");
-
       // toast.success(data.message);
       navigate("/admin/login");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Logout failed");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Logout failed");
     }
   };
 
@@ -127,6 +140,7 @@ const SideBar = ({ title = "Admin Dashboard", menuItems = [] }) => {
                 alt="Exclusive Labs"
                 className="relative z-10"
                 style={{
+                  position: "absolute",
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
@@ -135,7 +149,7 @@ const SideBar = ({ title = "Admin Dashboard", menuItems = [] }) => {
             </div>
             <button
               onClick={logoutHandler}
-              className="w-3/4 rounded text-base text-white bg-blue-500 py-2"
+              className="w-3/4 rounded bg-blue-500 py-2 text-base text-white transition-colors hover:bg-blue-600"
             >
               Log Out
             </button>
@@ -147,9 +161,9 @@ const SideBar = ({ title = "Admin Dashboard", menuItems = [] }) => {
           onClick={toggleSidebar}
         >
           {isOpen ? (
-            <FaChevronLeft className="h-4 w-4 scale-150 transform" /> // Icône de fermeture avec React Icons
+            <FaChevronLeft className="h-4 w-4 scale-150 transform" />
           ) : (
-            <FaChevronRight className="h-4 w-4 scale-150 transform" /> // Icône de menu avec React Icons
+            <FaChevronRight className="h-4 w-4 scale-150 transform" />
           )}
           <span className="sr-only">Toggle Sidebar</span>
         </button>

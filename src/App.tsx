@@ -1,4 +1,5 @@
 import "./index.css";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
@@ -12,41 +13,47 @@ import ContactForm from "./contact/Contact";
 import ShoppingCart from "./components/cart/ShoppingCart";
 import AboutUs from "./components/about/AboutUs";
 import Loader from "./components/loaders/Loader";
-import { useGlobalImageLoader } from "./hooks/useGlobalImageLoader";
 
 function App() {
-  const allImagesLoaded = useGlobalImageLoader();
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const handleLoad = () => {
+      setIsLoaded(true);
+    };
+
+    window.addEventListener("load", handleLoad);
+
+    return () => {
+      window.removeEventListener("load", handleLoad);
+    };
+  }, []);
 
   return (
     <BrowserRouter>
       <Header />
-      {!allImagesLoaded && (
+      {!isLoaded ? (
         <Loader
           backgroundColor="transparent"
           color="red"
           className="mt-12 flex h-full w-full items-center justify-center"
         />
+      ) : (
+        <div className="opacity-100 transition-opacity duration-300">
+          <Routes>
+            <Route element={<Home />} path="/" />
+            <Route element={<Articles />} path="/design/" />
+            <Route element={<Login />} path="/kedache/" />
+            <Route element={<Dashboard />} path="/dashboard/overview/" />
+            <Route element={<Admin />} path="/dashboard/articles/" />
+            <Route element={<ContactForm />} path="/contact/" />
+            <Route element={<ShoppingCart />} path="/cart/" />
+            <Route element={<AboutUs />} path="/about/" />
+            <Route element={<Shop />} path="/shop/:item" />
+            <Route element={<NotFound />} path="*" />
+          </Routes>
+        </div>
       )}
-      <div
-        className={
-          !allImagesLoaded
-            ? "opacity-0"
-            : "opacity-100 transition-opacity duration-300"
-        }
-      >
-        <Routes>
-          <Route element={<Home />} path="/" />
-          <Route element={<Articles />} path="/design/" />
-          <Route element={<Login />} path="/kedache/" />
-          <Route element={<Dashboard />} path="/dashboard/overview/" />
-          <Route element={<Admin />} path="/dashboard/articles/" />
-          <Route element={<ContactForm />} path="/contact/" />
-          <Route element={<ShoppingCart />} path="/cart/" />
-          <Route element={<AboutUs />} path="/about/" />
-          <Route element={<Shop />} path="/shop/:item" />
-          <Route element={<NotFound />} path="*" />
-        </Routes>
-      </div>
     </BrowserRouter>
   );
 }

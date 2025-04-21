@@ -1,14 +1,24 @@
+interface RequestOptions extends RequestInit {
+  headers?: Record<string, string>;
+}
+
 class HttpClient {
-  constructor(baseURL) {
+  private baseURL: string;
+
+  constructor(baseURL: string) {
     this.baseURL = baseURL;
   }
 
-  async get(url, options = {}) {
-    return this.request(url, { ...options, method: "GET" });
+  async get<T>(url: string, options: RequestOptions = {}): Promise<T> {
+    return this.request<T>(url, { ...options, method: "GET" });
   }
 
-  async post(url, body, options = {}) {
-    return this.request(url, {
+  async post<T>(
+    url: string,
+    body: unknown,
+    options: RequestOptions = {},
+  ): Promise<T> {
+    return this.request<T>(url, {
       ...options,
       method: "POST",
       body: JSON.stringify(body),
@@ -16,8 +26,12 @@ class HttpClient {
     });
   }
 
-  async put(url, body, options = {}) {
-    return this.request(url, {
+  async put<T>(
+    url: string,
+    body: unknown,
+    options: RequestOptions = {},
+  ): Promise<T> {
+    return this.request<T>(url, {
       ...options,
       method: "PUT",
       body: JSON.stringify(body),
@@ -25,11 +39,11 @@ class HttpClient {
     });
   }
 
-  async delete(url, options = {}) {
-    return this.request(url, { ...options, method: "DELETE" });
+  async delete<T>(url: string, options: RequestOptions = {}): Promise<T> {
+    return this.request<T>(url, { ...options, method: "DELETE" });
   }
 
-  async request(url, options) {
+  private async request<T>(url: string, options: RequestOptions): Promise<T> {
     try {
       const response = await fetch(this.baseURL + url, options);
       const data = await response.json();
@@ -38,10 +52,13 @@ class HttpClient {
       }
       return data;
     } catch (error) {
-      throw error;
+      throw error instanceof Error
+        ? error
+        : new Error("Unknown error occurred");
     }
   }
 }
+
 import { environment } from "./enviroments/enviroment";
 const httpClient = environment.httpEndpoint;
 export default new HttpClient(`${httpClient}/api/`);
