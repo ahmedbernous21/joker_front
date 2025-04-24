@@ -5,15 +5,49 @@ import { ShopContext } from "../../contexts/ShopContext";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loaders/Loader";
 
+// Define the response interface
+interface OrderResponse {
+  id: number | string;
+  [key: string]: any; // For other properties that might be in the response
+}
+
 interface OrderModelProps {
   setIsModelOpen: (value: boolean) => void;
   price: number;
+  preSelectedSize?: string;
+  quantity?: number;
+  currentArticle: any; // Add this prop
 }
 
-const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
+const OrderModel = ({
+  setIsModelOpen,
+  price,
+  preSelectedSize = "",
+  quantity = 1,
+  currentArticle, // Add this prop
+}: OrderModelProps) => {
+  if (!currentArticle) {
+    console.error("currentArticle is not defined in OrderModel");
+    return (
+      <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black/80">
+        <div className="container fixed mt-6 h-[80vh] w-[90%] max-w-[500px] overflow-auto rounded-2xl bg-white p-6 text-center sm:w-[50vw]">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <h2 className="text-2xl font-bold text-red-500">Error</h2>
+            <p className="text-gray-600">There was an error loading the article data.</p>
+            <button
+              onClick={() => setIsModelOpen(false)}
+              className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-700 transition duration-300 hover:bg-gray-100"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const navigate = useNavigate();
-  const { currentArticle, frontCanvas, backCanvas } = useContext(ShopContext);
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  const { frontCanvas, backCanvas } = useContext(ShopContext);
+  const [selectedSize, setSelectedSize] = useState<string>(preSelectedSize);
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [city, setCity] = useState<string>("");
@@ -69,39 +103,54 @@ const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
         frontImage,
         backImage,
         text: currentArticle.articleFrontSide?.texts?.[0]?.text || "",
-        // Add any additional fields required by your backend
         creation_date: new Date().toISOString(),
         is_seen: false,
         state: "unseen",
         is_delivered: false,
+        quantity: quantity,
       };
 
       console.log("Sending order data:", orderData);
-      const response = await httpClient.post("requests/", orderData);
+      const response = await httpClient.post<OrderResponse>(
+        "requests/",
+        orderData,
+      );
 
-      if (response) {
+      if (response && response.id) {
+        const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+
+        // Get smaller versions of the images for storage
+        const frontImageThumbnail = frontCanvas
+          ? frontCanvas.toDataURL("image/jpeg", 0.3)
+          : null;
+        const backImageThumbnail = backCanvas
+          ? backCanvas.toDataURL("image/jpeg", 0.3)
+          : null;
+
+        savedOrders.push({
+          id: response.id,
+          date: new Date().toISOString(),
+          name: currentArticle.articleName,
+          articleType: currentArticle.articleType || "t_shirt",
+          color: currentArticle.articleColor || "white",
+          size: selectedSize,
+          price,
+          quantity,
+          status: "processing",
+          frontImage: frontImageThumbnail,
+          backImage: backImageThumbnail,
+        });
+
+        localStorage.setItem("orders", JSON.stringify(savedOrders));
+
         toast.success("Order created successfully!");
-        // Save order ID in localStorage for reference
-        if (response.id) {
-          const savedOrders = JSON.parse(
-            localStorage.getItem("orders") || "[]",
-          );
-          savedOrders.push({
-            id: response.id,
-            date: new Date().toISOString(),
-            name: currentArticle.articleName,
-            price,
-          });
-          localStorage.setItem("orders", JSON.stringify(savedOrders));
-        }
 
-        // Redirect to a success page or home
         setTimeout(() => {
           setIsModelOpen(false);
-          navigate("/");
-        }, 2000);
+          navigate("/my-orders/");
+        }, 1500);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating order:", error);
       setErrorMessage(
         error.message || "An error occurred while creating the order",
@@ -125,25 +174,33 @@ const OrderModel = ({ setIsModelOpen, price }: OrderModelProps) => {
           <h2 className="text-2xl font-bold">Complete Your Order</h2>
           <p className="text-gray-600">Product: {currentArticle.articleName}</p>
           <p className="text-gray-600">Price: {price} DA</p>
+          {quantity > 1 && (
+            <p className="text-gray-600">Quantity: {quantity}</p>
+          )}
+          {preSelectedSize && (
+            <p className="text-gray-600">Size: {preSelectedSize}</p>
+          )}
 
-          <div className="mt-4 w-full">
-            <p className="mb-2 text-left font-semibold">Select Size</p>
-            <div className="mt-2 flex flex-wrap justify-center gap-4">
-              {["S", "M", "L", "XL", "XXL"].map((size) => (
-                <button
-                  key={size}
-                  onClick={() => handleSizeSelection(size)}
-                  className={`rounded-lg border-2 px-4 py-2 ${
-                    selectedSize === size
-                      ? "bg-blue-500 text-white"
-                      : "bg-white text-black"
-                  } transition duration-300 hover:bg-blue-500 hover:text-white`}
-                >
-                  {size}
-                </button>
-              ))}
+          {!preSelectedSize && (
+            <div className="mt-4 w-full">
+              <p className="mb-2 text-left font-semibold">Select Size</p>
+              <div className="mt-2 flex flex-wrap justify-center gap-4">
+                {["S", "M", "L", "XL", "XXL"].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => handleSizeSelection(size)}
+                    className={`rounded-lg border-2 px-4 py-2 ${
+                      selectedSize === size
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-black"
+                    } transition duration-300 hover:bg-blue-500 hover:text-white`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="mt-6 w-full">
             <p className="mb-2 text-left font-semibold">Your Information</p>

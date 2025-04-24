@@ -5,7 +5,7 @@ import { CanvasSliceState } from "../../interfaces/CanvasSliceInterfaces";
 export const getCurrentArticle = (
   state: IRootState,
 ): CanvasSliceState["articles"][number] =>
-  state.canvas.articles[state.canvas.selectedArticleIndex];
+  state?.canvas?.articles[state.canvas.selectedArticleIndex];
 
 export const getCurrentSide = (state: IRootState) => {
   const article = getCurrentArticle(state);
