@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FaShoppingBag,
-  FaHistory,
-  FaArrowLeft,
-  FaSyncAlt,
-} from "react-icons/fa";
+import { FaShoppingBag, FaHistory, FaArrowLeft } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 interface Order {
@@ -16,12 +11,37 @@ interface Order {
   color: string;
   size: string;
   price: number;
+  quantity?: number;
   status: string;
   frontImage: string | null;
   backImage: string | null;
 }
 
 const MyOrders = () => {
+  const validateImageUrl = (url: string | null): boolean => {
+    if (!url) return false;
+
+    // More tolerant check for data URLs
+    if (url.startsWith("data:image/") || url.startsWith("data:application/")) {
+      return url.length > 100; // Ensure it has some actual content
+    }
+
+    // Handle http URLs
+    if (url.startsWith("http")) {
+      return true;
+    }
+
+    // For debugging
+    if (url && url.length > 50) {
+      console.log(
+        "Invalid image URL format starting with:",
+        url.substring(0, 50) + "...",
+      );
+    }
+
+    return false;
+  };
+
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -32,10 +52,24 @@ const MyOrders = () => {
     try {
       // Load orders from localStorage
       const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+      console.log("Loaded orders from localStorage:", savedOrders);
 
       // Validate each order has required fields
       const validOrders = savedOrders.filter((order: any) => {
-        return order.id && order.date && order.name && order.price;
+        const isValid = order.id && order.date && order.name && order.price;
+
+        // Log image data for debugging
+        if (isValid) {
+          console.log(`Order ${order.id} images:`, {
+            hasFrontImage: !!order.frontImage,
+            hasBackImage: !!order.backImage,
+            frontImageValid: validateImageUrl(order.frontImage),
+            backImageValid: validateImageUrl(order.backImage),
+            frontImageLength: order.frontImage?.length || 0,
+          });
+        }
+
+        return isValid;
       });
 
       // Sort by date, newest first
@@ -128,15 +162,13 @@ const MyOrders = () => {
     return "bg-gray-300"; // pending step
   };
 
-
-  // Calculate pagination
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8 md:px-8 lg:px-16">
+    <div className="pb-24 min-h-screen bg-gray-50 px-4 py-8 md:px-8 lg:px-16">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8">
           <Link
@@ -147,7 +179,6 @@ const MyOrders = () => {
           </Link>
           <div className="mt-4 flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-            
           </div>
           <p className="mt-2 text-gray-600">View and track all your orders</p>
         </div>
@@ -172,7 +203,6 @@ const MyOrders = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Orders List - only visible when no order is selected */}
             {!selectedOrder &&
               currentOrders.map((order) => (
                 <div
@@ -198,19 +228,21 @@ const MyOrders = () => {
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">
-                      {order.frontImage && (
-                        <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                          <img
-                            src={order.frontImage}
-                            alt="Front design"
-                            className="h-full w-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = "/placeholder-image.png"; // Fallback image
-                              e.currentTarget.onerror = null;
-                            }}
-                          />
-                        </div>
-                      )}
+                      {order.frontImage &&
+                        validateImageUrl(order.frontImage) && (
+                          <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                            <img
+                              src={order.frontImage}
+                              alt="Front design"
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                console.error("Error loading thumbnail image");
+                                e.currentTarget.src = "/placeholder-image.png";
+                                e.currentTarget.onerror = null;
+                              }}
+                            />
+                          </div>
+                        )}
                       <div>
                         <p className="text-sm font-medium text-gray-900">
                           {getProductTypeLabel(order.articleType)} -{" "}
@@ -232,7 +264,6 @@ const MyOrders = () => {
                 </div>
               ))}
 
-            {/* Pagination controls */}
             {!selectedOrder && orders.length > ordersPerPage && (
               <div className="col-span-full mt-6 flex justify-center">
                 <nav className="flex items-center gap-1">
@@ -301,7 +332,7 @@ const MyOrders = () => {
                 </div>
 
                 <div className="p-6">
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <h2 className="text-xl font-bold text-gray-900">
                       Order #{selectedOrder.id}
                     </h2>
@@ -310,42 +341,44 @@ const MyOrders = () => {
                     </p>
                   </div>
 
-                  <div className="mb-8 rounded-lg bg-gray-50 p-4">
-                    <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                      Product Details
-                    </h3>
-                    <div className="flex flex-col gap-6 md:flex-row">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-700">
-                          Product:
-                        </p>
-                        <p className="text-lg font-semibold text-gray-900">
-                          {selectedOrder.name}
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-gray-700">
-                          Type:
-                        </p>
-                        <p className="text-gray-900">
-                          {getProductTypeLabel(selectedOrder.articleType)}
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-gray-700">
-                          Color:
-                        </p>
-                        <p className="text-gray-900">{selectedOrder.color}</p>
-                        <p className="mt-2 text-sm font-medium text-gray-700">
-                          Size:
-                        </p>
-                        <p className="text-gray-900">{selectedOrder.size}</p>
-                        <p className="mt-4 text-lg font-bold text-gray-900">
-                          {selectedOrder.price} DA
-                        </p>
-                      </div>
+                  <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {/* Product Info */}
+                    <div className="rounded-lg bg-gray-50 p-4">
+                      <h3 className="mb-3 text-lg font-semibold text-gray-900">
+                        Product Details
+                      </h3>
+                      <p>
+                        <span className="font-medium">Product:</span>{" "}
+                        {selectedOrder.name}
+                      </p>
+                      <p>
+                        <span className="font-medium">Type:</span>{" "}
+                        {getProductTypeLabel(selectedOrder.articleType)}
+                      </p>
+                      <p>
+                        <span className="font-medium">Color:</span>{" "}
+                        {selectedOrder.color}
+                      </p>
+                      <p>
+                        <span className="font-medium">Size:</span>{" "}
+                        {selectedOrder.size}
+                      </p>
+                      <p className="mt-2 text-lg font-bold text-gray-900">
+                        {selectedOrder.price} DA
+                      </p>
+                    </div>
 
-                      <div className="flex flex-col gap-4 md:w-1/2">
-                        {selectedOrder.frontImage && (
-                          <div>
-                            <p className="mb-2 text-sm font-medium text-gray-700">
-                              Front Design:
+                    {/* Design Images */}
+                    <div className="rounded-lg bg-gray-50 p-4">
+                      <h3 className="mb-3 text-lg font-semibold text-gray-900">
+                        Your Design
+                      </h3>
+                      <div className="flex flex-wrap justify-center gap-4">
+                        {selectedOrder.frontImage &&
+                        validateImageUrl(selectedOrder.frontImage) ? (
+                          <div className="w-full max-w-[200px]">
+                            <p className="mb-2 text-center text-sm font-medium">
+                              Front
                             </p>
                             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white p-2">
                               <img
@@ -353,19 +386,30 @@ const MyOrders = () => {
                                 alt="Front design"
                                 className="mx-auto h-auto max-h-48 w-auto object-contain"
                                 onError={(e) => {
+                                  console.error("Error loading full image");
                                   e.currentTarget.src =
-                                    "/placeholder-image.png"; // Fallback image
+                                    "/placeholder-image.png";
                                   e.currentTarget.onerror = null;
                                 }}
                               />
                             </div>
                           </div>
+                        ) : (
+                          <div className="w-full max-w-[200px]">
+                            <p className="mb-2 text-center text-sm font-medium">
+                              Front
+                            </p>
+                            <div className="flex h-48 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-white p-2">
+                              <p className="text-gray-400">No design saved</p>
+                            </div>
+                          </div>
                         )}
 
-                        {selectedOrder.backImage && (
-                          <div>
-                            <p className="mb-2 text-sm font-medium text-gray-700">
-                              Back Design:
+                        {selectedOrder.backImage &&
+                        validateImageUrl(selectedOrder.backImage) ? (
+                          <div className="w-full max-w-[200px]">
+                            <p className="mb-2 text-center text-sm font-medium">
+                              Back
                             </p>
                             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white p-2">
                               <img
@@ -373,91 +417,26 @@ const MyOrders = () => {
                                 alt="Back design"
                                 className="mx-auto h-auto max-h-48 w-auto object-contain"
                                 onError={(e) => {
+                                  console.error("Error loading back image");
                                   e.currentTarget.src =
-                                    "/placeholder-image.png"; // Fallback image
+                                    "/placeholder-image.png";
                                   e.currentTarget.onerror = null;
                                 }}
                               />
                             </div>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mb-8 rounded-lg bg-gray-50 p-4">
-                    <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                      Order Timeline
-                    </h3>
-                    <div className="relative pl-8">
-                      <div className="absolute bottom-0 left-0 top-0 w-px bg-gray-300"></div>
-
-                      <div className="relative mb-6 pb-6">
-                        <div className="absolute -left-2 top-0 h-4 w-4 rounded-full bg-green-500"></div>
-                        <div className="pl-6">
-                          <p className="font-medium text-gray-900">
-                            Order Placed
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {formatDate(selectedOrder.date)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="relative mb-6 pb-6">
-                        <div
-                          className={`absolute -left-2 top-0 h-4 w-4 rounded-full ${getStepStatus(selectedOrder.status, "processing")}`}
-                        ></div>
-                        <div className="pl-6">
-                          <p
-                            className={`font-medium ${["processing", "shipped", "delivered", "completed"].includes(selectedOrder.status.toLowerCase()) ? "text-gray-900" : "text-gray-500"}`}
-                          >
-                            Processing
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Your order is being processed
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="relative mb-6 pb-6">
-                        <div
-                          className={`absolute -left-2 top-0 h-4 w-4 rounded-full ${getStepStatus(selectedOrder.status, "shipped")}`}
-                        ></div>
-                        <div className="pl-6">
-                          <p
-                            className={`font-medium ${["shipped", "delivered", "completed"].includes(selectedOrder.status.toLowerCase()) ? "text-gray-900" : "text-gray-500"}`}
-                          >
-                            Shipping
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Your order will be shipped soon
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="relative">
-                        <div
-                          className={`absolute -left-2 top-0 h-4 w-4 rounded-full ${getStepStatus(selectedOrder.status, "delivered")}`}
-                        ></div>
-                        <div className="pl-6">
-                          <p
-                            className={`font-medium ${["delivered", "completed"].includes(selectedOrder.status.toLowerCase()) ? "text-gray-900" : "text-gray-500"}`}
-                          >
-                            Delivered
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Estimated delivery date:{" "}
-                            {new Date(
-                              new Date(selectedOrder.date).getTime() +
-                                7 * 24 * 60 * 60 * 1000,
-                            ).toLocaleDateString(undefined, {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </p>
-                        </div>
+                        ) : selectedOrder.backImage ? (
+                          <div className="w-full max-w-[200px]">
+                            <p className="mb-2 text-center text-sm font-medium">
+                              Back
+                            </p>
+                            <div className="flex h-48 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-white p-2">
+                              <p className="text-gray-400">
+                                Image not available
+                              </p>
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </div>

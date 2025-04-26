@@ -5,18 +5,14 @@ import { ShopContext } from "../../contexts/ShopContext";
 import { useNavigate } from "react-router-dom";
 import Loader from "../loaders/Loader";
 
-// Define the response interface
-interface OrderResponse {
-  id: number | string;
-  [key: string]: any; // For other properties that might be in the response
-}
+import { Article } from "../../interfaces/CanvasSliceInterfaces";
 
 interface OrderModelProps {
   setIsModelOpen: (value: boolean) => void;
   price: number;
   preSelectedSize?: string;
   quantity?: number;
-  currentArticle: any; // Add this prop
+  currentArticle: Article; // Use proper type instead of any
 }
 
 const OrderModel = ({
@@ -24,7 +20,7 @@ const OrderModel = ({
   price,
   preSelectedSize = "",
   quantity = 1,
-  currentArticle, // Add this prop
+  currentArticle,p
 }: OrderModelProps) => {
   if (!currentArticle) {
     console.error("currentArticle is not defined in OrderModel");
@@ -33,7 +29,9 @@ const OrderModel = ({
         <div className="container fixed mt-6 h-[80vh] w-[90%] max-w-[500px] overflow-auto rounded-2xl bg-white p-6 text-center sm:w-[50vw]">
           <div className="flex flex-col items-center justify-center gap-2">
             <h2 className="text-2xl font-bold text-red-500">Error</h2>
-            <p className="text-gray-600">There was an error loading the article data.</p>
+            <p className="text-gray-600">
+              There was an error loading the article data.
+            </p>
             <button
               onClick={() => setIsModelOpen(false)}
               className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-700 transition duration-300 hover:bg-gray-100"
@@ -73,8 +71,7 @@ const OrderModel = ({
     link.href = canvas;
     link.click();
   };
-
-  const createOrder = async () => {
+  const createOrder = async (): Promise<void> => {
     if (!selectedSize || !phone || !city || !name) {
       return toast.error("Please fill in all fields");
     }
@@ -86,11 +83,44 @@ const OrderModel = ({
     setIsLoading(true);
     setErrorMessage("");
 
-    try {
-      // Convert the canvas to base64 images
-      const frontImage = frontCanvas ? frontCanvas.toDataURL() : null;
-      const backImage = backCanvas ? backCanvas.toDataURL() : null;
+    // CRITICAL: Capture the canvas designs FIRST before any async operations
+    let frontImageData = null;
+    let backImageData = null;
 
+    try {
+      // Access canvases directly by ID to ensure we get the actual canvas objects
+      const frontCanvasEl = document.getElementById("frontCanvas");
+      const backCanvasEl = document.getElementById("backCanvas");
+
+      if (frontCanvasEl) {
+        console.log("Found front canvas element");
+        // Get the raw canvas element and convert to png
+        frontImageData = frontCanvasEl.toDataURL("image/png");
+        console.log(
+          "Front image captured, length:",
+          frontImageData?.length || 0,
+        );
+      } else if (frontCanvas) {
+        // Try the context canvas as fallback
+        console.log("Using context frontCanvas");
+        frontImageData = frontCanvas.toDataURL("image/png");
+      }
+
+      if (backCanvasEl) {
+        console.log("Found back canvas element");
+        backImageData = backCanvasEl.toDataURL("image/png");
+        console.log("Back image captured, length:", backImageData?.length || 0);
+      } else if (backCanvas) {
+        // Try the context canvas as fallback
+        console.log("Using context backCanvas");
+        backImageData = backCanvas.toDataURL("image/png");
+      }
+    } catch (canvasError) {
+      console.error("Error capturing canvas:", canvasError);
+    }
+
+    try {
+      // Submit order to backend WITH the images
       const orderData = {
         article: currentArticle.articleType || "t_shirt",
         size: selectedSize,
@@ -99,68 +129,64 @@ const OrderModel = ({
         name,
         color: currentArticle.articleColor || "white",
         price: price || currentArticle.articlePrice,
-        description: `Order for ${currentArticle.articleName}`,
-        frontImage,
-        backImage,
-        text: currentArticle.articleFrontSide?.texts?.[0]?.text || "",
-        creation_date: new Date().toISOString(),
-        is_seen: false,
+        quantity: quantity,
         state: "unseen",
         is_delivered: false,
-        quantity: quantity,
+        frontImage: frontImageData, // Send the front image to the backend
+        backImage: backImageData, // Send the back image to the backend
       };
 
-      console.log("Sending order data:", orderData);
-      const response = await httpClient.post<OrderResponse>(
-        "requests/",
-        orderData,
-      );
+      console.log("Sending order with images to backend");
 
-      if (response && response.id) {
-        const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+      // Create the order in the backend
+      const response = await httpClient.post("requests/", orderData);
+      console.log("Order created with data:", response);
 
-        // Get smaller versions of the images for storage
-        const frontImageThumbnail = frontCanvas
-          ? frontCanvas.toDataURL("image/jpeg", 0.3)
-          : null;
-        const backImageThumbnail = backCanvas
-          ? backCanvas.toDataURL("image/jpeg", 0.3)
-          : null;
+      // Save the order with design images to localStorage
+      const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
 
-        savedOrders.push({
-          id: response.id,
-          date: new Date().toISOString(),
-          name: currentArticle.articleName,
-          articleType: currentArticle.articleType || "t_shirt",
-          color: currentArticle.articleColor || "white",
-          size: selectedSize,
-          price,
-          quantity,
-          status: "processing",
-          frontImage: frontImageThumbnail,
-          backImage: backImageThumbnail,
-        });
+      // Create the complete order record for localStorage
+      const newOrder = {
+        id: response.id || Date.now(),
+        date: new Date().toISOString(),
+        name: currentArticle.articleName || "Custom Item",
+        articleType: currentArticle.articleType || "t_shirt",
+        color: currentArticle.articleColor || "white",
+        size: selectedSize,
+        price: price || 0,
+        quantity: quantity || 1,
+        status: "processing",
+        frontImage: frontImageData,
+        backImage: backImageData,
+      };
 
-        localStorage.setItem("orders", JSON.stringify(savedOrders));
+      // Add to start of array (newest first)
+      savedOrders.unshift(newOrder);
 
-        toast.success("Order created successfully!");
+      // Limit orders to prevent localStorage overflow
+      const limitedOrders = savedOrders.slice(0, 20);
+      localStorage.setItem("orders", JSON.stringify(limitedOrders));
 
-        setTimeout(() => {
-          setIsModelOpen(false);
-          navigate("/my-orders/");
-        }, 1500);
-      }
-    } catch (error: any) {
+      toast.success("Order created successfully!");
+
+      setTimeout(() => {
+        setIsModelOpen(false);
+        navigate("/my-orders/");
+      }, 1500);
+    } catch (error) {
       console.error("Error creating order:", error);
-      setErrorMessage(
-        error.message || "An error occurred while creating the order",
-      );
+
+      if (error.response) {
+        console.error("Status:", error.response.status);
+        console.error("Data:", error.response.data);
+      }
+
+      setErrorMessage("Failed to create order. Please try again.");
       toast.error("Failed to create order. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div
       className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black/80"

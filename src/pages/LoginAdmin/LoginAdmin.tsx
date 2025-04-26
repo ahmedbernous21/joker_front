@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
-import HttpClient from "../../httpClient.tsx";
 import { useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +10,7 @@ const Login = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,18 +19,19 @@ const Login = () => {
     setSuccessMessage("");
 
     try {
-      const response = await HttpClient.post("auth/login/", {
-        email,
-        password,
-      });
+      const success = await login(email, password);
 
-      if (response) {
+      if (success) {
         setSuccessMessage("Login successful! Redirecting...");
         setTimeout(() => {
           navigate("/dashboard/overview/");
         }, 1000);
+      } else {
+        setErrorMessage(
+          "Invalid credentials or you don't have admin privileges",
+        );
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMessage(error.message || "An error occurred during login");
     } finally {
       setIsLoading(false);
@@ -96,7 +98,6 @@ const Login = () => {
                 >
                   Password
                 </label>
-               
               </div>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

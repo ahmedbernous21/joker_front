@@ -1,50 +1,65 @@
-import React, { createContext, useState, useEffect } from "react";
-import { fabric } from "fabric";
+import React, { createContext, useState } from "react";
+import * as fabric from "fabric";
+import { Article } from "../interfaces/CanvasSliceInterfaces";
 
-// Define a more complete default article
-const defaultArticle = {
+// Define default article with proper structure
+const defaultArticle: Article = {
+  id: "",
   articleId: "",
-  articleName: "",
+  articleName: "Unknown Article",
   articleType: "t_shirt",
   articleColor: "white",
   articlePrice: 0,
   articleBackground: "#ffffff",
   isDoubleSided: false,
   active: "front",
-  articleFrontSide: {
+  articleFrontSideInfo: {
+    name: "front",
+    src: "",
     texts: [],
     images: [],
-    src: "",
   },
-  articleBackSide: null,
+  articleBackSideInfo: null,
 };
 
-export const ShopContext = createContext({
+interface ShopContextType {
+  currentArticle: Article;
+  setCurrentArticle: (article: Article) => void;
+  frontCanvas: fabric.Canvas | null;
+  setFrontCanvas: (canvas: fabric.Canvas | null) => void;
+  backCanvas: fabric.Canvas | null;
+  setBackCanvas: (canvas: fabric.Canvas | null) => void;
+}
+
+export const ShopContext = createContext<ShopContextType>({
   currentArticle: defaultArticle,
-  setCurrentArticle: (article: any) => {},
-  frontCanvas: null as fabric.Canvas | null,
-  setFrontCanvas: (canvas: fabric.Canvas | null) => {},
-  backCanvas: null as fabric.Canvas | null,
-  setBackCanvas: (canvas: fabric.Canvas | null) => {},
+  setCurrentArticle: () => {},
+  frontCanvas: null,
+  setFrontCanvas: () => {},
+  backCanvas: null,
+  setBackCanvas: () => {},
 });
 
-export const ShopProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentArticle, setCurrentArticle] = useState(defaultArticle);
+interface ShopProviderProps {
+  children: React.ReactNode;
+}
+
+export const ShopProvider = ({ children }) => {
+  const [currentArticle, setCurrentArticle] = useState<Article>(defaultArticle);
   const [frontCanvas, setFrontCanvas] = useState<fabric.Canvas | null>(null);
   const [backCanvas, setBackCanvas] = useState<fabric.Canvas | null>(null);
 
+  // Make sure contextValue includes the canvas objects
+  const contextValue = {
+    currentArticle,
+    setCurrentArticle,
+    frontCanvas,
+    setFrontCanvas,
+    backCanvas,
+    setBackCanvas,
+  };
+
   return (
-    <ShopContext.Provider
-      value={{
-        currentArticle,
-        setCurrentArticle,
-        frontCanvas,
-        setFrontCanvas,
-        backCanvas,
-        setBackCanvas,
-      }}
-    >
-      {children}
-    </ShopContext.Provider>
+    <ShopContext.Provider value={contextValue}>{children}</ShopContext.Provider>
   );
 };

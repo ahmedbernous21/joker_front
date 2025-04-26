@@ -55,7 +55,7 @@ const articles = [
 
 const Articles = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 py-16">
+    <div className="pb-24 flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 py-16">
       <div className="container mx-auto">
         <h2 className="mb-4 text-center text-4xl font-bold text-gray-800">
           Discover Our Products
@@ -69,9 +69,9 @@ const Articles = () => {
           {articles.map((article, index) => (
             <div
               key={index}
-              className="group overflow-hidden rounded-lg bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
-              <div className="p-6">
+              <div className="flex h-full flex-col p-6">
                 <div className="mb-6 flex items-center justify-center">
                   <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-50">
                     <FontAwesomeIcon
@@ -81,11 +81,11 @@ const Articles = () => {
                   </div>
                 </div>
 
-                <h3 className="mb-2 text-center text-2xl font-semibold text-gray-800">
+                <h3 className="mb-3 text-center text-2xl font-semibold text-gray-800">
                   {article.name}
                 </h3>
 
-                <p className="mb-4 text-center text-gray-600">
+                <p className="mb-4 min-h-[48px] flex-grow text-center text-gray-600">
                   {article.description}
                 </p>
 
@@ -95,7 +95,7 @@ const Articles = () => {
 
                 <Link
                   to={article.link}
-                  className="block w-full rounded-lg bg-[#DB3F40] px-6 py-3 text-center text-base font-medium text-white transition-colors duration-300 hover:bg-opacity-90"
+                  className="mt-auto block w-full rounded-lg bg-[#DB3F40] px-6 py-3 text-center text-base font-medium text-white transition-colors duration-300 hover:bg-opacity-90"
                 >
                   Customize Now
                 </Link>

@@ -59,7 +59,7 @@ const ContactForm: React.FC = () => {
   return (
     <div
       style={{ minHeight: "calc(100vh - 112px)" }}
-      className="flex h-full min-h-screen items-center justify-center bg-[#f9f9f9] px-4 py-8"
+      className="flex h-full my-12 min-h-screen items-center justify-center bg-[#f9f9f9] px-4 py-8"
     >
       <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-lg lg:flex-row">
         <div className="relative w-full space-y-8 bg-[#DB3F40] p-8 text-white lg:w-1/3 lg:space-y-10">

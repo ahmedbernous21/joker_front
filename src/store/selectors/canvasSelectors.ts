@@ -1,4 +1,3 @@
-// selectors/canvasSelectors.ts
 import { IRootState } from "../../store/store";
 import { CanvasSliceState } from "../../interfaces/CanvasSliceInterfaces";
 

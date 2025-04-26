@@ -5,24 +5,21 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Loader from "../../components/loaders/Loader";
 import { toast } from "react-hot-toast";
-import {
-  FaCalendar,
-  FaChartLine,
-  FaBoxOpen,
-  FaMoneyBillWave,
-  FaFilter,
-} from "react-icons/fa";
+import { FaCalendar, FaChartLine, FaBoxOpen, FaFilter } from "react-icons/fa";
 
 // Define interface for the statistics data
 interface Statistics {
   total_requests: number;
   unseen_requests: number;
+  pending_requests: number;
   in_progress_requests: number;
   finished_requests: number;
   delivered_requests: number;
   repetitions_count: number;
   conversion_rate: number;
   total_revenue: number;
+  top_article: string;
+  top_color: string;
 }
 
 // Define interface for the StatisticCard props
@@ -55,40 +52,59 @@ const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(getTodayDate());
   const [endDate, setEndDate] = useState<string>(getTodayDate());
   const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: "",
-    endDate: "",
+    startDate: getTodayDate(),
+    endDate: getTodayDate(),
   });
+  const [userInitiated, setUserInitiated] = useState<boolean>(false);
 
-  const menuItems = [
-    { label: "Overview", href: "/dashboard/overview/" },
-    { label: "Articles", href: "/dashboard/articles/" },
-    { label: "Logout", href: "#" },
-  ];
+
+  // Define fetchStatistics outside useEffect
+  const fetchStatistics = async (): Promise<void> => {
+    try {
+      setLoading(true);
+      setError("");
+
+      // Create proper query parameters
+      const params = new URLSearchParams();
+      if (dateRange.startDate) params.append("start_date", dateRange.startDate);
+      if (dateRange.endDate) params.append("end_date", dateRange.endDate);
+
+      // Use the correct endpoint
+      const response = await HttpClient.get(
+        "statistics/calculate/?" + params.toString(),
+      );
+
+      // Make sure we have valid statistics data
+      if (response && typeof response === "object") {
+        setStatistics(response as Statistics);
+
+        // Only show toast if user initiated the change
+        if (userInitiated) {
+          toast.success("Statistics loaded successfully");
+          setUserInitiated(false);
+        }
+      } else {
+        throw new Error("Invalid statistics data");
+      }
+    } catch (err: any) {
+      console.error("Error fetching statistics:", err);
+      setError("Failed to load statistics. Please try again later.");
+
+      if (err.response) {
+        console.error("Status:", err.response.status);
+        console.error("Data:", err.response.data);
+      }
+
+      if (userInitiated) {
+        toast.error("Failed to load statistics");
+        setUserInitiated(false);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStatistics = async (): Promise<void> => {
-      try {
-        setLoading(true);
-        const params = new URLSearchParams();
-        if (dateRange.startDate)
-          params.append("start_date", dateRange.startDate);
-        if (dateRange.endDate) params.append("end_date", dateRange.endDate);
-
-        const response = await HttpClient.get<Statistics>(
-          `statistics/?${params.toString()}`,
-        );
-        setStatistics(response);
-        setError("");
-        toast.success("Statistics loaded successfully");
-      } catch (err) {
-        console.error("Error fetching statistics:", err);
-        setError("Failed to load statistics. Please try again later.");
-        toast.error("Failed to load statistics");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchStatistics();
   }, [dateRange]);
 
@@ -99,12 +115,13 @@ const Dashboard: React.FC = () => {
       return;
     }
     setError("");
+    setUserInitiated(true);
     setDateRange({ startDate, endDate });
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar title="Admin Dashboard" menuItems={menuItems} />
+      <Sidebar  />
 
       <div className="flex-1 p-4 md:p-6 lg:p-8">
         <h2 className="mb-6 text-2xl font-bold text-gray-800 md:text-3xl">
@@ -290,6 +307,14 @@ const Dashboard: React.FC = () => {
                     : "N/A"}
                 </span>
               </p>
+              {statistics.top_article && (
+                <p className="mt-2 text-gray-600">
+                  Top article:
+                  <span className="ml-2 font-semibold">
+                    {statistics.top_article}
+                  </span>
+                </p>
+              )}
             </div>
           </>
         ) : (
@@ -301,12 +326,13 @@ const Dashboard: React.FC = () => {
               No statistics available for the selected date range.
             </p>
             <button
-              onClick={() =>
+              onClick={() => {
+                setUserInitiated(true);
                 setDateRange({
                   startDate: getTodayDate(),
                   endDate: getTodayDate(),
-                })
-              }
+                });
+              }}
               className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
             >
               View Today's Statistics

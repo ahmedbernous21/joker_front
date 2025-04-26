@@ -1,25 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { useAuth } from "../../contexts/AuthContext";
 
-interface MenuItem {
-  label: string;
-  href: string;
-}
+const SideBar = () => {
+  const menuItems = [
+    { label: "Overview", href: "/dashboard/overview/" },
+    { label: "Requests", href: "/dashboard/requests/" },
+    { label: "Logout", href: "#" },
+  ];
 
-interface SideBarProps {
-  title?: string;
-  menuItems?: MenuItem[];
-}
-
-const SideBar: React.FC<SideBarProps> = ({
-  title = "Admin Dashboard",
-  menuItems = [],
-}) => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -62,22 +54,15 @@ const SideBar: React.FC<SideBarProps> = ({
 
   const toggleSidebar = (): void => setIsOpen(!isOpen);
 
-  const logoutHandler = async (): Promise<void> => {
-    try {
-      // const { data } = await fetch.post("/auth/logout");
-      // toast.success(data.message);
-      navigate("/admin/login");
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      toast.error(error.response?.data?.message || "Logout failed");
-    }
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
     <>
       <aside
         ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 z-[2231331] w-64 min-w-64 transform bg-[#E3F0F5] transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-[2] w-64 min-w-64 transform bg-[#E3F0F5] transition-all duration-300 ease-in-out ${
           isMobile
             ? isOpen
               ? "translate-x-0"
@@ -94,34 +79,37 @@ const SideBar: React.FC<SideBarProps> = ({
               alt="Avatar"
               className="rounded-full"
             />
-            <h1 className="text-2xl font-semibold">Bonjour Kedash!</h1>
-          </header>
 
-          <nav className="mt-8 flex-grow overflow-y-auto">
-            <ul className="relative">
-              <div
-                className="absolute h-12 w-full bg-[#79D0F1] transition-transform duration-300 ease-in-out"
-                style={{
-                  transform: `translateY(${activeIndex * 3}rem)`,
-                }}
-              ></div>
-              {menuItems.map((item, index) => (
-                <li key={index}>
-                  <Link
-                    to={item.href}
-                    className={`relative z-10 block px-4 py-3 pl-10 ${
-                      activeIndex === index
-                        ? "font-semibold text-white"
-                        : "font-normal hover:bg-[#79D0F1]/20"
-                    }`}
-                    onClick={() => isMobile && setIsOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
+            <nav className="mt-8 w-full space-y-2 px-4">
+              {menuItems.map((item, i) => (
+                <div key={i}>
+                  {item.href === "#" ? (
+                    <button
+                      onClick={handleLogout}
+                      className={`flex w-full items-center gap-2 rounded-lg px-4 py-3 text-left text-base font-medium transition-colors ${
+                        i === activeIndex
+                          ? "bg-[#BFDBFE] text-[#0D0F55]"
+                          : "text-gray-700 hover:bg-[#BFDBFE] hover:text-[#0D0F55]"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      className={`flex w-full items-center gap-2 rounded-lg px-4 py-3 text-left text-base font-medium transition-colors ${
+                        i === activeIndex
+                          ? "bg-[#BFDBFE] text-[#0D0F55]"
+                          : "text-gray-700 hover:bg-[#BFDBFE] hover:text-[#0D0F55]"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
               ))}
-            </ul>
-          </nav>
+            </nav>
+          </header>
 
           <footer className="mt-auto flex flex-shrink-0 flex-col items-center gap-6 lg:gap-12">
             <div className="relative inline-block h-32 w-32">
@@ -137,7 +125,7 @@ const SideBar: React.FC<SideBarProps> = ({
                 src="/joker_logo.png"
                 width={128}
                 height={128}
-                alt="Exclusive Labs"
+                alt="Joker Logo"
                 className="relative z-10"
                 style={{
                   position: "absolute",
@@ -148,7 +136,7 @@ const SideBar: React.FC<SideBarProps> = ({
               />
             </div>
             <button
-              onClick={logoutHandler}
+              onClick={handleLogout}
               className="w-3/4 rounded bg-blue-500 py-2 text-base text-white transition-colors hover:bg-blue-600"
             >
               Log Out

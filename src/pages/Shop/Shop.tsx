@@ -193,7 +193,7 @@ const Shop = () => {
                 price={currentArticle.articlePrice * quantity}
                 preSelectedSize={selectedSize}
                 quantity={quantity}
-                currentArticle={currentArticle} // Add this prop
+                currentArticle={currentArticle} 
               />
             )}
           </>
@@ -203,17 +203,18 @@ const Shop = () => {
   );
 };
 
+import { SelectedLayer } from "../../interfaces/CanvasSliceInterfaces";
+
 interface DesktopCustomizationProps {
-  article: any;
+  article: Article; 
   quantity: number;
   selectedSize: string;
   isModelOpen: boolean;
   setIsModelOpen: (value: boolean) => void;
   setQuantity: (value: number) => void;
   handleSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  selectedLayer: any;
+  selectedLayer: SelectedLayer | null;
 }
-
 const DesktopCustomization = ({
   article,
   quantity,
@@ -282,7 +283,7 @@ const DesktopCustomization = ({
             price={article.articlePrice * quantity}
             preSelectedSize={selectedSize}
             quantity={quantity}
-            currentArticle={article} // Add this prop
+            currentArticle={article}
           />
         )}
       </>
