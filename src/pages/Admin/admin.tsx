@@ -3,7 +3,14 @@ import HttpClient from "../../httpClient";
 import Sidebar from "../../components/sideBar/sideBar";
 import Loader from "../../components/loaders/Loader";
 import { toast } from "react-hot-toast";
-import { FaEye, FaSearch, FaTrash, FaTimes, FaExclamationTriangle, FaExpand } from "react-icons/fa";
+import {
+  FaEye,
+  FaSearch,
+  FaTrash,
+  FaTimes,
+  FaExclamationTriangle,
+  FaExpand,
+} from "react-icons/fa";
 
 // Define interface for the article object based on the Django model
 interface Request {
@@ -33,7 +40,10 @@ const Admin: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState<boolean>(false);
   const [requestToDelete, setRequestToDelete] = useState<number | null>(null);
-  const [enlargedImage, setEnlargedImage] = useState<{ src: string; alt: string } | null>(null);
+  const [enlargedImage, setEnlargedImage] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
 
   const menuItems = [
     { label: "Overview", href: "/dashboard/overview/" },
@@ -51,10 +61,10 @@ const Admin: React.FC = () => {
     try {
       setLoading(true);
       const response = await HttpClient.get<Request[]>("requests/");
-      
+
       // Log image data for debugging
       if (response && response.length > 0) {
-        response.forEach(req => {
+        response.forEach((req) => {
           if (req.frontImage || req.backImage) {
             console.log(`Request ${req.id} has images:`, {
               hasFrontImage: !!req.frontImage,
@@ -69,7 +79,7 @@ const Admin: React.FC = () => {
       } else {
         console.log("No requests or no images found in requests");
       }
-      
+
       setRequests(response);
       setError(null);
     } catch (err) {
@@ -87,7 +97,7 @@ const Admin: React.FC = () => {
 
   const confirmDelete = async (): Promise<void> => {
     if (!requestToDelete) return;
-    
+
     try {
       await HttpClient.delete(`requests/${requestToDelete}/`);
       toast.success("Request deleted successfully!");
@@ -112,22 +122,25 @@ const Admin: React.FC = () => {
 
   const validateImageUrl = (url: string | null): boolean => {
     if (!url) return false;
-    
+
     // More tolerant check for data URLs
-    if (url.startsWith('data:image/') || url.startsWith('data:application/')) {
+    if (url.startsWith("data:image/") || url.startsWith("data:application/")) {
       return url.length > 100; // Ensure it has some actual content
     }
-    
+
     // Handle http URLs
-    if (url.startsWith('http')) {
+    if (url.startsWith("http")) {
       return true;
     }
-    
+
     // For debugging
     if (url && url.length > 50) {
-      console.log("Invalid image URL format starting with:", url.substring(0, 50) + "...");
+      console.log(
+        "Invalid image URL format starting with:",
+        url.substring(0, 50) + "...",
+      );
     }
-    
+
     return false;
   };
 
@@ -288,19 +301,30 @@ const Admin: React.FC = () => {
 
                       {/* Customer Design Section */}
                       <div className="rounded bg-white p-4 shadow-sm">
-                        <h4 className="mb-3 font-medium text-gray-700">Customer Design</h4>
+                        <h4 className="mb-3 font-medium text-gray-700">
+                          Customer Design
+                        </h4>
                         <div className="flex flex-wrap gap-4">
-                          {request.frontImage && validateImageUrl(request.frontImage) ? (
+                          {request.frontImage &&
+                          validateImageUrl(request.frontImage) ? (
                             <div className="w-1/2">
-                              <p className="mb-1 text-xs text-gray-500">Front</p>
-                              <div className="group relative">
+                              <p className="mb-1 text-center text-xs text-gray-500">
+                                Front
+                              </p>
+                              <div className="group relative flex h-36 items-center justify-center">
                                 <img
                                   src={request.frontImage}
                                   alt="Front design"
-                                  className="h-36 w-auto cursor-pointer rounded border border-gray-200 object-contain hover:opacity-90"
-                                  onClick={() => showEnlargedImage(request.frontImage || "", "Front design")}
+                                  className="max-h-36 w-auto cursor-pointer rounded border border-gray-200 object-contain hover:opacity-90"
+                                  onClick={() =>
+                                    showEnlargedImage(
+                                      request.frontImage || "",
+                                      "Front design",
+                                    )
+                                  }
                                   onError={(e) => {
-                                    e.currentTarget.src = "/placeholder-image.png";
+                                    e.currentTarget.src =
+                                      "/placeholder-image.png";
                                     e.currentTarget.onerror = null;
                                   }}
                                 />
@@ -311,24 +335,37 @@ const Admin: React.FC = () => {
                             </div>
                           ) : (
                             <div className="w-1/2">
-                              <p className="mb-1 text-xs text-gray-500">Front</p>
+                              <p className="mb-1 text-center text-xs text-gray-500">
+                                Front
+                              </p>
                               <div className="flex h-36 items-center justify-center rounded border border-gray-200 bg-gray-50">
-                                <p className="text-sm text-gray-400">No image</p>
+                                <p className="text-sm text-gray-400">
+                                  No image
+                                </p>
                               </div>
                             </div>
                           )}
 
-                          {request.backImage && validateImageUrl(request.backImage) ? (
+                          {request.backImage &&
+                          validateImageUrl(request.backImage) ? (
                             <div className="w-1/2">
-                              <p className="mb-1 text-xs text-gray-500">Back</p>
-                              <div className="group relative">
+                              <p className="mb-1 text-center text-xs text-gray-500">
+                                Back
+                              </p>
+                              <div className="group relative flex h-36 items-center justify-center">
                                 <img
                                   src={request.backImage}
                                   alt="Back design"
-                                  className="h-36 w-auto cursor-pointer rounded border border-gray-200 object-contain hover:opacity-90"
-                                  onClick={() => showEnlargedImage(request.backImage || "", "Back design")}
+                                  className="max-h-36 w-auto cursor-pointer rounded border border-gray-200 object-contain hover:opacity-90"
+                                  onClick={() =>
+                                    showEnlargedImage(
+                                      request.backImage || "",
+                                      "Back design",
+                                    )
+                                  }
                                   onError={(e) => {
-                                    e.currentTarget.src = "/placeholder-image.png";
+                                    e.currentTarget.src =
+                                      "/placeholder-image.png";
                                     e.currentTarget.onerror = null;
                                   }}
                                 />
@@ -339,9 +376,13 @@ const Admin: React.FC = () => {
                             </div>
                           ) : (
                             <div className="w-1/2">
-                              <p className="mb-1 text-xs text-gray-500">Back</p>
+                              <p className="mb-1 text-center text-xs text-gray-500">
+                                Back
+                              </p>
                               <div className="flex h-36 items-center justify-center rounded border border-gray-200 bg-gray-50">
-                                <p className="text-sm text-gray-400">No image</p>
+                                <p className="text-sm text-gray-400">
+                                  No image
+                                </p>
                               </div>
                             </div>
                           )}
@@ -440,7 +481,8 @@ const Admin: React.FC = () => {
                 Delete Confirmation
               </h3>
               <p className="mt-2 text-center text-sm text-gray-500">
-                Are you sure you want to delete this request? This action cannot be undone.
+                Are you sure you want to delete this request? This action cannot
+                be undone.
               </p>
             </div>
             <div className="bg-white p-4 sm:flex sm:flex-row-reverse sm:px-6">
@@ -468,7 +510,7 @@ const Admin: React.FC = () => {
 
       {/* Enlarged Image Modal */}
       {enlargedImage && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
           onClick={() => setEnlargedImage(null)}
         >

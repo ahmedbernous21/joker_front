@@ -20,7 +20,8 @@ const OrderModel = ({
   price,
   preSelectedSize = "",
   quantity = 1,
-  currentArticle,p
+  currentArticle,
+  p,
 }: OrderModelProps) => {
   if (!currentArticle) {
     console.error("currentArticle is not defined in OrderModel");
@@ -274,13 +275,13 @@ const OrderModel = ({
               className="w-full rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition duration-300 hover:bg-blue-700 disabled:bg-blue-400 sm:w-1/2"
             >
               {isLoading ? (
-                <div className="flex items-center justify-center">
+                <div className="flex w-full items-center justify-center space-x-2">
                   <Loader
                     backgroundColor="transparent"
                     color="white"
-                    className="mr-2 h-5 w-5"
+                    className="h-5 w-5"
                   />
-                  Processing...
+                  <span>Processing...</span>
                 </div>
               ) : (
                 "Submit Order"
