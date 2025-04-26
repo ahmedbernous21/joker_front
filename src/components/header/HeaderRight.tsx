@@ -26,15 +26,17 @@ const navLinks: NavLink[] = [
   { name: "Home", link: "/" },
   { name: "About", link: "/#about" },
   { name: "Services", link: "/#services" },
-  { name: "shop", link: "/shop/tshirt" },
+  { name: "shop", link: "/design/" },
+  { name: "My Orders", link: "/my-orders" },
   { name: "Contact", link: "/contact" },
 ];
 
 const mobileNavLinks: MobileNavLink[] = [
   { name: "Home", link: "/", icon: <MdHome /> },
-  { name: "shop", link: "/shop", icon: <MdDashboardCustomize /> },
+  { name: "shop", link: "/design/", icon: <MdDashboardCustomize /> },
   { name: "Our services", link: "/#services", icon: <MdAdd /> },
-  { name: "Cart", link: "/cart", icon: <MdShoppingCart /> },
+  { name: "My Orders", link: "/my-orders", icon: <MdShoppingCart /> },
+  // { name: "Cart", link: "/cart", icon: <MdShoppingCart /> },
   { name: "Contact", link: "/contact", icon: <MdCall /> },
 ];
 
@@ -81,7 +83,7 @@ const HeaderRight = () => {
             <HashLink
               to={section.link}
               className={classNames(
-                "hover:text-primaryColor font-medium capitalize duration-300",
+                "font-medium capitalize duration-300 hover:text-primaryColor",
                 {
                   "text-primaryColor": isActive(section.link),
                 },
@@ -93,9 +95,7 @@ const HeaderRight = () => {
         ))}
       </ul>
 
-      <div className="hidden lg:block">
-        <CartAndSearch />
-      </div>
+      <div className="hidden lg:block">{/* <CartAndSearch /> */}</div>
 
       {/* mobile bottom nav*/}
       <nav

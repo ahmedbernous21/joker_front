@@ -17,6 +17,7 @@ interface ArticleSideInfo {
 
 interface Article {
   id: string;
+  articleId : string;
   articleName: string;
   articleFrontSideInfo: ArticleSideInfo;
   articleBackSideInfo: ArticleSideInfo | null;
@@ -28,7 +29,6 @@ interface SelectedLayer {
   type: "text" | "image";
   id: string;
 }
-
 interface CanvasSliceState {
   canvasRef: Canvas | null | Ref<Canvas>;
   articles: Article[];
